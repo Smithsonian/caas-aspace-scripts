@@ -3,6 +3,19 @@
 A collection of Python/SQL scripts for data cleanup, management, and others related to the Smithsonian's ArchivesSpace 
 implementation.
 
+### [remove_missingtitles.py](python_scripts/remove_missingtitles.py)
+This script collects all resources and archival objects from every repository, checks their notes for lists and 
+'Missing Title' in the list title, removes the title and updates to ArchivesSpace
+
+#### Requirements:
+- ArchivesSnake
+- ArchivesSpace username, password, API URL
+- 
+
+#### [missingtitles_tests.py](tests/missingtitles_tests.py)
+
+Unittests for [missingtitles_tests.py](tests/missingtitles_tests.py)
+
 ### [update_znames.py](python_scripts/update_znames.py)
 
 This script collects all users from ArchivesSpace, parses their usernames to separate any starting with 'z-' and

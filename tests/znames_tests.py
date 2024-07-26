@@ -44,20 +44,20 @@ class TestParseZnames(unittest.TestCase):
     def test_good_user(self):
         good_user = {'username': 'z-simong-expired-'}
         updated_username = parse_znames(good_user)
-        self.assertEqual(updated_username[0], True)
-        self.assertEqual(updated_username[1], 'simong')
+        self.assertEqual(updated_username.Error, False)
+        self.assertEqual(updated_username.Message, 'simong')
 
     def test_username_not_match(self):
         nonmatch_user = {'username': 'simong'}
         update_username = parse_znames(nonmatch_user)
-        self.assertEqual(update_username[0], False)
-        self.assertIn('!!ERROR!!: Username does not match:', update_username[1])
+        self.assertEqual(update_username.Error, True)
+        self.assertIn('!!ERROR!!: Username does not match:', update_username.Message)
 
     def test_username_not_found(self):
         no_username = {'namenotuser': 'simong'}
         update_username = parse_znames(no_username)
-        self.assertEqual(update_username[0], False)
-        self.assertIn('!!ERROR!!: No username found:', update_username[1])
+        self.assertEqual(update_username.Error, True)
+        self.assertIn('!!ERROR!!: No username found:', update_username.Message)
 
 
 class TestUpdateUsernames(unittest.TestCase):

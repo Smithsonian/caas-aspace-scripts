@@ -2,13 +2,14 @@
 # ending with '-expired-' into just the text in-between, then updates the username in ArchivesSpace with the new
 # username
 from asnake.client.web_client import ASnakeAuthError
-
+from collections import namedtuple
 from secrets import *
 from asnake.client import ASnakeClient
 import re
 
 username_capture = re.compile(r'(?<=z-)(.*)(?=-expired-)', re.UNICODE)
 
+# TODO: adding logging
 
 def client_login(as_api, as_un, as_pw):
     """
@@ -62,19 +63,22 @@ def parse_znames(user):
         updated_username (tuple): returns True if username matches or False if not, and a string of the matched username
          or error message
     """
+    Update = namedtuple('Update', 'Error Message')
     if "username" in user:
         if bool(un_matches := username_capture.findall(user['username'])) is True:
             if len(un_matches) > 1:
-                updated_username = (False, f'!!ERROR!!: More than 1 match detected in {user['username']}: {un_matches}')
+                updated_username = Update(True, f'!!ERROR!!: More than 1 match detected in {user['username']}: '
+                                                f'{un_matches}')
                 return updated_username
             else:
-                updated_username = (True, un_matches[0])
+                updated_username = Update(False, un_matches[0])
                 return updated_username
         else:
-            updated_username = (False, f'!!ERROR!!: Username does not match: {user["username"]}')
+            updated_username = Update(True, f'!!ERROR!!: Username does not match: {user["username"]}')
             return updated_username
     else:
-        updated_username = (False, f'!!ERROR!!: No username found: {user}')
+        updated_username = Update(True, f'!!ERROR!!: No username found: {user}')
+        print(updated_username.Error)
         return updated_username
 
 
@@ -101,15 +105,15 @@ def main():
     users_data = get_userdata(client)
     for user in users_data:
         parsed_username = parse_znames(user)
-        if parsed_username[0] is False:
-            if 'Username does not match' in parsed_username[1]:
+        if parsed_username.Error is True:
+            if 'Username does not match' in parsed_username.Message:
                 pass
             else:
-                print(parsed_username[1])
+                print(parsed_username.Message)
         else:
-            user['username'] = parsed_username[1]
-            aspace_response = update_usernames(client, user)
-            print(f'{parsed_username[1]}: {aspace_response}')
+            user['username'] = parsed_username.Message
+            # aspace_response = update_usernames(client, user)
+            # print(f'{parsed_username[1]}: {aspace_response}')
 
 
 if __name__ == "__main__":

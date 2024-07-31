@@ -124,15 +124,14 @@ def main():
                 print(f'Username already exists: {parsed_username.Message}')
                 logger.error(f'Username already exists: {parsed_username.Message}')
             else:
-                pass
-                # logger.info(f'Original user data: {user}')
-                # aspace_response = update_usernames(client, user)
-                # if 'Error' in aspace_response:
-                #     print(f'!!ERROR!!: {aspace_response}')
-                #     logger.error(aspace_response)
-                # else:
-                #     print(f'Updated user data: {parsed_username.Message}: {aspace_response}')
-                #     logger.info(f'{parsed_username.Message}: {aspace_response}')
+                logger.info(f'Original user data: {user}')
+                aspace_response = update_usernames(client, user)
+                if 'Error' in aspace_response:
+                    print(f'!!ERROR!!: {aspace_response}')
+                    logger.error(aspace_response)
+                else:
+                    print(f'Updated user data: {parsed_username.Message}: {aspace_response}')
+                    logger.info(f'{parsed_username.Message}: {aspace_response}')
 
 
 if __name__ == "__main__":

@@ -1,15 +1,20 @@
 # This script collects all users from ArchivesSpace, parses their usernames to separate any starting with 'z-' and
 # ending with '-expired-' into just the text in-between, then updates the username in ArchivesSpace with the new
 # username
+from asnake.client import ASnakeClient
 from asnake.client.web_client import ASnakeAuthError
 from collections import namedtuple
+from loguru import logger
+from pathlib import Path
 from secrets import *
-from asnake.client import ASnakeClient
 import re
 
 username_capture = re.compile(r'(?<=z-)(.*)(?=-expired-)', re.UNICODE)
 
-# TODO: adding logging
+logger.remove()
+log_path = Path(f'../logs', 'update_znames_{time:YYYY-MM-DD}.log')
+logger.add(str(log_path), format="{time}-{level}: {message}")
+
 
 def client_login(as_api, as_un, as_pw):
     """
@@ -29,6 +34,7 @@ def client_login(as_api, as_un, as_pw):
         client.authorize()
     except ASnakeAuthError as e:
         print(f'Failed to authorize ASnake client. ERROR: {e}')
+        logger.error(f'Failed to authorize ASnake client. ERROR: {e}')
         return ASnakeAuthError
     else:
         return client
@@ -78,7 +84,8 @@ def parse_znames(user):
             return updated_username
     else:
         updated_username = Update(True, f'!!ERROR!!: No username found: {user}')
-        print(updated_username.Error)
+        print(updated_username.Message)
+        logger.error(updated_username.Message)
         return updated_username
 
 
@@ -103,6 +110,7 @@ def main():
     """
     client = client_login(as_api, as_un, as_pw)
     users_data = get_userdata(client)
+    existing_usernames = [user['username'] for user in users_data]
     for user in users_data:
         parsed_username = parse_znames(user)
         if parsed_username.Error is True:
@@ -112,8 +120,19 @@ def main():
                 print(parsed_username.Message)
         else:
             user['username'] = parsed_username.Message
-            # aspace_response = update_usernames(client, user)
-            # print(f'{parsed_username[1]}: {aspace_response}')
+            if parsed_username.Message in existing_usernames:
+                print(f'Username already exists: {parsed_username.Message}')
+                logger.error(f'Username already exists: {parsed_username.Message}')
+            else:
+                pass
+                # logger.info(f'Original user data: {user}')
+                # aspace_response = update_usernames(client, user)
+                # if 'Error' in aspace_response:
+                #     print(f'!!ERROR!!: {aspace_response}')
+                #     logger.error(aspace_response)
+                # else:
+                #     print(f'Updated user data: {parsed_username.Message}: {aspace_response}')
+                #     logger.info(f'{parsed_username.Message}: {aspace_response}')
 
 
 if __name__ == "__main__":

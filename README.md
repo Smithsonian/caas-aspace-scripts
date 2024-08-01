@@ -11,9 +11,15 @@ lists and removes the title from the metadata, then posts the update to Archives
 - ArchivesSnake
 - ArchivesSpace username, password, API URL in a secrets.py file
 - logs directory for storing local log files
-- test_data/missingtitles_testdata.py file, with `test_object_metadata = {ArchivesSpace resource or archival object 
-metadata}` for testing. Can get this from your API by getting a `client.get` request for a resource or archival
-object that has a "Missing Title" in one of its notes with a list.
+- test_data/missingtitles_testdata.py file, with the following:
+  - `test_object_metadata = {ArchivesSpace resource or archival object metadata}` for testing. Can get this from your 
+API by using a `client.get` request for a resource or archival object that has a "Missing Title" in one of its notes 
+with a list.
+  - `test_notes = [ArchivesSpace resource or archival object notes list]` for testing. Can get this from your 
+API using a `client.get` request for a resource or archival object that has a "Missing Title" in one of its notes 
+with a list and taking all the data found in `"notes" = [list of notes]`
+- test_data/MissingTitles_BeGone.csv - a csv file containing the URIs of the objects that have "Missing Title" in their
+notes. URIs should be in the 4th spot (`row[3]`)
 
 #### [missingtitles_tests.py](tests/missingtitles_tests.py)
 
@@ -45,6 +51,7 @@ import statements at the top to see which specific packages are needed.
 
 - [ArchivesSnake](https://github.com/archivesspace-labs/ArchivesSnake) - Library used for interacting with the 
 ArchivesSpace API
+- [loguru](https://pypi.org/project/loguru/) - Library used for generating log files
 
 ### Installation
 

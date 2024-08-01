@@ -1,4 +1,5 @@
 # This script consists of unittests for update_znames.py
+import copy
 import json
 import unittest
 
@@ -18,6 +19,19 @@ class TestClientLogin(unittest.TestCase):
         """Test using garbage input for ASnakeAuthError return"""
         self.local_aspace = client_login("https://www.cnn.com", "garbage", "garbage")
         self.assertEqual(self.local_aspace, ASnakeAuthError)
+
+
+class TestReadCSV(unittest.TestCase):
+
+    def test_good_csv(self):
+        test_missinguris = read_csv(str(Path(f'../test_data/MissingTitles_BeGone.csv')))
+        self.assertIsNotNone(test_missinguris)
+        self.assertIsInstance(test_missinguris[1], str)
+
+    def test_bad_csv(self):
+        test_missinguris = read_csv(str(Path(f'../test_data/fake.csv')))
+        self.assertRaises(FileNotFoundError)
+        self.assertEqual(test_missinguris, None)
 
 
 class TestGetObjects(unittest.TestCase):
@@ -54,20 +68,43 @@ class TestGetObjects(unittest.TestCase):
 
 
 class TestDeleteMissingTitle(unittest.TestCase):
-    pass
+
+    def test_missing_title_notes(self):
+        test_delete = delete_missingtitle(test_notes)
+        for note in test_delete:
+            if 'subnotes' in note:
+                for subnote in note['subnotes']:
+                    if 'title' in subnote:
+                        self.fail(f'title found in {test_delete}')
+
+    def test_no_missing_title_note(self):
+        no_title_notes = copy.deepcopy(test_notes)
+        for note in no_title_notes:
+            if 'subnotes' in note:
+                for subnote in note['subnotes']:
+                    if 'title' in subnote:
+                        subnote.pop('title', None)
+        test_delete = delete_missingtitle(no_title_notes)
+        self.assertTrue(len(test_delete) == 0)
 
 
 class TestUpdateObject(unittest.TestCase):
 
     def test_aspace_post_response(self):
         self.local_aspace = client_login(as_api, as_un, as_pw)
-        # self.assertEqual(test_response['status'], 'Updated')
-        # self.assertEqual(test_response['warnings'], [])
+        updated_lock_version = self.local_aspace.get(f'{test_object_metadata["uri"]}').json()['lock_version']
+        test_object_metadata['lock_version'] = updated_lock_version
+        test_response = update_object(self.local_aspace, test_object_metadata['uri'], test_object_metadata)
+        self.assertEqual(test_response['status'], 'Updated')
+        self.assertEqual(test_response['warnings'], [])
 
     def test_bad_post(self):
         self.local_aspace = client_login(as_api, as_un, as_pw)
-        # self.assertIn('error', test_response)
-        # self.assertEqual(test_response['error'], 'User not found')
+        updated_lock_version = self.local_aspace.get(f'{test_object_metadata["uri"]}').json()['lock_version']
+        test_object_metadata['lock_version'] = updated_lock_version
+        test_object_metadata['uri'] = 'lkjsadlkjiidifakdsj'  # Bad URI
+        test_response = update_object(self.local_aspace, test_object_metadata['uri'], test_object_metadata)
+        self.assertIn('error', test_response)
 
 
 if __name__ == "__main__":

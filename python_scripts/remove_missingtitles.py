@@ -1,15 +1,15 @@
 # This script collects all resources and archival objects from every repository, checks their notes for lists and
 # 'Missing Title' in the list title, removes the title and updates to ArchivesSpace
+import copy
+import csv
 
+from asnake.client import ASnakeClient
 from asnake.client.web_client import ASnakeAuthError
 from collections import namedtuple
 from loguru import logger
 from pathlib import Path
-import copy
-import os
-
 from secrets import *
-from asnake.client import ASnakeClient
+
 
 logger.remove()
 log_path = Path(f'../logs', 'remove-missingtitles_{time:YYYY-MM-DD}.log')
@@ -36,6 +36,31 @@ def client_login(as_api, as_un, as_pw):
         return ASnakeAuthError
     else:
         return client
+
+
+def read_csv(missing_titles_csv):
+    """
+    Takes a csv input of ASpace objects with "Missing Title" in them - ran from SQL query - and returns a list of all
+    the URIs for those objects
+
+    Args:
+        missing_titles_csv (str): filepath for the missing titles csv listing all the URIs for resources or archival
+    objects
+
+    Returns:
+        missingtitle_uris (list): a list of URIs (str) with "Missing Title" in their notes
+    """
+    missingtitle_uris = []
+    try:
+        with open(missing_titles_csv, 'r', encoding='UTF-8') as missingtitles:
+            missingtitle_data = csv.reader(missingtitles, delimiter=',')
+            for row in missingtitle_data:
+                missingtitle_uris.append(row[3])  # appends the URI of the object to missingtitle_uris
+    except IOError as csverror:
+        logger.error(f'ERROR reading csv file: {csverror}')
+        print(f'ERROR reading csv file: {csverror}')
+    else:
+        return missingtitle_uris
 
 
 def get_objects(object_metadata, test=""):
@@ -114,34 +139,39 @@ def update_object(client, original_objecturi, new_object):
     return update_message
 
 
-def main():
+def run_script(missing_titles_csv):
     """
-    Runs the functions of the script, collecting, parsing, then updating metadata in for resources and archival objects
-    with notes that have 'Missing Title' in their notes list titles
+    Runs the functions of the script, taking a csv input containing all the URIs of objects with 'Missing Title' in
+    their notes, parsing the notes and removing the title, then updating the resources and archival objects by posting
+    to ASpace
+
+    Args:
+        missing_titles_csv (str): filepath for the missing titles csv listing all the URIs for resources or archival
+    objects
     """
-    object_types = ['resources', 'archival_objects']
     client = client_login(as_api, as_un, as_pw)
-    all_repos = client.get('/repositories', params={'all_ids': True}).json()
-    for repo in all_repos:
-        for object_type in object_types:
-            all_res_ids = client.get(f'{repo['uri']}/{object_type}', params={'all_ids': True}).json()
-            for res_id in all_res_ids:
-                object_md = client.get(f'{repo['uri']}/{object_type}/{res_id}').json()
-                updated_object = get_objects(object_md)
-                if updated_object.Status == "ERROR":
-                    logger.error(updated_object.Message)
-                    print(updated_object.Status, updated_object.Message)
-                elif updated_object.Status == "PASS":
-                    pass
+    missingtitle_uris = read_csv(missing_titles_csv)
+    for uri in missingtitle_uris:
+        object_md = client.get(f'{uri}').json()
+        if 'error' in object_md:
+            logger.error(f'ERROR getting object metadata: {object_md}')
+            print(f'ERROR getting object metadata: {object_md}')
+        else:
+            updated_object = get_objects(object_md)
+            if updated_object.Status == "ERROR":
+                logger.error(updated_object.Message)
+                print(f'{updated_object.Status}: {updated_object.Message}')
+            elif updated_object.Status == "PASS":
+                pass
+            else:
+                aspace_response = update_object(client, object_md['uri'], updated_object.Message)
+                if 'error' in aspace_response:
+                    logger.error(aspace_response)
+                    print(f'!!ERROR!!: {aspace_response}')
                 else:
-                    aspace_response = update_object(client, object_md['uri'], updated_object.Message)
-                    if 'error' in aspace_response:
-                        print(f'!!ERROR!!: {aspace_response}')
-                        logger.error(aspace_response)
-                    else:
-                        print(f'Updated object data: {aspace_response}')
-                        logger.info(f'{aspace_response}')
+                    logger.info(f'{aspace_response}')
+                    print(f'Updated object data: {aspace_response}')
 
 
 if __name__ == "__main__":
-    main()
+    run_script(str(Path(f'../test_data/MissingTitles_BeGone.csv')))

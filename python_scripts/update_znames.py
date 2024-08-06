@@ -9,7 +9,7 @@ from pathlib import Path
 from secrets import *
 import re
 
-username_capture = re.compile(r'(?<=z-)(.*)(?=-expired-)', re.UNICODE)
+username_capture = re.compile(r'(?<=z-)(.*)(?=-expired)', re.UNICODE)
 
 logger.remove()
 log_path = Path(f'../logs', 'update_znames_{time:YYYY-MM-DD}.log')
@@ -113,11 +113,16 @@ def main():
     existing_usernames = [user['username'] for user in users_data]
     for user in users_data:
         parsed_username = parse_znames(user)
+        if 'is_active_user' in user:
+            if user['is_active_user'] is False:
+                logger.info(f'WARNING: {user["username"]} is marked as ACTIVE, '
+                            f'is_active_user: {user['is_active_user']}')
         if parsed_username.Error is True:
             if 'Username does not match' in parsed_username.Message:
                 pass
             else:
                 print(parsed_username.Message)
+                logger.error(f'!!ERROR!!: {parsed_username.Message}')
         else:
             user['username'] = parsed_username.Message
             if parsed_username.Message in existing_usernames:

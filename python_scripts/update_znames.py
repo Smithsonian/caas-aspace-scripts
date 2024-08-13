@@ -113,10 +113,9 @@ def main():
     existing_usernames = [user['username'] for user in users_data]
     for user in users_data:
         parsed_username = parse_znames(user)
-        if 'is_active_user' in parsed_username.Message:
-            if parsed_username.Message['is_active_user'] is True:
+        if user['is_active_user'] is True and user["username"].startswith('z-'):
                 logger.info(f'WARNING: {user["username"]} is marked as ACTIVE, '
-                            f'is_active_user: {user['is_active_user']}')
+                    f'is_active_user: {user['is_active_user']}')
         if parsed_username.Error is True:
             if 'Username does not match' in parsed_username.Message:
                 pass

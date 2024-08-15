@@ -2,3 +2,9 @@
 
 # Global Owner
 *       @crugas
+
+# Python Owner
+*.py @crugas
+
+# Documentation Owner
+*.txt @crugas

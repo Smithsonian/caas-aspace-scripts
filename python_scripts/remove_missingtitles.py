@@ -41,26 +41,24 @@ def client_login(as_api, as_un, as_pw):
 def read_csv(missing_titles_csv):
     """
     Takes a csv input of ASpace objects with "Missing Title" in them - ran from SQL query - and returns a list of all
-    the URIs for those objects
+    dictionaries of all the objects metadata, including their identifiers, repository ID, ASpace ID, and URI
 
     Args:
-        missing_titles_csv (str): filepath for the missing titles csv listing all the URIs for resources or archival
+        missing_titles_csv (str): filepath for the missing titles csv listing metadata for resources or archival
     objects
 
     Returns:
-        missingtitle_uris (list): a list of URIs (str) with "Missing Title" in their notes
+        missingtitle_objects (list): a list of URIs (dict) with "Missing Title" in their notes
     """
-    missingtitle_uris = []
+    missingtitle_objects = []
     try:
-        with open(missing_titles_csv, 'r', encoding='UTF-8') as missingtitles:
-            missingtitle_data = csv.reader(missingtitles, delimiter=',')
-            for row in missingtitle_data:
-                missingtitle_uris.append(row[3])  # appends the URI of the object to missingtitle_uris
+        open_csv = open(missing_titles_csv, 'r', encoding='UTF-8')
+        missingtitle_objects = csv.DictReader(open_csv)
     except IOError as csverror:
         logger.error(f'ERROR reading csv file: {csverror}')
         print(f'ERROR reading csv file: {csverror}')
     else:
-        return missingtitle_uris
+        return missingtitle_objects
 
 
 def get_objects(object_metadata, test=""):
@@ -150,9 +148,9 @@ def run_script(missing_titles_csv):
     objects
     """
     client = client_login(as_api, as_un, as_pw)
-    missingtitle_uris = read_csv(missing_titles_csv)
-    for uri in missingtitle_uris:
-        object_md = client.get(f'{uri}').json()
+    missingtitles = read_csv(missing_titles_csv)
+    for mt_object in missingtitles:
+        object_md = client.get(f'{mt_object['uri']}').json()
         if 'error' in object_md:
             logger.error(f'ERROR getting object metadata: {object_md}')
             print(f'ERROR getting object metadata: {object_md}')
@@ -175,3 +173,4 @@ def run_script(missing_titles_csv):
 
 if __name__ == "__main__":
     run_script(str(Path(f'../test_data/MissingTitles_BeGone.csv')))
+    print(f'TESTING')

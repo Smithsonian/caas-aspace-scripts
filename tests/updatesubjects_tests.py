@@ -1,22 +1,23 @@
 # This script consists of unittests for new_subjects.py
-import json
 import unittest
 
 from python_scripts.update_subjects import *
-from secrets import *
 from test_data.subjects_testdata import *
+
+env_file = find_dotenv(f'.env.{os.getenv("ENV", "dev")}')
+load_dotenv(env_file)
+local_aspace = client_login(os.getenv('as_api'), os.getenv('as_un'), os.getenv('as_pw'))
 
 class TestClientLogin(unittest.TestCase):
 
     def test_default_connection(self):
         """Test using default connection info found in secrets.py"""
-        self.local_aspace = client_login(as_api, as_un, as_pw)
-        self.assertIsInstance(self.local_aspace, ASnakeClient)
+        self.assertIsInstance(local_aspace, ASnakeClient)
 
     def test_error_connection(self):
         """Test using garbage input for ASnakeAuthError return"""
-        self.local_aspace = client_login("https://www.cnn.com", "garbage", "garbage")
-        self.assertEqual(self.local_aspace, ASnakeAuthError)
+        not_aspace = client_login("https://www.cnn.com", "garbage", "garbage")
+        self.assertEqual(not_aspace, ASnakeAuthError)
 
 class TestReadCSV(unittest.TestCase):
 
@@ -35,17 +36,15 @@ class TestGetSubject(unittest.TestCase):
 
     def test_get_subject(self):
         """Tests that the existing subject can be retrieved"""
-        self.local_aspace = client_login(as_api, as_un, as_pw)
         subject_id = test_update_subject_metadata['uri'].split('/subjects/')[1]
-        test_response = get_subject(self.local_aspace, subject_id)
+        test_response = get_subject(local_aspace, subject_id)
         self.assertIsInstance(test_response, dict)
         self.assertNotIn('error', test_response)
 
     def test_get_missing_subject(self):
-        """Tests that a missing subject returns an error"""
-        self.local_aspace = client_login(as_api, as_un, as_pw)
-        test_response = get_subject(self.local_aspace, '600') # Some unusually high made up number
-        self.assertIn('error', test_response)
+        """Tests that a missing subject returns None"""
+        test_response = get_subject(local_aspace, '600') # Some unusually high made up number
+        self.assertIsNone(test_response)
 
 class TestBuildSubject(unittest.TestCase):
 
@@ -64,15 +63,13 @@ class TestBuildSubject(unittest.TestCase):
 class TestUpdateSubjects(unittest.TestCase):
 
     def test_aspace_post_response(self):
-        self.local_aspace = client_login(as_api, as_un, as_pw)
         subject_id = test_update_subject_metadata['uri'].split('/subjects/')[1]
-        test_response = update_subject(self.local_aspace, subject_id, test_update_subject_metadata)
+        test_response = update_subject(local_aspace, subject_id, test_update_subject_metadata)
         self.assertEqual(test_response['status'], 'Updated')
         self.assertEqual(test_response['warnings'], [])
 
     def test_bad_post(self):
-        self.local_aspace = client_login(as_api, as_un, as_pw)
-        test_response = update_subject(self.local_aspace, '600', test_update_subject_metadata) # Some unusually high made up number
+        test_response = update_subject(local_aspace, '600', test_update_subject_metadata) # Some unusually high made up number
         self.assertIn('error', test_response)
         self.assertEqual(test_response['error'], 'Subject not found')
 

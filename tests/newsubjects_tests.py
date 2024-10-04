@@ -2,20 +2,22 @@
 import unittest
 
 from python_scripts.new_subjects import *
-from secrets import *
 from test_data.subjects_testdata import *
+
+env_file = find_dotenv(f'.env.{os.getenv("ENV", "dev")}')
+load_dotenv(env_file)
+local_aspace = client_login(os.getenv('as_api'), os.getenv('as_un'), os.getenv('as_pw'))
 
 class TestClientLogin(unittest.TestCase):
 
     def test_default_connection(self):
         """Test using default connection info found in secrets.py"""
-        self.local_aspace = client_login(as_api, as_un, as_pw)
-        self.assertIsInstance(self.local_aspace, ASnakeClient)
+        self.assertIsInstance(local_aspace, ASnakeClient)
 
     def test_error_connection(self):
         """Test using garbage input for ASnakeAuthError return"""
-        self.local_aspace = client_login("https://www.cnn.com", "garbage", "garbage")
-        self.assertEqual(self.local_aspace, ASnakeAuthError)
+        not_aspace = client_login("https://www.cnn.com", "garbage", "garbage")
+        self.assertEqual(not_aspace, ASnakeAuthError)
 
 class TestReadCSV(unittest.TestCase):
 
@@ -47,14 +49,12 @@ class TestBuildSubject(unittest.TestCase):
 class TestCreateSubjects(unittest.TestCase):
 
     def test_aspace_post_response(self):
-        self.local_aspace = client_login(as_api, as_un, as_pw)
-        test_response = create_subject(self.local_aspace, test_new_subject_metadata)
+        test_response = create_subject(local_aspace, test_new_subject_metadata)
         self.assertEqual(test_response['status'], 'Created')
         self.assertEqual(test_response['warnings'], [])
 
     def test_bad_post(self):
-        self.local_aspace = client_login(as_api, as_un, as_pw)
-        test_response = create_subject(self.local_aspace, duplicate_new_subject)
+        test_response = create_subject(local_aspace, duplicate_new_subject)
         self.assertIn('error', test_response)
         self.assertEqual(test_response['error']['terms'], ['Subject must be unique'])
 

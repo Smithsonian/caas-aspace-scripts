@@ -1,16 +1,21 @@
 # This script updates existing subjects in bulk from a csv
 import csv
+import os
 import sys
 
 from asnake.client import ASnakeClient
 from asnake.client.web_client import ASnakeAuthError
+from dotenv import load_dotenv, find_dotenv
 from loguru import logger
 from pathlib import Path
-from secrets import *
 
 logger.remove()
 log_path = Path(f'./logs', 'update_subjects_{time:YYYY-MM-DD}.log')
 logger.add(str(log_path), format="{time}-{level}: {message}")
+
+# Find  and load environment-specific .env file
+env_file = find_dotenv(f'.env.{os.getenv("ENV", "dev")}')
+load_dotenv(env_file)
 
 def client_login(as_api, as_un, as_pw):
     """
@@ -29,8 +34,8 @@ def client_login(as_api, as_un, as_pw):
     try:
         client.authorize()
     except ASnakeAuthError as e:
-        print(f'Failed to authorize ASnake client. ERROR: {e}')
-        logger.error(f'Failed to authorize ASnake client. ERROR: {e}')
+        print(f'ERROR authorizing ASnake client: {e}')
+        logger.error(f'ERROR authorizing ASnake client: {e}')
         return ASnakeAuthError
     else:
         return client
@@ -61,12 +66,14 @@ def get_subject(client, existing_subject_id):
 
     Returns:
         existing_subj (dict): the existing subject returned from ArchivesSpace's API
+        None (NoneType): if problem retrieving existing subject
     """
     existing_subj = client.get(f'subjects/{existing_subject_id}').json()
     if 'error' in existing_subj:
-        logger.error(f'ERROR getting existing subject: {existing_subj}')
-        print(f'ERROR getting existing subject: {existing_subj}')
-    return existing_subj
+        logger.error(f'ERROR getting existing subject {existing_subject_id}: {existing_subj}')
+        print(f'ERROR getting existing subject {existing_subject_id}: {existing_subj}')
+    else:
+        return existing_subj
     
 def build_subject(existing_subj, subj):
     """
@@ -109,7 +116,7 @@ def update_subject(client, existing_subj_id, data):
     update_message = client.post(f'subjects/{existing_subj_id}', json=data).json()
     if 'error' in update_message:
         logger.error(update_message)
-        print(f'!!ERROR!!: {update_message}')
+        print(f'ERROR: {update_message}')
     else:
         logger.info(f'{update_message}')
         print(f'Updated object data: {update_message}')
@@ -129,13 +136,14 @@ def main(updated_subjects_csv):
     Args:
         updated_subjects_csv (str): filepath for the subjects csv
     """
-    client = client_login(as_api, as_un, as_pw)
+    client = client_login(os.getenv('as_api'), os.getenv('as_un'), os.getenv('as_pw'))
     updated_subjects = read_csv(updated_subjects_csv)
     for subj in updated_subjects:
         existing_subj_id = subj['aspace_subject_id']
         existing_subj = get_subject(client, existing_subj_id)
-        data = build_subject(existing_subj, subj)
-        update_subject(client, existing_subj_id, data)
+        if not existing_subj is None:
+            data = build_subject(existing_subj, subj)
+            update_subject(client, existing_subj_id, data)
 
 # Call with `python update_subjects.py <filename>.csv`
 if __name__ == "__main__":

@@ -111,7 +111,19 @@ this hardcoded NMAI metadata can be changed/updated in the future.
 
 #### Requirements:
 - ArchivesSnake
-- ArchivesSpace username, password, API URL in a secrets.py file
+- Environment-based ArchivesSpace username, password, API URL in a .env.{environment} file:
+  - On your local:
+    1. Create a new `.env.dev` file containing local credentials
+    2. `export ENV=dev`
+    3. Run script
+  - On test:
+    1. Create a new `.env.test` file containing test credentials
+    2. `export ENV=test`
+    3. Run script
+  - On prod:
+    1. Create a new `.env.prod` file containing prod credentials
+    2. `export ENV=prod`
+    3. CAREFULLY run script
 - logs directory for storing local log files
 
 #### [newsubjects_tests.py](tests/newsubjects_tests.py)
@@ -135,7 +147,19 @@ needs of NMAI, but can be changed/updated in the future.
 
 #### Requirements:
 - ArchivesSnake
-- ArchivesSpace username, password, API URL in a secrets.py file
+- Environment-based ArchivesSpace username, password, API URL in a .env.{environment} file:
+  - On your local:
+    1. Create a new `.env.dev` file containing local credentials
+    2. `export ENV=dev`
+    3. Run script
+  - On test:
+    1. Create a new `.env.test` file containing test credentials
+    2. `export ENV=test`
+    3. Run script
+  - On prod:
+    1. Create a new `.env.prod` file containing prod credentials
+    2. `export ENV=prod`
+    3. CAREFULLY run script
 - logs directory for storing local log files
 
 #### [updatesubjects_tests.py](tests/updatesubjects_tests.py)
@@ -159,7 +183,19 @@ this hardcoded NMAI metadata can be changed/updated in the future.
 
 #### Requirements:
 - ArchivesSnake
-- ArchivesSpace username, password, API URL in a secrets.py file
+- Environment-based ArchivesSpace username, password, API URL in a .env.{environment} file:
+  - On your local:
+    1. Create a new `.env.dev` file containing local credentials
+    2. `export ENV=dev`
+    3. Run script
+  - On test:
+    1. Create a new `.env.test` file containing test credentials
+    2. `export ENV=test`
+    3. Run script
+  - On prod:
+    1. Create a new `.env.prod` file containing prod credentials
+    2. `export ENV=prod`
+    3. CAREFULLY run script
 - logs directory for storing local log files
 
 #### [mergesubjects_tests.py](tests/mergesubjects_tests.py)

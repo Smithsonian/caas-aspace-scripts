@@ -1,16 +1,21 @@
 # This script creates new subjects in bulk from a csv
 import csv
+import os
 import sys
 
 from asnake.client import ASnakeClient
 from asnake.client.web_client import ASnakeAuthError
+from dotenv import load_dotenv, find_dotenv
 from loguru import logger
 from pathlib import Path
-from secrets import *
 
 logger.remove()
 log_path = Path(f'./logs', 'new_subjects_{time:YYYY-MM-DD}.log')
 logger.add(str(log_path), format="{time}-{level}: {message}")
+
+# Find  and load environment-specific .env file
+env_file = find_dotenv(f'.env.{os.getenv("ENV", "dev")}')
+load_dotenv(env_file)
 
 def client_login(as_api, as_un, as_pw):
     """
@@ -29,8 +34,8 @@ def client_login(as_api, as_un, as_pw):
     try:
         client.authorize()
     except ASnakeAuthError as e:
-        print(f'Failed to authorize ASnake client. ERROR: {e}')
-        logger.error(f'Failed to authorize ASnake client. ERROR: {e}')
+        print(f'ERROR authorizing ASnake client: {e}')
+        logger.error(f'ERROR authorizing ASnake client: {e}')
         return ASnakeAuthError
     else:
         return client
@@ -101,7 +106,7 @@ def create_subject(client, data):
     create_message = client.post('/subjects', json=data).json()
     if 'error' in create_message:
         logger.error(create_message)
-        print(f'!!ERROR!!: {create_message}')
+        print(f'ERROR: {create_message}')
     else:
         logger.info(f'{create_message}')
         print(f'Created object data: {create_message}')
@@ -120,7 +125,7 @@ def main(new_subjects_csv):
     Args:
         new_subjects_csv (str): filepath for the subjects csv
     """
-    client = client_login(as_api, as_un, as_pw)
+    client = client_login(os.getenv('as_api'), os.getenv('as_un'), os.getenv('as_pw'))
     new_subjects = read_csv(new_subjects_csv)
     for subj in new_subjects:
         data = build_subject(subj)

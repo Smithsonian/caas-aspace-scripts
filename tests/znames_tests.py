@@ -1,3 +1,5 @@
+#!/usr/bin/env python
+
 # This script consists of unittests for update_znames.py
 import json
 import unittest

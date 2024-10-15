@@ -1,3 +1,5 @@
+#!/usr/bin/env python
+
 # This script takes a CSV of digital objects and deletes all agents, dates, extents, languages, notes, and subjects
 # from the record and uploads it back to ArchivesSpace
 import copy
@@ -77,16 +79,15 @@ def client_login(as_api, as_un, as_pw):
 
 def read_csv(delete_domd_csv):
     """
-    Takes a csv input of ASpace objects with "Missing Title" in them - ran from SQL query - and returns a list of all
-    dictionaries of all the objects metadata, including their identifiers, repository ID, ASpace ID, and URI
+    Takes a csv input of ASpace digital objects - ran from SQL query - and returns a list of dictionaries of all the
+    digital objects metadata
 
     Args:
         delete_domd_csv (str): filepath for the delete digital object metadata csv containing metadata for all digital
         objects to edit
-    objects
 
     Returns:
-        digital_objects (list): a list of dictionaries for all the digital objects' metadata for updating
+        digital_objects (list): a list of dictionaries for each column name (key) and row values (value)
     """
     digital_objects = []
     try:

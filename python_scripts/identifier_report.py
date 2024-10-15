@@ -1,3 +1,7 @@
+#!/usr/bin/env python
+
+# This script reads a CSV containing all the resource and accession identifiers in ArchivesSpace and returns a
+# dictionary containing all the unique, non-alphanumeric characters in the identifiers and their counts
 import csv
 import json
 

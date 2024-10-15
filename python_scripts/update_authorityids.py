@@ -1,3 +1,5 @@
+#!/usr/bin/env python
+
 # This script intakes a CSV of all subjects and agends in ArchivesSpace to update their Authority IDs to match the
 # following standard: <https://<authority_url>/<authority_id>>
 import copy
@@ -73,7 +75,7 @@ def read_csv(authorityids_csv):
     updated
 
     Returns:
-        authorityids_uris (list): a list of subject and agent URIs (str) to update their authority IDs
+        authorityids_uris (list): a list of dictionaries for each column name (key) and row values (value)
     """
     authorityids_uris = []
     try:

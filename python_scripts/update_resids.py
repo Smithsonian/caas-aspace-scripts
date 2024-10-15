@@ -1,3 +1,5 @@
+#!/usr/bin/env python
+
 # This script takes a CSV file of resource identifiers, edits them to standardize them to contain only alphanumeric
 # characters, except periods using those as separators, and posts those changes to ArchivesSpace
 import csv
@@ -47,12 +49,11 @@ def read_csv(all_ids_csv):
     dictionaries of all the objects metadata, including their identifiers, repository ID, ASpace ID, and URI
 
     Args:
-        all_ids_csv (str): filepath for the all identifiers csv listing metadata for resources
+        all_ids_csv (str): filepath for CSV file
 
     Returns:
-        resources (list): a list of URIs (dict) with "Missing Title" in their notes
+        resources (list): a list of dictionaries for each column name (key) and row values (value)
     """
-    resources = []
     try:
         open_csv = open(all_ids_csv, 'r', encoding='UTF-8')
         resources = csv.DictReader(open_csv)

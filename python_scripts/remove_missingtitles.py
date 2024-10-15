@@ -1,3 +1,5 @@
+#!/usr/bin/env python
+
 # This script collects all resources and archival objects from every repository, checks their notes for lists and
 # 'Missing Title' in the list title, removes the title and updates to ArchivesSpace
 import copy

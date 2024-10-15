@@ -3,11 +3,15 @@
 A collection of Python/SQL scripts for data cleanup, management, and others related to the Smithsonian's ArchivesSpace 
 implementation.
 
-### [remove_missingtitles.py](python_scripts/remove_missingtitles.py)
+### Metadata Cleanup Scripts
+#### [remove_missingtitles.py](python_scripts/remove_missingtitles.py)
 This script takes a CSV of resources and archival objects from every repository with "Missing Title" titles in note 
 lists and removes the title from the metadata, then posts the update to ArchivesSpace
 
-#### Requirements:
+##### Tests:
+- [missingtitles_tests.py](tests/missingtitles_tests.py)
+
+##### Requirements:
 - ArchivesSnake
 - ArchivesSpace username, password, API URL in a secrets.py file
 - logs directory for storing local log files
@@ -21,27 +25,32 @@ with a list and taking all the data found in `"notes" = [list of notes]`
 - test_data/MissingTitles_BeGone.csv - a csv file containing the URIs of the objects that have "Missing Title" in their
 notes. URIs should be in the 4th spot (`row[3]`)
 
-#### [missingtitles_tests.py](tests/missingtitles_tests.py)
-
-Unittests for [missingtitles_tests.py](tests/missingtitles_tests.py)
-
-### [update_znames.py](python_scripts/update_znames.py)
+#### [update_znames.py](python_scripts/update_znames.py)
 
 This script collects all users from ArchivesSpace, parses their usernames to separate any starting with 'z-' and
 ending with '-expired-' into just the text in-between, then updates the username in ArchivesSpace with the new 
 username
 
-#### Requirements:
+##### Tests:
+- [znames_tests.py](tests/znames_tests.py)
+
+##### Requirements:
 - ArchivesSnake
 - ArchivesSpace username, password, API URL
 - logs directory for storing local log files
 - test_data/znames_testdata.py file, with `viewer_user = {ArchivesSpace viewer user metadata}` for testing. Can get this
 from your API by getting a `client.get` request for the `viewer' user in your ArchivesSpace instance.
 
+### Reporting Scripts
 
-#### [znames_tests.py](tests/znames_tests.py)
+#### [identifier_report.py](python_scripts/identifier_report.py)
 
-Unittests for [znames_tests.py](tests/znames_tests.py)
+This script reads a CSV containing all the resource and accession identifiers in ArchivesSpace and prints a
+dictionary containing all the unique, non-alphanumeric characters in the identifiers and their counts
+
+##### Requirements:
+- CSV input containing the following columns: id, repo_id, identifier, title, ead_id, recordType
+  - identifier should be structured like so: "['id_0','id_1','id_2','id_3']"
 
 ## Getting Started
 
@@ -81,9 +90,10 @@ See the [Overview](#Overview) section for more info on what each script does.
    2. If the script is not a python script, but an SQL statement, you can either download the SQL file or copy the code
    to your local SQL developer environment and run it there.
 
-## Author
+## Authors
 
 - Corey Schmidt - IT Specialist at the Smithsonian Institution
+- Mark Custer - Manager of the Community Applications and Archival Support Team at the Smithsonian Institution
 
 ## Acknowledgements
 

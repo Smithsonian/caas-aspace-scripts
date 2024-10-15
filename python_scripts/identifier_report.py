@@ -5,14 +5,8 @@
 import csv
 import json
 
-from collections import namedtuple
 from loguru import logger
 from pathlib import Path
-
-
-logger.remove()
-log_path = Path(f'../logs', 'remove-missingtitles_{time:YYYY-MM-DD}.log')
-logger.add(str(log_path), format="{time}-{level}: {message}")
 
 def read_csv(missing_titles_csv):
     """
@@ -26,7 +20,6 @@ def read_csv(missing_titles_csv):
     Returns:
         missingtitle_objects (list): a list of URIs (dict) with "Missing Title" in their notes
     """
-    missingtitle_objects = []
     try:
         open_csv = open(missing_titles_csv, 'r', encoding='UTF-8')
         missingtitle_objects = csv.DictReader(open_csv)

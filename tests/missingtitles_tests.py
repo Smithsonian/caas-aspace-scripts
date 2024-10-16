@@ -14,7 +14,7 @@ class TestClientLogin(unittest.TestCase):
 
     def test_default_connection(self):
         """Test using default connection info found in secrets.py"""
-        self.local_aspace = client_login(as_api, as_un, as_pw)
+        self.local_aspace = client_login(as_api_stag, as_un, as_pw)
         self.assertIsInstance(self.local_aspace, ASnakeClient)
 
     def test_error_connection(self):

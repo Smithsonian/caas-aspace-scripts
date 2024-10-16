@@ -130,7 +130,7 @@ def update_resids(aspace_client, updated_resource):
 
 
 def main():
-    aspace_client = client_login(as_api, as_un, as_pw)
+    aspace_client = client_login(as_api_stag, as_un, as_pw)  # TODO: replace as_api_stag with as_api_prod
     resources = read_csv(f'../test_data/resource_accession_IDs_all.csv')
     for resource in resources:
         identifier_values = json.loads(resource['identifier'])

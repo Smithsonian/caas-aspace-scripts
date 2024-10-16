@@ -110,7 +110,7 @@ def main():
     Runs the functions of the script, collecting, parsing, then updating user metadata in ArchivesSpace, printing
     error messages if they occur
     """
-    client = client_login(as_api, as_un, as_pw)
+    client = client_login(as_api_stag, as_un, as_pw)  # TODO: replace as_api_stag with as_api_prod
     users_data = get_userdata(client)
     existing_usernames = [user['username'] for user in users_data]
     for user in users_data:

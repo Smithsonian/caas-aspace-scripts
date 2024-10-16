@@ -4,8 +4,7 @@
 import json
 import unittest
 
-from python_scripts.update_resids import remove_nonalphanums
-from python_scripts.update_znames import *
+from python_scripts.update_resids import *
 from secrets import *
 # from test_data.resids_testdata import *
 

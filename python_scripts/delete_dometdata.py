@@ -21,7 +21,7 @@ logger.add(str(log_path), format="{time}-{level}: {message}")
 
 class ArchivesSpace:
     try:
-        aspace = ASpace(baseurl=as_api,
+        aspace = ASpace(baseurl=as_api_stag,  # TODO: replace as_api_stag with as_api_prod
                         username=as_un,
                         password=as_pw)
     except ASnakeAuthError as e:

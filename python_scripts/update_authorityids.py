@@ -5,7 +5,6 @@
 import copy
 import csv
 
-from asnake.aspace import ASpace
 from asnake.client import ASnakeClient
 from asnake.client.web_client import ASnakeAuthError
 from collections import namedtuple
@@ -24,7 +23,7 @@ class ArchivesSpace:
     def __init__(self, repo_id):
         self.repository_uri = f'/repositories/{repo_id}/'
         try:
-            self.aspace_client = ASnakeClient(baseurl=as_api, username=as_un, password=as_pw)
+            self.aspace_client = ASnakeClient(baseurl=as_api_stag, username=as_un, password=as_pw)  # TODO: replace as_api_stag with as_api_prod
         except ASnakeAuthError as e:
             print(f'Failed to authorize ASnake client. ERROR: {e}')
             logger.error(f'Failed to authorize ASnake client. ERROR: {e}')

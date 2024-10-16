@@ -69,7 +69,7 @@ ArchivesSpace API
 packages
 3. Create a secrets.py file with the following information:
    1. An ArchivesSpace admin username (as_un = ""), password (as_pw = "")
-   2. The URLs to your ArchivesSpace staging (as_api_stag = "") and production (as_api = "") API instances
+   2. The URLs to your ArchivesSpace staging (as_api_stag = "") and production (as_api_prod = "") API instances
    3. Your ArchivesSpace's staging database credentials, including username (as_dbstag_un = ""), 
    password (as_dbstag_pw = ""), hostname (as_dbstag_host = ""), database name (as_dbstag_database = ""), and 
    port (as_dbstag_port = "")

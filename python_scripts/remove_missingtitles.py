@@ -149,7 +149,7 @@ def run_script(missing_titles_csv):
         missing_titles_csv (str): filepath for the missing titles csv listing all the URIs for resources or archival
     objects
     """
-    client = client_login(as_api, as_un, as_pw)
+    client = client_login(as_api_stag, as_un, as_pw)   # TODO: replace as_api_stag with as_api_prod
     missingtitles = read_csv(missing_titles_csv)
     for mt_object in missingtitles:
         object_md = client.get(f'{mt_object['uri']}').json()

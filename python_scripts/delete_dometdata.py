@@ -4,7 +4,6 @@
 # from the record and uploads it back to ArchivesSpace
 import copy
 import csv
-import requests
 
 from asnake.aspace import ASpace
 from asnake.client import ASnakeClient

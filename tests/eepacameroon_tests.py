@@ -4,6 +4,7 @@
 import contextlib
 import io
 import json
+import os
 import unittest
 
 from python_scripts.eepa_cameroonreport import *
@@ -38,6 +39,43 @@ class TestReadCSV(unittest.TestCase):
         self.assertEqual(test_missingcsv, None)
 
 
+class TestWriteCSV(unittest.TestCase):
+
+    def test_good_csv(self):
+        old_test_file = str(Path(f'../test_data/EEPA_Cameroon_Reports/Cameroon - List of Archival Collection- URI.csv'))
+        new_test_file = str(Path(f'../test_data/EEPA_Cameroon_Reports/Cameroon - List of Archival Collection- '
+                                 f'Abstracts.csv'))
+        test_values = ['Abstract/Scope']
+        for row in open(old_test_file):
+            test_values.append('blahblahblah')
+        write_csv(old_test_file, new_test_file, test_values)
+        self.assertTrue(os.path.isfile(f'../test_data/EEPA_Cameroon_Reports/'
+                                           f'Cameroon - List of Archival Collection- Abstracts.csv'))
+        with open(new_test_file, 'r', newline='', encoding='utf-8') as readcsv:
+            csvreader = csv.reader(readcsv)
+            row_count = 0
+            for row in csvreader:
+                if row_count == 0:
+                    self.assertEqual(row[-1], 'Abstract/Scope')
+                    row_count += 1
+                else:
+                    self.assertEqual(row[-1], 'blahblahblah')
+                    row_count += 1
+        os.remove(new_test_file)
+
+    def test_bad_csv(self):
+        old_test_file = str(Path(f'../test_data/EEPA_Cameroon_Reports/DOESNOTEXIST.csv'))
+        new_test_file = str(Path(f'../test_data/EEPA_Cameroon_Reports/Cameroon - List of Archival Collection- '
+                                 f'Abstracts.csv'))
+        test_values = ['Abstract/Scope', 'blahblahblah']
+        f = io.StringIO()
+        with contextlib.redirect_stdout(f):
+            write_csv(old_test_file, new_test_file, test_values)
+        # self.assertTrue('''ERROR getting object metadata: {'error': {'id': ["Wanted type Integer but got '4804a'"]}}'''
+        #                 in f.getvalue())
+
+
+
 class TestGetResourceMetadata(unittest.TestCase):
 
     def test_good_resource(self):
@@ -50,10 +88,10 @@ class TestGetResourceMetadata(unittest.TestCase):
     def test_bad_uri(self):
         self.local_aspace = client_login(as_api_stag, as_un, as_pw)
         test_bad_uri = f'/repositories/20/resources/4804a'
-        test_resource_json = get_resource_metadata(test_bad_uri, self.local_aspace)
+        get_resource_metadata(test_bad_uri, self.local_aspace)
         f = io.StringIO()
         with contextlib.redirect_stdout(f):
-            parser = get_resource_metadata(test_bad_uri, self.local_aspace)
+            get_resource_metadata(test_bad_uri, self.local_aspace)
         self.assertTrue('''ERROR getting object metadata: {'error': {'id': ["Wanted type Integer but got '4804a'"]}}'''
                         in f.getvalue())
 

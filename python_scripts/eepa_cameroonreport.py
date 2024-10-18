@@ -4,12 +4,9 @@
 # each CSV, uses the ArchivesSpace API to grab the Abstract or Scope and Contents note from the JSON data, and writes
 # the note to the provided CSV in a new column
 import csv
-import json
-import os
 
 from asnake.client import ASnakeClient
 from asnake.client.web_client import ASnakeAuthError
-from collections import namedtuple
 from loguru import logger
 from pathlib import Path
 from secrets import *
@@ -65,6 +62,35 @@ def read_csv(cameroon_reports_csv):
         return resources
 
 
+def write_csv(original_filepath, new_filepath, add_values):
+    """
+    Takes a CSV input and writes a header and values to an additional column at the end of the CSV
+
+    Args:
+        original_filepath (str): the filepath of the CSV being read from
+        new_filepath (str): the filepath of the new CSV file being written to
+        add_values (list): the list of all the new column values to write to in the new CSV
+
+    Returns:
+
+    """
+    try:
+        with open(original_filepath, 'r', newline='', encoding='utf-8') as readcsv:
+            with open(new_filepath, 'w', newline='', encoding='utf-8') as writecsv:
+                csvreader = csv.reader(readcsv)
+                csvwriter = csv.writer(writecsv)
+                row_count = 0
+                for row in csvreader:
+                    row.append(add_values[row_count])
+                    row_count += 1
+                    csvwriter.writerow(row)
+                writecsv.close()
+            readcsv.close()
+    except Exception as csverror:
+        print(f'Error when reading/writing to CSV: {csverror}')
+        logger.error(f'Error when reading/writing to CSV: {csverror}')
+
+
 def get_resource_metadata(resource_uri, aspace_client):
     """
     Takes an ArchivesSpace resource URI and grabs the JSON metadata using the API
@@ -98,7 +124,6 @@ def find_abstract_scope(resource_json):
     """
     abstract_content = ''
     scope_content = ''
-    isabstract = None
     if 'notes' in resource_json:
         if bool(resource_json['notes']) is True:
             for note in resource_json['notes']:
@@ -109,28 +134,29 @@ def find_abstract_scope(resource_json):
                             all_abstract_contents = [subnote for subnote in note['content']]
                             combined_abstract = " "
                             abstract_content = combined_abstract.join(all_abstract_contents)
-                        isabstract = True
                     if note['type'] == 'scopecontent':
                         all_scope_contents = [subnote['content'] for subnote in note['subnotes']
                                               if 'content' in subnote]
                         combined_scope = " "
                         scope_content = combined_scope.join(all_scope_contents)
-                        isabstract = True
-    if isabstract is None:
-        print(f'No Abstract')
+    if not abstract_content and scope_content:
+        return scope_content
     else:
-        print(f'Abstract: {abstract_content}')
+        return abstract_content
 
 
 def main():
     aspace_client = client_login(as_api_stag, as_un, as_pw)  # TODO: replace as_api_stag with as_api_prod
     reportspath = Path(f'../test_data/EEPA_Cameroon_Reports').glob('*.csv')
     for file in reportspath:
+        abstractscope_column_values = ['Abstract/Scope']
+        new_report_filepath = str(file)[:-4] + '-Abstracts.csv'
         report_collections = read_csv(str(file))
         for collection in report_collections:
+            print(collection['uri'])
             resource_json = get_resource_metadata(collection['uri'], aspace_client)
-            abstract_scope = find_abstract_scope(resource_json)
-        print(f'\n\n')
+            abstractscope_column_values.append(find_abstract_scope(resource_json))
+        write_csv(file, new_report_filepath, abstractscope_column_values)
 
 
 if __name__ == "__main__":

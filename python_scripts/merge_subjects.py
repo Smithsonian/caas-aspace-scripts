@@ -138,13 +138,13 @@ def main(merge_subjects_csv):
     client = client_login(os.getenv('as_api'), os.getenv('as_un'), os.getenv('as_pw'))
     merge_subjects = read_csv(merge_subjects_csv)
     for subj in merge_subjects:
-        destination_id = subj['aspace_subject_id']
-        candidate_id = subj['aspace_subject_id2']
-        destination_match = check_subject(client, destination_id, subj['title'])
-        candidate_match = check_subject(client, candidate_id, subj['Merge into'])
+        destination_id = subj['aspace_subject_id2']
+        candidate_id = subj['aspace_subject_id']
+        destination_match = check_subject(client, destination_id, subj['Merge into'])
+        candidate_match = check_subject(client, candidate_id, subj['title'])
         if not destination_match is None and not candidate_match is None:
             if destination_match and candidate_match:
-                merge_subject(client, f'/subjects/{subj["aspace_subject_id"]}', f'/subjects/{subj["aspace_subject_id2"]}')
+                merge_subject(client, f'/subjects/{subj["aspace_subject_id2"]}', f'/subjects/{subj["aspace_subject_id"]}')
             elif not destination_match and candidate_match:
                 logger.error(f'ERROR: Destination subject id and title do not match for subject {destination_id}.')
                 print(f'ERROR: Destination subject id and title do not match for subject {destination_id}.')

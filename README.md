@@ -36,12 +36,33 @@ username
 
 ##### Requirements:
 - ArchivesSnake
-- ArchivesSpace username, password, API URL
+- ArchivesSpace username, password, API URL in a secrets.py file
 - logs directory for storing local log files
 - test_data/znames_testdata.py file, with `viewer_user = {ArchivesSpace viewer user metadata}` for testing. Can get this
 from your API by getting a `client.get` request for the `viewer' user in your ArchivesSpace instance.
 
 ### Reporting Scripts
+
+#### [eepa_cameroonreport.py](python_scripts/eepa_cameroonreport.py)
+This script takes CSV files listing specific collections from EEPA repository, extracts the resource URIs listed in
+each CSV, uses the ArchivesSpace API to grab the Abstract or Scope and Contents note from the JSON data, and writes
+the note to the provided CSV in a new column.
+
+##### Tests:
+- [eepacameroon_tests.py](tests/eepacameroon_tests.py)
+
+##### Requirements:
+- CSV input(s) containing the following columns: ead_id,title,dates,publish,level,extents,uri
+  - Note: This script originally had 3 CSVs to iterate through, but any number of CSVs should work
+- ArchivesSnake
+- ArchivesSpace username, password, API URL in a secrets.py file
+- logs directory for storing local log files
+- test_data/eepacameroon_testdata.py file, with 3 variables:
+  - `test_abstract_only_json = {JSON data from a resource that contains only an abstract note}`
+  - `test_scope_only_json = {JSON data from a resource that contains only a scope note}`
+  - `test_no_abstract_scope_json = {JSON data from a resource that contains no abstract or scope note}`
+  - Note for the above variables and values: these are for testing. You can get these from your API by running a 
+`client.get` request for resources using their URI and the .json() function to return data in JSON format.
 
 #### [identifier_report.py](python_scripts/identifier_report.py)
 

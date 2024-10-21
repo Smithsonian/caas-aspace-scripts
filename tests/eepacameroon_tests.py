@@ -3,13 +3,12 @@
 # This script consists of unittests for update_resids.py
 import contextlib
 import io
-import json
 import os
 import unittest
 
 from python_scripts.eepa_cameroonreport import *
 from secrets import *
-# from test_data.resids_testdata import *
+from test_data.eepacameroon_testdata import *
 
 
 class TestClientLogin(unittest.TestCase):
@@ -65,14 +64,12 @@ class TestWriteCSV(unittest.TestCase):
 
     def test_bad_csv(self):
         old_test_file = str(Path(f'../test_data/EEPA_Cameroon_Reports/DOESNOTEXIST.csv'))
-        new_test_file = str(Path(f'../test_data/EEPA_Cameroon_Reports/Cameroon - List of Archival Collection- '
-                                 f'Abstracts.csv'))
+        new_test_file = str(Path(f'../test_data/EEPA_Cameroon_Reports/BADOUTPUT.csv'))
         test_values = ['Abstract/Scope', 'blahblahblah']
         f = io.StringIO()
         with contextlib.redirect_stdout(f):
             write_csv(old_test_file, new_test_file, test_values)
-        # self.assertTrue('''ERROR getting object metadata: {'error': {'id': ["Wanted type Integer but got '4804a'"]}}'''
-        #                 in f.getvalue())
+        self.assertTrue(r"""Error when reading/writing to CSV: [Errno 2] No such file or directory: '..\\test_data\\EEPA_Cameroon_Reports\\DOESNOTEXIST.csv'""" in f.getvalue())
 
 
 
@@ -85,6 +82,7 @@ class TestGetResourceMetadata(unittest.TestCase):
         self.assertIsInstance(test_resource_json, dict)
         self.assertEqual(test_resource_json['title'], f'World War One Theater Lantern Slides')
 
+
     def test_bad_uri(self):
         self.local_aspace = client_login(as_api_stag, as_un, as_pw)
         test_bad_uri = f'/repositories/20/resources/4804a'
@@ -96,11 +94,21 @@ class TestGetResourceMetadata(unittest.TestCase):
                         in f.getvalue())
 
 
+class TestFindAbstractScope(unittest.TestCase):
 
+    def test_abstract_only(self):
+        abstract_only_json = find_abstract_scope(test_abstract_only_json)
+        self.assertIsInstance(abstract_only_json, str)
+        self.assertEqual(abstract_only_json, 'Photographs taken by Klara Farkas in Ethiopia in 1971.')
 
-        test_abstract_only = f'/repositories/36/resources/11496'
-        test_scope_only = f'/repositories/36/resources/13874'
-        test_no_abstract_scope = f'/repositories/12/resources/114' # Unprocessed collection
+    def test_scope_only(self):
+        scope_only_json = find_abstract_scope(test_scope_only_json)
+        self.assertIsInstance(scope_only_json, str)
+        self.assertEqual(scope_only_json, 'Photographic print of Eliot Elisofon accepting an award on March 1, '
+                                          '1953 from Modern Photography for "Outstanding Color Photography" in the film '
+                                          'Moulin Rouge.')
 
-
-
+    def test_no_note(self):
+        no_scope_abstract_json = find_abstract_scope(test_no_abstract_scope_json)
+        self.assertIsInstance(no_scope_abstract_json, str)
+        self.assertEqual(no_scope_abstract_json, '')

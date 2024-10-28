@@ -19,25 +19,77 @@ logger.add(str(log_path), format="{time}-{level}: {message}")
 
 
 class ArchivesSpace:
-    try:
-        aspace = ASpace(baseurl=as_api_stag,  # TODO: replace as_api_stag with as_api_prod
-                        username=as_un,
-                        password=as_pw)
-    except ASnakeAuthError as e:
-        print(f'Failed to authorize ASnake client. ERROR: {e}')
-        logger.error(f'Failed to authorize ASnake client. ERROR: {e}')
-        raise ASnakeAuthError
 
-    def __init__(self, repo_id):
-        self.repository_identifier = repo_id
+    def __init__(self, aspace_api, aspace_un, aspace_pw):
+        """
+        Establishes connection to ASnakeClient and runs queries to the ArchivesSpace API
+
+        Args:
+            aspace_api (str): ArchivesSpace API URL
+            aspace_un (str): ArchivesSpace username - admin rights preferred
+            aspace_pw (str): ArchivesSpace password
+        """
+
+        try:
+            self.aspace_client = ASnakeClient(baseurl=aspace_api,
+                                              username=aspace_un,
+                                              password=aspace_pw)
+            self.aspace_client.authorize()
+        except ASnakeAuthError as e:
+            print(f'Failed to authorize ASnake client. ERROR: {e}')
+            logger.error(f'Failed to authorize ASnake client. ERROR: {e}')
+            raise ASnakeAuthError
+        self.repo_info = []
 
     def get_repo_info(self):
-        repo_info = self.aspace.repositories(self.repository_identifier)
-        return repo_info
+        """
+        Gets all the repository information for an ArchivesSpace instance in a list and assigns it to self.repo_info
 
-    def get_digitalobjects(self, repository_info):
-        digital_objects = repository_info.digital_objects
-        return digital_objects
+        Returns:
+            self.repo_info (list): a list of dictionaries containing all the repository information for an ArchivesSpace
+            instance
+        """
+        self.repo_info = self.aspace_client.get(f'repositories').json()
+        if self.repo_info:
+            return self.repo_info
+        else:
+            print(f'INFO: There are no repositories in the Archivesspace Instance: {self.repo_info}')
+            logger.info(f'INFO: There are no repositories in the Archivesspace Instance: {self.repo_info}')
+
+
+    def get_digitalobjects(self, repository_uri, parameters = ('all_ids', True)):
+        """
+        Intakes a repository URI and returns all the digital object IDs as a list for that repository
+        Args:
+            repository_uri (str): the repository URI
+            parameters (tuple): Selected parameter and value: ('all_ids', 'True'), ('page', '#'), and
+            (id_set, '1,2,3,etc.') Default is ('all_ids', 'True')
+
+        Returns:
+            digital_objects (list): all the digital object IDs
+
+        """
+        parameter_options = ['all_ids', 'page', 'id_set']
+        if parameters[0] not in parameter_options:
+            print(f'ERROR: get_digitalobjects parameter not valid: {parameters}')  # TODO: write error printing/logging function
+            logger.error(f'get_digitalobjects parameter not valid: {parameters}')
+            raise ValueError
+        else:
+            if parameters[0] == 'all_ids' and type(parameters[1]) is not bool:
+                print(f'ERROR: get_digitalobjects parameter not valid: {parameters}')
+                logger.error(f'get_digitalobjects parameter not valid: {parameters}')
+                raise ValueError
+            elif parameters[0] == 'page' and type(parameters[1]) is not int:
+                print(f'ERROR: get_digitalobjects parameter not valid: {parameters}')
+                logger.error(f'get_digitalobjects parameter not valid: {parameters}')
+                raise ValueError
+            elif parameters[0] == 'id_set' and type(parameters[1]) is not str:  # TODO: how to handle id_set validation and multiple inputs
+                print(f'ERROR: get_digitalobjects parameter not valid: {parameters}')
+                logger.error(f'get_digitalobjects parameter not valid: {parameters}')
+                raise ValueError
+            else:
+                digital_objects = self.aspace_client.get(f'{repository_uri}/digital_objects?{parameters[0]}={parameters[1]}').json()
+                return digital_objects
 
     def update_object(self, object_uri, updated_json):
         """

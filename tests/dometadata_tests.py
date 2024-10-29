@@ -80,6 +80,27 @@ class TestReadCSV(unittest.TestCase):
         self.assertEqual(test_missinguris, None)
 
 
+class TestRecordError(unittest.TestCase):
+
+    def test_good_format(self):
+        f = io.StringIO()
+        with contextlib.redirect_stdout(f):
+            record_error('This is a test error', 'Error 404 - page not found')
+        self.assertTrue(r"""This is a test error: Error 404 - page not found""" in f.getvalue())
+
+    def test_tuple_input(self):
+        f = io.StringIO()
+        with contextlib.redirect_stdout(f):
+            record_error('This is a test error', ('test_this', 'and_this'))
+        self.assertTrue(r"""This is a test error: ('test_this', 'and_this')""" in f.getvalue())
+
+    def test_bool_input(self):
+        f = io.StringIO()
+        with contextlib.redirect_stdout(f):
+            record_error('This is a test error', False)
+        self.assertTrue(r"""This is a test error: False""" in f.getvalue())
+
+
 # class TestUpdateObject(unittest.TestCase):
 #
 #     def test_aspace_post_response(self):

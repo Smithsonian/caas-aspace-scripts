@@ -161,21 +161,6 @@ def delete_missingtitle(object_notes):
     return new_notes
 
 
-def update_object(client, original_objecturi, new_object):
-    """
-
-    Args:
-        client (ASnake.client object): client object from ASnake.client to allow to connect to the ASpace API
-        original_objecturi (str): the original object's URI for posting to the client
-        new_object (dict): the updated metadata for the object
-
-    Returns:
-        update_message (dict): ArchivesSpace response
-    """
-    update_message = client.post(f'{original_objecturi}', json=new_object).json()
-    return update_message
-
-
 def run_script(digital_objects_csv):
     """
     Runs the functions of the script, taking a csv input containing all the URIs of digital objects, gets the JSON data

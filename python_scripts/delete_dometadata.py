@@ -3,6 +3,7 @@
 # This script takes a CSV of digital objects and deletes all agents, dates, extents, languages, notes, and subjects
 # from the record and uploads it back to ArchivesSpace
 import csv
+from http.client import HTTPException
 from pathlib import Path
 
 from asnake.client import ASnakeClient
@@ -81,6 +82,28 @@ class ArchivesSpace:
             else:
                 digital_objects = self.aspace_client.get(f'{repository_uri}/digital_objects?{parameters[0]}={parameters[1]}').json()
                 return digital_objects
+
+    def get_digitalobject(self, repo_uri, object_id):
+        """
+        Get and return a digital object JSON metadata from its URI
+
+        Args:
+            repo_uri (str): the repository ArchivesSpace URI
+            object_id (int): the original object ArchivesSpace ID
+
+        Returns:
+            do_json (dict): the JSON metadata for a digital object
+        """
+        try:
+            digital_object = self.aspace_client.get(f'{repo_uri}/digital_objects/{object_id}').json()
+        except HTTPException as get_error:
+            record_error(f'get_digitalobject() - Unable to retrieve digital object', get_error)
+        else:
+            if 'error' in digital_object:
+                record_error(f'get_digitalobject() - Unable to retrieve digital object with provided URI',
+                             digital_object)
+            else:
+                return digital_object
 
     def update_object(self, object_uri, updated_json):
         """
@@ -173,15 +196,16 @@ def run_script(digital_objects_csv):
     """
     archivesspace_instance = ArchivesSpace(as_api_stag, as_un, as_pw)
     archivesspace_instance.get_repo_info()
-    digitalobjects = read_csv(digital_objects_csv)
-    pass
-    # for mt_object in missingtitles:
-    #     object_md = archivesspace_instance.get_digitalobjects()
-    #     if 'error' in object_md:
-    #         logger.error(f'ERROR getting object metadata: {object_md}')
-    #         print(f'ERROR getting object metadata: {object_md}')
-    #     else:
-    #         pass
+    # digitalobjects = read_csv(digital_objects_csv)  TODO: fill this out once we have a CSV - use get_digitalobjects in the meantime
+    no_repos = ['Test', 'TRAINING', 'NMAH-AF']
+    for repo in archivesspace_instance.repo_info:
+        if not repo['repo_code'] in no_repos:
+            all_digital_object_ids = archivesspace_instance.get_digitalobjects(repo['uri'])
+            # print(f'{repo['repo_code']}: {len(all_digital_object_ids)}')
+            if len(all_digital_object_ids) > 0:
+                digital_object_json = archivesspace_instance.get_digitalobject(repo['uri'], all_digital_object_ids[0])
+                if digital_object_json['linked_agents'] or digital_object_json['dates'] or digital_object_json['extents'] or digital_object_json['lang_materials'] or digital_object_json['notes'] or digital_object_json['subjects']:
+                    print(digital_object_json)
 
 
 if __name__ == "__main__":

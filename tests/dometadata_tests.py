@@ -8,7 +8,10 @@ import io
 import unittest
 
 from python_scripts.delete_dometadata import *
+from test_data.dometadata_testdata import *
 from secrets import *
+
+
 # from test_data.authorityids_testdata import *  TODO: change this
 
 
@@ -28,43 +31,49 @@ class TestArchivesSpaceClass(unittest.TestCase):
         self.assertIsInstance(repos_info, list)
         self.assertIn('uri', repos_info[1].keys())
 
-    def test_get_digobj_all(self):
+    def test_get_digobjs_all(self):
         test_archivesspace = ArchivesSpace(as_api_stag, as_un, as_pw)
         test_archivesspace.get_repo_info()
         test_digitalobjects = test_archivesspace.get_digitalobjects(test_archivesspace.repo_info[1]['uri'],
                                                                     ('all_ids', True))
-        print(test_digitalobjects)
+        self.assertIsInstance(test_digitalobjects, list)
+        self.assertIsNot(len(test_digitalobjects), 0)
+        self.assertIsInstance(test_digitalobjects[0], int)
 
-    def test_get_digobj_page(self):
+    def test_get_digobjs_page(self):
         test_archivesspace = ArchivesSpace(as_api_stag, as_un, as_pw)
         test_archivesspace.get_repo_info()
         test_digitalobjects = test_archivesspace.get_digitalobjects(test_archivesspace.repo_info[1]['uri'],
                                                                     ('page', 1))
-        print(test_digitalobjects)
+        self.assertIsInstance(test_digitalobjects, dict)
+        self.assertIsNot(len(test_digitalobjects), 0)
+        self.assertIs(test_digitalobjects['first_page'], 1)
 
-    def test_get_digobj_set(self):
+    def test_get_digobjs_set(self):
         test_archivesspace = ArchivesSpace(as_api_stag, as_un, as_pw)
         test_archivesspace.get_repo_info()
         id_set_values = r'18&id_set=20'
         test_digitalobjects = test_archivesspace.get_digitalobjects(test_archivesspace.repo_info[1]['uri'],
                                                                     ('id_set', id_set_values))
-        print(test_digitalobjects)
+        self.assertIsInstance(test_digitalobjects, list)
+        self.assertIsNot(len(test_digitalobjects), 0)
+        self.assertIs(type(test_digitalobjects[0]), dict)
+
+    def test_get_digobj(self):
+        test_archivesspace = ArchivesSpace(as_api_stag, as_un, as_pw)
+        test_do_json = test_archivesspace.get_digitalobject(test_digital_object_repo_uri, test_digital_object_id)
+        self.assertIsInstance(test_do_json, dict)
+        self.assertEqual(test_do_json['digital_object_id'], test_digital_object_user_identifier)
+
+    def test_bad_digobj(self):
+        test_archivesspace = ArchivesSpace(as_api_stag, as_un, as_pw)
+        f = io.StringIO()
+        with contextlib.redirect_stdout(f):
+            test_do_json = test_archivesspace.get_digitalobject(test_digital_object_repo_uri, 10000000000000000)
+            print(test_do_json)
+        self.assertTrue(r"""get_digitalobject() - Unable to retrieve digital object with provided URI: {'error': 'DigitalObject not found'}""" in f.getvalue())
 
 
-
-
-
-# class TestClientLogin(unittest.TestCase):
-#
-    # def test_default_connection(self):
-    #     """Test using default connection info found in secrets.py"""
-    #     self.local_aspace = client_login(as_api, as_un, as_pw)
-    #     self.assertIsInstance(self.local_aspace, ASnakeClient)
-    #
-    # def test_error_connection(self):
-    #     """Test using garbage input for ASnakeAuthError return"""
-    #     self.local_aspace = client_login("https://www.cnn.com", "garbage", "garbage")
-    #     self.assertEqual(self.local_aspace, ASnakeAuthError)
 
 
 class TestReadCSV(unittest.TestCase):
@@ -82,7 +91,7 @@ class TestReadCSV(unittest.TestCase):
 
 class TestRecordError(unittest.TestCase):
 
-    def test_good_format(self):
+    def test_str_input(self):
         f = io.StringIO()
         with contextlib.redirect_stdout(f):
             record_error('This is a test error', 'Error 404 - page not found')

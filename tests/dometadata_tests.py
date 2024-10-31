@@ -109,6 +109,24 @@ class TestRecordError(unittest.TestCase):
             record_error('This is a test error', False)
         self.assertTrue(r"""This is a test error: False""" in f.getvalue())
 
+class TestParseDeleteFields(unittest.TestCase):
+
+    def test_delete_dates(self):
+        deleted_dates_json = parse_delete_fields(test_digital_object_dates)
+        self.assertIs(len(deleted_dates_json['dates']), 0)
+        self.assertIsInstance(deleted_dates_json['dates'], list)
+
+
+class TestDeleteFieldInfo(unittest.TestCase):
+
+    def test_delete_dates(self):
+        deleted_dates_json = delete_field_info(test_digital_object_dates, 'dates')
+        self.assertIs(len(deleted_dates_json['dates']), 0)
+        self.assertIsInstance(deleted_dates_json['dates'], list)
+
+    def test_delete_notes(self):
+        pass
+
 
 # class TestUpdateObject(unittest.TestCase):
 #

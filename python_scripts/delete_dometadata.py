@@ -3,6 +3,7 @@
 # This script takes a CSV of digital objects and deletes all agents, dates, extents, languages, notes, and subjects
 # from the record and uploads it back to ArchivesSpace
 import csv
+from copy import deepcopy
 from http.client import HTTPException
 from pathlib import Path
 
@@ -157,31 +158,42 @@ def read_csv(delete_domd_csv):
         return digital_objects
 
 
-def delete_missingtitle(object_notes):
+def parse_delete_fields(object_json):
     """
-    Iterate through all the notes of a specific object (resource or archival object) and return updated notes without
-    'Missing Title' in notes list titles
+    Iterate through digital object JSON for specific fields and if the field is found, send it to delete_field_info()
+    for deletion, returning updated JSON
 
     Args:
-        object_notes (list): metadata for the specific object's notes (resource or archival_object)
+        object_json (dict): metadata for the specific object in JSON
 
     Returns:
-        new_notes (list): updated notes metadata for object without 'Missing Title' in notes list titles or empty list
-        if there are no notes found with 'Mising Title'
+
     """
-    new_notes = []
-    for note in object_notes:
-        if note['jsonmodel_type'] == 'note_multipart':
-            if 'subnotes' in note:
-                for subnote in note['subnotes']:
-                    if (subnote['jsonmodel_type'] == 'note_orderedlist' or
-                            subnote['jsonmodel_type'] == 'note_definedlist' or
-                            subnote['jsonmodel_type'] == 'note_chronology'):
-                        if 'title' in subnote:
-                            if subnote['title'] == 'Missing Title':
-                                new_notes = object_notes
-                                subnote.pop('title', None)
-    return new_notes
+    fields_to_check = ['linked_agents', 'dates', 'extents', 'lang_materials', 'notes', 'subjects']
+    updated_object = {}
+    for field in fields_to_check:
+        if field in object_json:
+            if object_json[f'{field}']:
+                updated_object = delete_field_info(object_json, field)
+    return updated_object
+
+
+
+def delete_field_info(object_json, field):
+    """
+    Take the digital object JSON metadata and replace the given field with an empty list to delete the data, returning
+    the updated JSON
+
+    Args:
+        object_json (dict): metadata for the specific object in JSON
+        field (str): the name of the field (key) to remove its data (value)
+
+    Returns:
+        updated_json (dict): updated metadata for the object in JSON with the data for the selected field deleted
+    """
+    updated_json = deepcopy(object_json)
+    updated_json[field] = []
+    return updated_json
 
 
 def run_script(digital_objects_csv):
@@ -194,6 +206,7 @@ def run_script(digital_objects_csv):
         digital_objects_csv (str): filepath for the digital objects csv listing all the URIs for digital objects in an
         ArchivesSpace instance
     """
+    updated_digital_object_json = None
     archivesspace_instance = ArchivesSpace(as_api_stag, as_un, as_pw)
     archivesspace_instance.get_repo_info()
     # digitalobjects = read_csv(digital_objects_csv)  TODO: fill this out once we have a CSV - use get_digitalobjects in the meantime
@@ -204,8 +217,8 @@ def run_script(digital_objects_csv):
             # print(f'{repo['repo_code']}: {len(all_digital_object_ids)}')
             if len(all_digital_object_ids) > 0:
                 digital_object_json = archivesspace_instance.get_digitalobject(repo['uri'], all_digital_object_ids[0])
-                if digital_object_json['linked_agents'] or digital_object_json['dates'] or digital_object_json['extents'] or digital_object_json['lang_materials'] or digital_object_json['notes'] or digital_object_json['subjects']:
-                    print(digital_object_json)
+                updated_digital_object_json = parse_delete_fields(digital_object_json)
+
 
 
 if __name__ == "__main__":

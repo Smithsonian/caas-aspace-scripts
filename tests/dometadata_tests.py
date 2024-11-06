@@ -12,9 +12,6 @@ from test_data.dometadata_testdata import *
 from secrets import *
 
 
-# from test_data.authorityids_testdata import *  TODO: change this
-
-
 class TestArchivesSpaceClass(unittest.TestCase):
 
     def test_asnake_connection(self):
@@ -34,7 +31,7 @@ class TestArchivesSpaceClass(unittest.TestCase):
     def test_get_digobjs_all(self):
         test_archivesspace = ArchivesSpace(as_api_stag, as_un, as_pw)
         test_archivesspace.get_repo_info()
-        test_digitalobjects = test_archivesspace.get_digitalobjects(test_archivesspace.repo_info[1]['uri'],
+        test_digitalobjects = test_archivesspace.get_objects(test_archivesspace.repo_info[1]['uri'], 'digital_objects',
                                                                     ('all_ids', True))
         self.assertIsInstance(test_digitalobjects, list)
         self.assertIsNot(len(test_digitalobjects), 0)
@@ -43,7 +40,7 @@ class TestArchivesSpaceClass(unittest.TestCase):
     def test_get_digobjs_page(self):
         test_archivesspace = ArchivesSpace(as_api_stag, as_un, as_pw)
         test_archivesspace.get_repo_info()
-        test_digitalobjects = test_archivesspace.get_digitalobjects(test_archivesspace.repo_info[1]['uri'],
+        test_digitalobjects = test_archivesspace.get_objects(test_archivesspace.repo_info[1]['uri'], 'digital_objects',
                                                                     ('page', 1))
         self.assertIsInstance(test_digitalobjects, dict)
         self.assertIsNot(len(test_digitalobjects), 0)
@@ -53,7 +50,7 @@ class TestArchivesSpaceClass(unittest.TestCase):
         test_archivesspace = ArchivesSpace(as_api_stag, as_un, as_pw)
         test_archivesspace.get_repo_info()
         id_set_values = r'18&id_set=20'
-        test_digitalobjects = test_archivesspace.get_digitalobjects(test_archivesspace.repo_info[1]['uri'],
+        test_digitalobjects = test_archivesspace.get_objects(test_archivesspace.repo_info[1]['uri'], 'digital_objects',
                                                                     ('id_set', id_set_values))
         self.assertIsInstance(test_digitalobjects, list)
         self.assertIsNot(len(test_digitalobjects), 0)
@@ -61,7 +58,7 @@ class TestArchivesSpaceClass(unittest.TestCase):
 
     def test_get_digobj(self):
         test_archivesspace = ArchivesSpace(as_api_stag, as_un, as_pw)
-        test_do_json = test_archivesspace.get_digitalobject(test_digital_object_repo_uri, test_digital_object_id)
+        test_do_json = test_archivesspace.get_object('digital_objects', test_digital_object_id, test_digital_object_repo_uri)
         self.assertIsInstance(test_do_json, dict)
         self.assertEqual(test_do_json['digital_object_id'], test_digital_object_user_identifier)
 
@@ -69,24 +66,29 @@ class TestArchivesSpaceClass(unittest.TestCase):
         test_archivesspace = ArchivesSpace(as_api_stag, as_un, as_pw)
         f = io.StringIO()
         with contextlib.redirect_stdout(f):
-            test_do_json = test_archivesspace.get_digitalobject(test_digital_object_repo_uri, 10000000000000000)
+            test_do_json = test_archivesspace.get_object('digital_objects',10000000000000000, test_digital_object_repo_uri)
             print(test_do_json)
-        self.assertTrue(r"""get_digitalobject() - Unable to retrieve digital object with provided URI: {'error': 'DigitalObject not found'}""" in f.getvalue())
+        self.assertTrue(r"""get_object() - Unable to retrieve object with provided URI: {'error': 'DigitalObject not found'}""" in f.getvalue())
 
+    def test_aspace_post_response(self):
+        test_archivesspace = ArchivesSpace(as_api_stag, as_un, as_pw)
+        original_object_json = test_archivesspace.get_object('digital_objects',
+                                                             20,
+                                                             '/repositories/12')
+        test_response = test_archivesspace.update_object(original_object_json['uri'],
+                                                         original_object_json)
+        self.assertEqual(test_response['status'], 'Updated')
+        self.assertEqual(test_response['warnings'], [])
 
-
-
-class TestReadCSV(unittest.TestCase):
-
-    def test_good_csv(self):
-        test_missinguris = read_csv(str(Path(f'../test_data/MissingTitles_BeGone.csv')))  # TODO: Change CSV to match
-        self.assertIsNotNone(test_missinguris)
-        self.assertIsInstance(test_missinguris[1], str)
-
-    def test_bad_csv(self):
-        test_missinguris = read_csv(str(Path(f'../test_data/fake.csv')))
-        self.assertRaises(FileNotFoundError)
-        self.assertEqual(test_missinguris, None)
+    def test_bad_post(self):
+        test_archivesspace = ArchivesSpace(as_api_stag, as_un, as_pw)
+        original_object_json = test_archivesspace.get_object('digital_objects',
+                                                             20,
+                                                             '/repositories/12')
+        original_object_json['uri'] = 'laksjdlfieklkjfa'
+        test_response = test_archivesspace.update_object(original_object_json['uri'],
+                                                         original_object_json)
+        self.assertIn('error', test_response)
 
 
 class TestRecordError(unittest.TestCase):
@@ -109,6 +111,20 @@ class TestRecordError(unittest.TestCase):
             record_error('This is a test error', False)
         self.assertTrue(r"""This is a test error: False""" in f.getvalue())
 
+
+# class TestReadCSV(unittest.TestCase):
+#
+#     def test_good_csv(self):
+#         test_missinguris = read_csv(str(Path(f'../test_data/MissingTitles_BeGone.csv')))  # TODO: Change CSV to match
+#         self.assertIsNotNone(test_missinguris)
+#         self.assertIsInstance(test_missinguris[1], str)
+#
+#     def test_bad_csv(self):
+#         test_missinguris = read_csv(str(Path(f'../test_data/fake.csv')))
+#         self.assertRaises(FileNotFoundError)
+#         self.assertEqual(test_missinguris, None)
+
+
 class TestParseDeleteFields(unittest.TestCase):
 
     def test_delete_dates(self):
@@ -126,17 +142,6 @@ class TestDeleteFieldInfo(unittest.TestCase):
 
     def test_delete_notes(self):
         pass
-
-
-# class TestUpdateObject(unittest.TestCase):
-#
-#     def test_aspace_post_response(self):
-#         self.local_aspace = client_login(as_api, as_un, as_pw)
-#         pass
-#
-#     def test_bad_post(self):
-#         self.local_aspace = client_login(as_api, as_un, as_pw)
-#         pass
 
 
 if __name__ == "__main__":

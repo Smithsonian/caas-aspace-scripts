@@ -3,6 +3,7 @@
 # This script takes a CSV of digital objects and deletes all agents, dates, extents, languages, notes, and subjects
 # from the record and uploads it back to ArchivesSpace
 import csv
+import json
 from copy import deepcopy
 from http.client import HTTPException
 from pathlib import Path
@@ -54,11 +55,13 @@ class ArchivesSpace:
             logger.info(f'get_repo_info() - There are no repositories in the Archivesspace Instance: {self.repo_info}')
 
 
-    def get_digitalobjects(self, repository_uri, parameters = ('all_ids', True)):
+    def get_objects(self, repository_uri, record_type, parameters = ('all_ids', True)):
         """
         Intakes a repository URI and returns all the digital object IDs as a list for that repository
         Args:
             repository_uri (str): the repository URI
+            record_type (str): the type of record object you want to get (resources, archival_objects, digital_objects,
+                accessions, etc.)
             parameters (tuple): Selected parameter and value: ('all_ids', 'True'), ('page', '#'), and
             (id_set, '1,2,3,etc.') Default is ('all_ids', 'True')
 
@@ -68,43 +71,44 @@ class ArchivesSpace:
         """
         parameter_options = ['all_ids', 'page', 'id_set']
         if parameters[0] not in parameter_options:
-            record_error('get_digitalobjects() - parameter not valid', parameters)
+            record_error('get_objects() - parameter not valid', parameters)
             raise ValueError
         else:
             if parameters[0] == 'all_ids' and type(parameters[1]) is not bool:
-                record_error('get_digitalobjects() - parameter not valid', parameters)
+                record_error('get_objects() - parameter not valid', parameters)
                 raise ValueError
             elif parameters[0] == 'page' and type(parameters[1]) is not int:
-                record_error('get_digitalobjects() - parameter not valid', parameters)
+                record_error('get_objects() - parameter not valid', parameters)
                 raise ValueError
             elif parameters[0] == 'id_set' and type(parameters[1]) is not str:  # TODO: how to handle id_set validation and multiple inputs
-                record_error('get_digitalobjects() - parameter not valid', parameters)
+                record_error('get_objects() - parameter not valid', parameters)
                 raise ValueError
             else:
-                digital_objects = self.aspace_client.get(f'{repository_uri}/digital_objects?{parameters[0]}={parameters[1]}').json()
+                digital_objects = self.aspace_client.get(f'{repository_uri}/{record_type}?{parameters[0]}={parameters[1]}').json()
                 return digital_objects
 
-    def get_digitalobject(self, repo_uri, object_id):
+    def get_object(self, record_type, object_id, repo_uri = ''):
         """
         Get and return a digital object JSON metadata from its URI
 
         Args:
-            repo_uri (str): the repository ArchivesSpace URI
+            record_type (str): the type of record object you want to get (resources, archival_objects, digital_objects,
+                accessions, etc.)
             object_id (int): the original object ArchivesSpace ID
+            repo_uri (str): the repository ArchivesSpace URI including ending forward slash, default is None
 
         Returns:
             do_json (dict): the JSON metadata for a digital object
         """
         try:
-            digital_object = self.aspace_client.get(f'{repo_uri}/digital_objects/{object_id}').json()
+            object_json = self.aspace_client.get(f'{repo_uri}/{record_type}/{object_id}').json()
         except HTTPException as get_error:
-            record_error(f'get_digitalobject() - Unable to retrieve digital object', get_error)
+            record_error(f'get_object() - Unable to retrieve object', get_error)
         else:
-            if 'error' in digital_object:
-                record_error(f'get_digitalobject() - Unable to retrieve digital object with provided URI',
-                             digital_object)
+            if 'error' in object_json:
+                record_error(f'get_object() - Unable to retrieve object with provided URI', object_json)
             else:
-                return digital_object
+                return object_json
 
     def update_object(self, object_uri, updated_json):
         """
@@ -118,6 +122,8 @@ class ArchivesSpace:
             update_message (dict): ArchivesSpace response
         """
         update_message = self.aspace_client.post(f'{object_uri}', json=updated_json).json()
+        if 'error' in update_message:
+            record_error('update_object() - Update failed due to following error', update_message)
         return update_message
 
 
@@ -135,27 +141,27 @@ def record_error(message, status_input):
         print(f'record_error() - Input is invalid for recording error: {input_error}')
         logger.error(f'record_error() - Input is invalid for recording error: {input_error}')
 
-def read_csv(delete_domd_csv):
-    """
-    Takes a csv input of ASpace digital objects - ran from SQL query - and returns a list of dictionaries of all the
-    digital objects metadata
-
-    Args:
-        delete_domd_csv (str): filepath for the delete digital object metadata csv containing metadata for all digital
-        objects to edit
-
-    Returns:
-        digital_objects (list): a list of dictionaries for each column name (key) and row values (value)
-    """
-    digital_objects = []
-    try:
-        open_csv = open(delete_domd_csv, 'r', encoding='UTF-8')
-        digital_objects = csv.DictReader(open_csv)
-    except IOError as csverror:
-        logger.error(f'ERROR reading csv file: {csverror}')
-        print(f'ERROR reading csv file: {csverror}')
-    else:
-        return digital_objects
+# def read_csv(delete_domd_csv):
+#     """
+#     Takes a csv input of ASpace digital objects - ran from SQL query - and returns a list of dictionaries of all the
+#     digital objects metadata
+#
+#     Args:
+#         delete_domd_csv (str): filepath for the delete digital object metadata csv containing metadata for all digital
+#         objects to edit
+#
+#     Returns:
+#         digital_objects (list): a list of dictionaries for each column name (key) and row values (value)
+#     """
+#     digital_objects = []
+#     try:
+#         open_csv = open(delete_domd_csv, 'r', encoding='UTF-8')
+#         digital_objects = csv.DictReader(open_csv)
+#     except IOError as csverror:
+#         logger.error(f'ERROR reading csv file: {csverror}')
+#         print(f'ERROR reading csv file: {csverror}')
+#     else:
+#         return digital_objects
 
 
 def parse_delete_fields(object_json):
@@ -196,30 +202,37 @@ def delete_field_info(object_json, field):
     return updated_json
 
 
-def run_script(digital_objects_csv):
+def run_script():
     """
-    Runs the functions of the script, taking a csv input containing all the URIs of digital objects, gets the JSON data
-    for the digital object, deletes all information not contained within the Basic Information or File Version sections
-    and posts the updated JSON to ArchivesSpace
+    Runs the functions of the script by creating an ArchivesSpacec class instance, getting the repository info for every
+    repository, then all the digital object IDs per each repository, gets the JSON data for the digital object, deletes
+    all information not contained within the Basic Information or File Version sections and posts the updated JSON to
+    ArchivesSpace, saving the old JSON data in a separate file.
 
     Args:
         digital_objects_csv (str): filepath for the digital objects csv listing all the URIs for digital objects in an
         ArchivesSpace instance
     """
-    updated_digital_object_json = None
+    original_do_json_data = []
     archivesspace_instance = ArchivesSpace(as_api_stag, as_un, as_pw)
     archivesspace_instance.get_repo_info()
-    # digitalobjects = read_csv(digital_objects_csv)  TODO: fill this out once we have a CSV - use get_digitalobjects in the meantime
     no_repos = ['Test', 'TRAINING', 'NMAH-AF']
     for repo in archivesspace_instance.repo_info:
         if not repo['repo_code'] in no_repos:
-            all_digital_object_ids = archivesspace_instance.get_digitalobjects(repo['uri'])
-            # print(f'{repo['repo_code']}: {len(all_digital_object_ids)}')
+            all_digital_object_ids = archivesspace_instance.get_objects(repo['uri'], 'digital_objects')
             if len(all_digital_object_ids) > 0:
-                digital_object_json = archivesspace_instance.get_digitalobject(repo['uri'], all_digital_object_ids[0])
-                updated_digital_object_json = parse_delete_fields(digital_object_json)
-
+                for do_id in all_digital_object_ids:
+                    digital_object_json = archivesspace_instance.get_object('digital_objects', do_id,
+                                                                            repo['uri'])
+                    updated_digital_object_json = parse_delete_fields(digital_object_json)
+                    if updated_digital_object_json:
+                        original_do_json_data.append(digital_object_json)
+                        print(f'Updated: {updated_digital_object_json["uri"]}')
+                        # archivesspace_instance.update_object(updated_digital_object_json['uri'], updated_digital_object_json)
+    with open(f'../test_data/delete_dometadata_original_data.json', 'w', encoding='utf8') as org_data_file:
+        json.dump(original_do_json_data, org_data_file, indent=4)
+        org_data_file.close()
 
 
 if __name__ == "__main__":
-    run_script(str(Path(f'../test_data/')))  # TODO: Fill out
+    run_script()

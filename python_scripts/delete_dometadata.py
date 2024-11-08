@@ -180,7 +180,13 @@ def parse_delete_fields(object_json):
     for field in fields_to_check:
         if field in object_json:
             if object_json[f'{field}']:
-                updated_object = delete_field_info(object_json, field)
+                if field == 'dates':
+                    for date in object_json[f'{field}']:
+                        if 'label' in date:
+                            if not date['label'] == 'digitized':
+                                updated_object = delete_field_info(object_json, field)  # TODO: just delete any date notes that are not digitized
+                else:
+                    updated_object = delete_field_info(object_json, field)
     return updated_object
 
 

@@ -1,8 +1,9 @@
 #!/usr/bin/env python
 
-# This script takes a CSV of digital objects and deletes all agents, dates, extents, languages, notes, and subjects
-# from the record and uploads it back to ArchivesSpace
-import csv
+# This script iterates through all the digital objects in every repository in SI's ArchivesSpace instance - except Test,
+# Training, and NMAH-AF, parses them for any data in the following fields: agents, dates, extents, languages, notes,
+# and subjects, and then deletes any data within those fields except digitized date and uploads the updated digital
+# object back to ArchivesSpace
 import json
 from copy import deepcopy
 from http.client import HTTPException
@@ -10,6 +11,7 @@ from pathlib import Path
 
 from asnake.client import ASnakeClient
 from asnake.client.web_client import ASnakeAuthError
+from collections import namedtuple
 from loguru import logger
 
 from secrets import *
@@ -166,45 +168,48 @@ def record_error(message, status_input):
 
 def parse_delete_fields(object_json):
     """
-    Iterate through digital object JSON for specific fields and if the field is found, send it to delete_field_info()
-    for deletion, returning updated JSON
+    Iterate through digital object JSON for specific fields and if the field is found, add it to a fields_to_delete list
+    as a named tuple, with Field and Subrecord, returning the list
 
     Args:
         object_json (dict): metadata for the specific object in JSON
 
     Returns:
-
+        fields_to_delete (list): list of named tuples (named DeleteField), with Field being the name of the field
+            parsed (ex. dates, extents, etc.) and Subrecord being the dictionary subrecord of the field, with multiple
+            subrecords added
     """
     fields_to_check = ['linked_agents', 'dates', 'extents', 'lang_materials', 'notes', 'subjects']
-    updated_object = {}
+    fields_to_delete = []
+    DeleteField = namedtuple('DeleteField', 'Field Subrecord')
     for field in fields_to_check:
         if field in object_json:
             if object_json[f'{field}']:
-                if field == 'dates':
-                    for date in object_json[f'{field}']:
-                        if 'label' in date:
-                            if not date['label'] == 'digitized':
-                                updated_object = delete_field_info(object_json, field)  # TODO: just delete any date notes that are not digitized
-                else:
-                    updated_object = delete_field_info(object_json, field)
-    return updated_object
+                for subrecord in object_json[f'{field}']:
+                    if 'label' in subrecord and field == 'dates':
+                        if not subrecord['label'] == 'digitized':
+                            fields_to_delete.append(DeleteField(field, subrecord))
+                    else:
+                        fields_to_delete.append(DeleteField(field, subrecord))
+    return fields_to_delete
 
 
 
-def delete_field_info(object_json, field):
+def delete_field_info(object_json, field, subrecord):
     """
-    Take the digital object JSON metadata and replace the given field with an empty list to delete the data, returning
-    the updated JSON
+    Take the digital object JSON metadata and remove the given subrecord from the given field, returning the updated
+    JSON
 
     Args:
         object_json (dict): metadata for the specific object in JSON
         field (str): the name of the field (key) to remove its data (value)
+        subrecord (any): the subrecord for the field, ex. a single subrecord for dates if more than one subrecord exists
 
     Returns:
         updated_json (dict): updated metadata for the object in JSON with the data for the selected field deleted
     """
     updated_json = deepcopy(object_json)
-    updated_json[field] = []
+    updated_json[field].remove(subrecord)
     return updated_json
 
 
@@ -214,27 +219,31 @@ def run_script():
     repository, then all the digital object IDs per each repository, gets the JSON data for the digital object, deletes
     all information not contained within the Basic Information or File Version sections and posts the updated JSON to
     ArchivesSpace, saving the old JSON data in a separate file.
-
-    Args:
-        digital_objects_csv (str): filepath for the digital objects csv listing all the URIs for digital objects in an
-        ArchivesSpace instance
     """
+    donotrun_repos = ['Test', 'TRAINING', 'NMAH-AF']
     original_do_json_data = []
-    archivesspace_instance = ArchivesSpace(as_api_stag, as_un, as_pw)
+    archivesspace_instance = ArchivesSpace(as_api_stag, as_un, as_pw)   # TODO: replace as_api_stag with as_api_prod
     archivesspace_instance.get_repo_info()
-    no_repos = ['Test', 'TRAINING', 'NMAH-AF']
     for repo in archivesspace_instance.repo_info:
-        if not repo['repo_code'] in no_repos:
+        if repo['repo_code'] not in donotrun_repos:
             all_digital_object_ids = archivesspace_instance.get_objects(repo['uri'], 'digital_objects')
             if len(all_digital_object_ids) > 0:
                 for do_id in all_digital_object_ids:
                     digital_object_json = archivesspace_instance.get_object('digital_objects', do_id,
                                                                             repo['uri'])
-                    updated_digital_object_json = parse_delete_fields(digital_object_json)
-                    if updated_digital_object_json:
-                        original_do_json_data.append(digital_object_json)
-                        print(f'Updated: {updated_digital_object_json["uri"]}')
-                        # archivesspace_instance.update_object(updated_digital_object_json['uri'], updated_digital_object_json)
+                    delete_fields = parse_delete_fields(digital_object_json)
+                    if delete_fields:
+                        updated_digital_object_json = deepcopy(digital_object_json)
+                        for field in delete_fields:
+                            updated_digital_object_json = delete_field_info(updated_digital_object_json,
+                                                                            field.Field,
+                                                                            field.Subrecord)
+                        if updated_digital_object_json:
+                            original_do_json_data.append(digital_object_json)
+                            # update_response = archivesspace_instance.update_object(updated_digital_object_json['uri'],
+                            #                                                        updated_digital_object_json)
+                            # print(f'Updated {updated_digital_object_json["uri"]}: {update_response}')
+                            # logger.info(f'Updated {updated_digital_object_json["uri"]}: {update_response}')
     with open(f'../test_data/delete_dometadata_original_data.json', 'w', encoding='utf8') as org_data_file:
         json.dump(original_do_json_data, org_data_file, indent=4)
         org_data_file.close()

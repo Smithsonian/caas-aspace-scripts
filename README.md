@@ -12,7 +12,9 @@ lists and removes the title from the metadata, then posts the update to Archives
 - [missingtitles_tests.py](tests/missingtitles_tests.py)
 
 ##### Requirements:
-- ArchivesSnake
+- Packages:
+  - [ArchivesSnake](https://github.com/archivesspace-labs/ArchivesSnake)
+  - [loguru](https://github.com/Delgan/loguru)
 - ArchivesSpace username, password, API URL in a secrets.py file
 - logs directory for storing local log files
 - test_data/missingtitles_testdata.py file, with the following:
@@ -35,11 +37,39 @@ username
 - [znames_tests.py](tests/znames_tests.py)
 
 ##### Requirements:
-- ArchivesSnake
+- Packages:
+  - [ArchivesSnake](https://github.com/archivesspace-labs/ArchivesSnake)
+  - [loguru](https://github.com/Delgan/loguru)
 - ArchivesSpace username, password, API URL in a secrets.py file
 - logs directory for storing local log files
 - test_data/znames_testdata.py file, with `viewer_user = {ArchivesSpace viewer user metadata}` for testing. Can get this
 from your API by getting a `client.get` request for the `viewer' user in your ArchivesSpace instance.
+
+#### [delete_dometadata.py](python_scripts/delete_dometadata.py)
+This script iterates through all the digital objects in every repository in SI's ArchivesSpace instance - except Test, 
+Training, and NMAH-AF, parses them for any data in the following fields: agents, dates, extents, languages, notes, 
+and subjects, and then deletes any data within those fields except digitized date and uploads the updated digital 
+object back to ArchivesSpace
+
+##### Tests:
+- [dometadata_tests.py](tests/dometadata_tests.py)
+
+##### Requirements:
+- Packages:
+  - [ArchivesSnake](https://github.com/archivesspace-labs/ArchivesSnake)
+  - [loguru](https://github.com/Delgan/loguru)
+- ArchivesSpace username, password, API URL in a secrets.py file
+- logs directory for storing local log files
+- test_data/dometadata_testdata.py file, with the following variables:
+  - `test_record_type = string` - the object endpoint ArchivesSpace uses; ex. 'digital_objects'
+  - `test_object_id = int` - the number of the digital object you want to use for testing (must have metadata in 
+above-mentioned fields)
+  - `test_object_repo_uri = string` - the repository URI where the test digital object is; ex. '/repositories/12'
+  - `test_object_user_identifier = string` - the identifier that user's input in the digital_object_id field for testing; 
+ex. 'NMAI.AC.066.ref21.1'
+  - `test_digital_object_dates = dict` - JSON data from a digital object that contains multiple date subrecords
+  - `test_digital_object_dates_deleted = dict` JSON data from the same digital object as above but without any data in
+the dates field (i.e. `dates = []`)
 
 ### Reporting Scripts
 
@@ -58,9 +88,9 @@ the note to the provided CSV in a new column.
 - ArchivesSpace username, password, API URL in a secrets.py file
 - logs directory for storing local log files
 - test_data/eepacameroon_testdata.py file, with 3 variables:
-  - `test_abstract_only_json = {JSON data from a resource that contains only an abstract note}`
-  - `test_scope_only_json = {JSON data from a resource that contains only a scope note}`
-  - `test_no_abstract_scope_json = {JSON data from a resource that contains no abstract or scope note}`
+  - `test_abstract_only_json = dict` - JSON data from a resource that contains only an abstract note
+  - `test_scope_only_json = dict` - JSON data from a resource that contains only a scope note
+  - `test_no_abstract_scope_json = dict` - JSON data from a resource that contains no abstract or scope note
   - Note for the above variables and values: these are for testing. You can get these from your API by running a 
 `client.get` request for resources using their URI and the .json() function to return data in JSON format.
 

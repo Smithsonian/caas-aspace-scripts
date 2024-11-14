@@ -1,23 +1,25 @@
 #!/usr/bin/env python
 
-# This script iterates through all the digital objects in every repository in SI's ArchivesSpace instance - except Test,
-# Training, and NMAH-AF, parses them for any data in the following fields: agents, dates, extents, languages, notes,
-# and subjects, and then deletes any data within those fields except digitized date and uploads the updated digital
-# object back to ArchivesSpace
+# This script iterates through all the digital objects in every repository in SI's ArchivesSpace
+# instance - except Test, Training, and NMAH-AF, parses them for any data in the following fields:
+# agents, dates, extents, languages, notes, and subjects, and then deletes any data within those
+# fields except digitized date and uploads the updated digital object back to ArchivesSpace
+
 import json
+from collections import namedtuple
 from copy import deepcopy
 from http.client import HTTPException
 from pathlib import Path
+from secrets import *
 
 from asnake.client import ASnakeClient
 from asnake.client.web_client import ASnakeAuthError
-from collections import namedtuple
 from loguru import logger
 
-from secrets import *
+
 
 logger.remove()
-log_path = Path(f'../logs', 'delete_dometadata_{time:YYYY-MM-DD}.log')
+log_path = Path('../logs', 'delete_dometadata_{time:YYYY-MM-DD}.log')
 logger.add(str(log_path), format="{time}-{level}: {message}")
 
 
@@ -49,12 +51,11 @@ class ArchivesSpace:
             self.repo_info (list): a list of dictionaries containing all the repository information for an ArchivesSpace
             instance
         """
-        self.repo_info = self.aspace_client.get(f'repositories').json()
+        self.repo_info = self.aspace_client.get('repositories').json()
         if self.repo_info:
             return self.repo_info
-        else:
-            print(f'get_repo_info() - There are no repositories in the Archivesspace Instance: {self.repo_info}')
-            logger.info(f'get_repo_info() - There are no repositories in the Archivesspace Instance: {self.repo_info}')
+        print(f'get_repo_info() - There are no repositories in the Archivesspace Instance: {self.repo_info}')
+        logger.info(f'get_repo_info() - There are no repositories in the Archivesspace Instance: {self.repo_info}')
 
 
     def get_objects(self, repository_uri, record_type, parameters = ('all_ids', True)):
@@ -65,7 +66,7 @@ class ArchivesSpace:
             record_type (str): the type of record object you want to get (resources, archival_objects, digital_objects,
                 accessions, etc.)
             parameters (tuple): Selected parameter and value: ('all_ids', 'True'), ('page', '#'), and
-            (id_set, '1,2,3,etc.') Default is ('all_ids', 'True')
+            ('id_set',' '1,2,3,etc.') Default is ('all_ids', 'True')
 
         Returns:
             digital_objects (list): all the digital object IDs
@@ -75,19 +76,17 @@ class ArchivesSpace:
         if parameters[0] not in parameter_options:
             record_error('get_objects() - parameter not valid', parameters)
             raise ValueError
-        else:
-            if parameters[0] == 'all_ids' and type(parameters[1]) is not bool:
-                record_error('get_objects() - parameter not valid', parameters)
-                raise ValueError
-            elif parameters[0] == 'page' and type(parameters[1]) is not int:
-                record_error('get_objects() - parameter not valid', parameters)
-                raise ValueError
-            elif parameters[0] == 'id_set' and type(parameters[1]) is not str:  # TODO: how to handle id_set validation and multiple inputs
-                record_error('get_objects() - parameter not valid', parameters)
-                raise ValueError
-            else:
-                digital_objects = self.aspace_client.get(f'{repository_uri}/{record_type}?{parameters[0]}={parameters[1]}').json()
-                return digital_objects
+        if parameters[0] == 'all_ids' and not isinstance(parameters[1], bool):
+            record_error('get_objects() - parameter not valid', parameters)
+            raise ValueError
+        if parameters[0] == 'page' and not isinstance(parameters[1], int):
+            record_error('get_objects() - parameter not valid', parameters)
+            raise ValueError
+        if parameters[0] == 'id_set' and not isinstance(parameters[1], str):  # TODO: how to handle id_set validation and multiple inputs
+            record_error('get_objects() - parameter not valid', parameters)
+            raise ValueError
+        digital_objects = self.aspace_client.get(f'{repository_uri}/{record_type}?{parameters[0]}={parameters[1]}').json()
+        return digital_objects
 
     def get_object(self, record_type, object_id, repo_uri = ''):
         """
@@ -105,10 +104,10 @@ class ArchivesSpace:
         try:
             object_json = self.aspace_client.get(f'{repo_uri}/{record_type}/{object_id}').json()
         except HTTPException as get_error:
-            record_error(f'get_object() - Unable to retrieve object', get_error)
+            record_error('get_object() - Unable to retrieve object', get_error)
         else:
             if 'error' in object_json:
-                record_error(f'get_object() - Unable to retrieve object with provided URI', object_json)
+                record_error('get_object() - Unable to retrieve object with provided URI', object_json)
             else:
                 return object_json
 
@@ -240,11 +239,12 @@ def run_script():
                                                                             field.Subrecord)
                         if updated_digital_object_json:
                             original_do_json_data.append(digital_object_json)
-                            # update_response = archivesspace_instance.update_object(updated_digital_object_json['uri'],
-                            #                                                        updated_digital_object_json)
-                            # print(f'Updated {updated_digital_object_json["uri"]}: {update_response}')
-                            # logger.info(f'Updated {updated_digital_object_json["uri"]}: {update_response}')
-    with open(f'../test_data/delete_dometadata_original_data.json', 'w', encoding='utf8') as org_data_file:
+                            update_response = archivesspace_instance.update_object(updated_digital_object_json['uri'],
+                                                                                   updated_digital_object_json)
+                            print(f'Updated {updated_digital_object_json["uri"]}: {update_response}')
+                            logger.info(f'Updated {updated_digital_object_json["uri"]}: {update_response}')
+    with (open('../test_data/delete_dometadata_original_data.json', 'w', encoding='utf8')
+          as org_data_file):
         json.dump(original_do_json_data, org_data_file, indent=4)
         org_data_file.close()
 

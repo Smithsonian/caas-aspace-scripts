@@ -4,7 +4,7 @@
 import copy
 import json
 import contextlib
-import io
+import os
 import unittest
 
 from python_scripts.delete_dometadata import *
@@ -131,6 +131,48 @@ class TestRecordError(unittest.TestCase):
 #         test_missinguris = read_csv(str(Path(f'../test_data/fake.csv')))
 #         self.assertRaises(FileNotFoundError)
 #         self.assertEqual(test_missinguris, None)
+
+class TestWriteToFile(unittest.TestCase):
+
+    def test_new_data(self):
+        test_filepath = str(Path('../test_data', 'test_delete_dometadata_original_data.jsonl'))
+        if os.path.isfile(test_filepath):
+            os.remove(test_filepath)
+        write_to_file(test_filepath, test_digital_object_dates)
+        self.assertTrue(os.path.isfile(test_filepath))
+        with open(test_filepath, 'r') as test_reader:
+            for row_data in test_reader:
+                test_data = json.loads(row_data)
+                self.assertEqual(test_data['digital_object_id'], test_digital_object_dates['digital_object_id'])
+        os.remove(test_filepath)
+
+    def test_append_data(self):
+        test_filepath = str(Path('../test_data', 'test_delete_dometadata_original_data.jsonl'))
+        if os.path.isfile(test_filepath):
+            os.remove(test_filepath)
+        write_to_file(test_filepath, test_digital_object_dates)
+        self.assertTrue(os.path.isfile(test_filepath))
+        write_to_file(test_filepath, test_digital_object_dates_deleted)
+        with open(test_filepath, 'r') as test_reader:
+            counter = 0
+            for row_data in test_reader:
+                counter += 1
+                test_data = json.loads(row_data)
+                if counter == 1:
+                    self.assertEqual(test_data['digital_object_id'],
+                                     test_digital_object_dates['digital_object_id'])
+                if counter == 2:
+                    self.assertEqual(test_data['digital_object_id'],
+                                     test_digital_object_dates_deleted['digital_object_id'])
+            self.assertEqual(counter, 2)
+        os.remove(test_filepath)
+
+    def test_bad_file(self):
+        test_filepath = str(Path('../test_data', 'test_bad_filepath$&@.jID(#*&^%'))
+        f = io.StringIO()
+        with contextlib.redirect_stdout(f):
+            write_to_file(test_filepath, test_digital_object_dates)
+        self.assertTrue(r"""write_to_file() - Unable to open or access jsonl file: [Errno 22] Invalid argument: '..\\test_data\\test_bad_filepath$&@.jID(#*&^%'""" in f.getvalue())
 
 
 class TestParseDeleteFields(unittest.TestCase):

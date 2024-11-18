@@ -58,6 +58,7 @@ object back to ArchivesSpace
 - Packages:
   - [ArchivesSnake](https://github.com/archivesspace-labs/ArchivesSnake)
   - [loguru](https://github.com/Delgan/loguru)
+  - [jsonlines](https://github.com/wbolster/jsonlines)
 - ArchivesSpace username, password, API URL in a secrets.py file
 - logs directory for storing local log files
 - test_data/dometadata_testdata.py file, with the following variables:

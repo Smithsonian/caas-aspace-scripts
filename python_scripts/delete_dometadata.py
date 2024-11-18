@@ -1,15 +1,19 @@
 #!/usr/bin/env python
-
+import io
 # This script iterates through all the digital objects in every repository in SI's ArchivesSpace
 # instance - except Test, Training, and NMAH-AF, parses them for any data in the following fields:
 # agents, dates, extents, languages, notes, and subjects, and then deletes any data within those
 # fields except digitized date and uploads the updated digital object back to ArchivesSpace
 
 import json
+import jsonlines
 from collections import namedtuple
 from copy import deepcopy
 from http.client import HTTPException
 from pathlib import Path
+
+from jsonlines import InvalidLineError
+
 from secrets import *
 
 from asnake.client import ASnakeClient
@@ -142,6 +146,7 @@ def record_error(message, status_input):
         print(f'record_error() - Input is invalid for recording error: {input_error}')
         logger.error(f'record_error() - Input is invalid for recording error: {input_error}')
 
+
 # def read_csv(delete_domd_csv):
 #     """
 #     Takes a csv input of ASpace digital objects - ran from SQL query - and returns a list of dictionaries of all the
@@ -163,6 +168,24 @@ def record_error(message, status_input):
 #         print(f'ERROR reading csv file: {csverror}')
 #     else:
 #         return digital_objects
+
+
+def write_to_file(filepath, write_data):
+    """
+    Writes or appends JSON data to a specified file using jsonlines
+    Args:
+        filepath (str): the path of the file being written to
+        write_data (str): the data to be written on the given filepath
+    """
+    try:
+        with jsonlines.open(filepath, mode='a') as org_data_file:
+            try:
+                org_data_file.write(write_data)
+            except InvalidLineError as bad_write_error:
+                record_error('write_to_file() - Unable to write data to file', bad_write_error)
+        org_data_file.close()
+    except (FileNotFoundError, PermissionError, OSError) as write_file_error:
+        record_error('write_to_file() - Unable to open or access jsonl file', write_file_error)
 
 
 def parse_delete_fields(object_json):
@@ -220,7 +243,7 @@ def run_script():
     ArchivesSpace, saving the old JSON data in a separate file.
     """
     donotrun_repos = ['Test', 'TRAINING', 'NMAH-AF']
-    original_do_json_data = []
+    original_do_json_data = str(Path('../test_data', 'delete_dometadata_original_data.jsonl'))
     archivesspace_instance = ArchivesSpace(as_api_stag, as_un, as_pw)   # TODO: replace as_api_stag with as_api_prod
     archivesspace_instance.get_repo_info()
     for repo in archivesspace_instance.repo_info:
@@ -238,15 +261,11 @@ def run_script():
                                                                             field.Field,
                                                                             field.Subrecord)
                         if updated_digital_object_json:
-                            original_do_json_data.append(digital_object_json)
+                            write_to_file(original_do_json_data, digital_object_json)
                             update_response = archivesspace_instance.update_object(updated_digital_object_json['uri'],
                                                                                    updated_digital_object_json)
                             print(f'Updated {updated_digital_object_json["uri"]}: {update_response}')
                             logger.info(f'Updated {updated_digital_object_json["uri"]}: {update_response}')
-    with (open('../test_data/delete_dometadata_original_data.json', 'w', encoding='utf8')
-          as org_data_file):
-        json.dump(original_do_json_data, org_data_file, indent=4)
-        org_data_file.close()
 
 
 if __name__ == "__main__":

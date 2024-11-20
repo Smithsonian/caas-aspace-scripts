@@ -104,6 +104,119 @@ dictionary containing all the unique, non-alphanumeric characters in the identif
 - CSV input containing the following columns: id, repo_id, identifier, title, ead_id, recordType
   - identifier should be structured like so: "['id_0','id_1','id_2','id_3']"
 
+
+### [new_subjects.py](python_scripts/new_subjects.py)
+This script creates new subjects from a provided CSV.  It is currently customized to support the needs of NMAI, but
+this hardcoded NMAI metadata can be changed/updated in the future.
+
+#### Requirements:
+- ArchivesSnake
+- Environment-based ArchivesSpace username, password, API URL in a .env.{environment} file:
+  - On your local:
+    1. Create a new `.env.dev` file containing local credentials
+    2. `export ENV=dev`
+    3. Run script
+  - On test:
+    1. Create a new `.env.test` file containing test credentials
+    2. `export ENV=test`
+    3. Run script
+  - On prod:
+    1. Create a new `.env.prod` file containing prod credentials
+    2. `export ENV=prod`
+    3. CAREFULLY run script
+- logs directory for storing local log files
+
+#### [newsubjects_tests.py](tests/newsubjects_tests.py)
+
+Unittests for [newsubjects_tests.py](tests/newsubjects_tests.py)
+
+#### Requirements:
+- test_data/subjects_testdata.py file, containing the following:
+  - `test_new_subject_metadata = {JSON representation of a new subject}` for testing.
+  - `duplicate_new_subject = test_new_subject_metadata` ensures we can count on `duplicate_new_subject` to produce a not
+  unique error during testing.
+- test_data/newsubjects_testdata.csv - a csv file of new subjects to be created, containing:
+  - new_title
+  - new_scope_note
+  - new_EMu_ID
+
+
+### [update_subjects.py](python_scripts/update_subjects.py)
+This script updates existing ArchivesSpace subjects from a provided CSV.  It is currently customized to support the 
+needs of NMAI, but can be changed/updated in the future.
+
+#### Requirements:
+- ArchivesSnake
+- Environment-based ArchivesSpace username, password, API URL in a .env.{environment} file:
+  - On your local:
+    1. Create a new `.env.dev` file containing local credentials
+    2. `export ENV=dev`
+    3. Run script
+  - On test:
+    1. Create a new `.env.test` file containing test credentials
+    2. `export ENV=test`
+    3. Run script
+  - On prod:
+    1. Create a new `.env.prod` file containing prod credentials
+    2. `export ENV=prod`
+    3. CAREFULLY run script
+- logs directory for storing local log files
+
+#### [updatesubjects_tests.py](tests/updatesubjects_tests.py)
+
+Unittests for [updatesubjects_tests.py](tests/updatesubjects_tests.py)
+
+#### Requirements:
+- test_data/subjects_testdata.py file, containing the following:
+  - `test_update_subject_metadata = {JSON representation of an existing subject}` for testing.  If `newsubjects_tests.py` has
+    been run previously, you can use one of the subjects created by that test.
+- test_data/newsubjects_testdata.csv - a csv file of changes to be made to an existing subject, containing:
+  - aspace_subject_id - id of the subject to update, this can match that in test_data/subjects_testdata.py
+  - new_title
+  - new_scope_note
+  - new_EMu_ID
+
+
+### [merge_subjects.py](python_scripts/merge_subjects.py)
+This script creates new subjects from a provided CSV.  It is currently customized to support the needs of NMAI, but
+this hardcoded NMAI metadata can be changed/updated in the future.
+
+#### Requirements:
+- ArchivesSnake
+- Environment-based ArchivesSpace username, password, API URL in a .env.{environment} file:
+  - On your local:
+    1. Create a new `.env.dev` file containing local credentials
+    2. `export ENV=dev`
+    3. Run script
+  - On test:
+    1. Create a new `.env.test` file containing test credentials
+    2. `export ENV=test`
+    3. Run script
+  - On prod:
+    1. Create a new `.env.prod` file containing prod credentials
+    2. `export ENV=prod`
+    3. CAREFULLY run script
+- logs directory for storing local log files
+
+#### [mergesubjects_tests.py](tests/mergesubjects_tests.py)
+
+Unittests for [mergesubjects_tests.py](tests/mergesubjects_tests.py)
+
+#### Requirements:
+- test_data/subjects_testdata.py file, containing the following:
+  - `test_merge_subject_destination = {JSON representation of an existing subject that will survive the merge}` for testing.  
+    If `newsubjects_tests.py` has been run previously, you can use one of the subjects created by that test.
+  - `test_merge_subject_candidate = {JSON representation of an existing subject that will be removed during the merge}` for testing.  
+    If `newsubjects_tests.py` has been run previously, you can use one of the subjects created by that test.
+- test_data/mergesubjects_testdata.csv - a csv file of subjects to be merged, containing:
+  - aspace_subject_id - id of the merge destination/subject to be retained. If newsubjects_tests.py previously run, this can be
+    one of the subjects created by those tests.
+  - title - title of the merge destination/subject to be retained.  The title must match the existing subject with the above id.
+  - aspace_subject_id2 - id of the merge candidate/subject to be removed. If newsubjects_tests.py previously run, this can be
+    one of the subjects created by those tests.
+  - Merge into - title of the merge candidate/subject to be removed.  The title must match the existing subject with the above id.
+
+
 ## Getting Started
 
 ### Dependencies

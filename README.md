@@ -226,6 +226,10 @@ import statements at the top to see which specific packages are needed.
 - [ArchivesSnake](https://github.com/archivesspace-labs/ArchivesSnake) - Library used for interacting with the 
 ArchivesSpace API
 - [loguru](https://pypi.org/project/loguru/) - Library used for generating log files
+- [jsonlines](https://github.com/wbolster/jsonlines) - Library used for creating and appending to jsonl files for 
+storage of JSON data
+- [python-dotenv](https://github.com/theskumar/python-dotenv) - Library used for writing environment variables for 
+script info like credentials
 
 ### Installation
 
@@ -257,8 +261,9 @@ See the [Overview](#Overview) section for more info on what each script does.
 
 ## Authors
 
-- Corey Schmidt - IT Specialist at the Smithsonian Institution
 - Mark Custer - Manager of the Community Applications and Archival Support Team at the Smithsonian Institution
+- Corey Schmidt - IT Specialist at the Smithsonian Institution
+- Lora Woodford - IT Specialist at the Smithsonian Institution
 
 ## Acknowledgements
 

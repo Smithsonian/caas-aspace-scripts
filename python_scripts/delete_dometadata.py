@@ -262,6 +262,8 @@ def main():
                                                                             field.Field,
                                                                             field.Subrecord)
                         write_to_file(original_do_json_data, digital_object_json)
+                        print(f'Updated {updated_digital_object_json["uri"]}')
+                        logger.info(f'Updated {updated_digital_object_json["uri"]}')
                         update_response = archivesspace_instance.update_object(updated_digital_object_json['uri'],
                                                                                updated_digital_object_json)
                         if update_response:

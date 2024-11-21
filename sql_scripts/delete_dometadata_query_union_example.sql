@@ -43,7 +43,7 @@ FROM
     FROM 
       digital_object AS do 
       JOIN date ON date.digital_object_id = do.id 
-    where 
+    WHERE
       date.label_id != 2727
   ) AS T 
 WHERE 

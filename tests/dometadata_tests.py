@@ -96,7 +96,7 @@ class TestArchivesSpaceClass(unittest.TestCase):
         original_object_json['uri'] = 'laksjdlfieklkjfa'
         test_response = test_archivesspace.update_object(original_object_json['uri'],
                                                          original_object_json)
-        self.assertIn('error', test_response)
+        self.assertIsNone(test_response)
 
 
 class TestRecordError(unittest.TestCase):

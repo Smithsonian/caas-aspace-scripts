@@ -124,11 +124,12 @@ class ArchivesSpace:
             updated_json (dict): the updated metadata for the object
 
         Returns:
-            update_message (dict): ArchivesSpace response
+            update_message (dict): ArchivesSpace response or None if an error was encountered and logged
         """
         update_message = self.aspace_client.post(f'{object_uri}', json=updated_json).json()
         if 'error' in update_message:
             record_error('update_object() - Update failed due to following error', update_message)
+            return None
         return update_message
 
 
@@ -235,7 +236,7 @@ def delete_field_info(object_json, field, subrecord):
     return updated_json
 
 
-def run_script():
+def main():
     """
     Runs the functions of the script by creating an ArchivesSpacec class instance, getting the repository info for every
     repository, then all the digital object IDs per each repository, gets the JSON data for the digital object, deletes
@@ -244,6 +245,7 @@ def run_script():
     """
     donotrun_repos = ['Test', 'TRAINING', 'NMAH-AF']
     original_do_json_data = str(Path('../test_data', 'delete_dometadata_original_data.jsonl'))
+    updated_digital_object_json = {}
     archivesspace_instance = ArchivesSpace(as_api_stag, as_un, as_pw)   # TODO: replace as_api_stag with as_api_prod
     archivesspace_instance.get_repo_info()
     for repo in archivesspace_instance.repo_info:
@@ -255,18 +257,19 @@ def run_script():
                                                                             repo['uri'])
                     delete_fields = parse_delete_fields(digital_object_json)
                     if delete_fields:
-                        updated_digital_object_json = deepcopy(digital_object_json)
                         for field in delete_fields:
-                            updated_digital_object_json = delete_field_info(updated_digital_object_json,
+                            updated_digital_object_json = delete_field_info(digital_object_json,
                                                                             field.Field,
                                                                             field.Subrecord)
-                        if updated_digital_object_json:
-                            write_to_file(original_do_json_data, digital_object_json)
-                            update_response = archivesspace_instance.update_object(updated_digital_object_json['uri'],
-                                                                                   updated_digital_object_json)
+                        write_to_file(original_do_json_data, digital_object_json)
+                        print(f'Updated {updated_digital_object_json["uri"]}')
+                        logger.info(f'Updated {updated_digital_object_json["uri"]}')
+                        update_response = archivesspace_instance.update_object(updated_digital_object_json['uri'],
+                                                                               updated_digital_object_json)
+                        if update_response:
                             print(f'Updated {updated_digital_object_json["uri"]}: {update_response}')
                             logger.info(f'Updated {updated_digital_object_json["uri"]}: {update_response}')
 
 
 if __name__ == "__main__":
-    run_script()
+    main()

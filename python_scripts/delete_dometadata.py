@@ -245,7 +245,6 @@ def main():
     """
     donotrun_repos = ['Test', 'TRAINING', 'NMAH-AF']
     original_do_json_data = str(Path('../test_data', 'delete_dometadata_original_data.jsonl'))
-    updated_digital_object_json = {}
     archivesspace_instance = ArchivesSpace(as_api_stag, as_un, as_pw)   # TODO: replace as_api_stag with as_api_prod
     archivesspace_instance.get_repo_info()
     for repo in archivesspace_instance.repo_info:
@@ -257,8 +256,9 @@ def main():
                                                                             repo['uri'])
                     delete_fields = parse_delete_fields(digital_object_json)
                     if delete_fields:
+                        updated_digital_object_json = deepcopy(digital_object_json)
                         for field in delete_fields:
-                            updated_digital_object_json = delete_field_info(digital_object_json,
+                            updated_digital_object_json = delete_field_info(updated_digital_object_json,
                                                                             field.Field,
                                                                             field.Subrecord)
                         write_to_file(original_do_json_data, digital_object_json)

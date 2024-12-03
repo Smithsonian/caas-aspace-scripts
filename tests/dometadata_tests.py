@@ -1,6 +1,6 @@
 #!/usr/bin/env python
 
-# This script consists of unittests for update_znames.py
+# This script consists of unittests for delete_dometadata.py
 import copy
 import json
 import contextlib

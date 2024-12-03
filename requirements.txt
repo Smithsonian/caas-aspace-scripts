@@ -2,3 +2,5 @@ ArchivesSnake == 0.10.1
 loguru~=0.7.2
 jsonlines~=4.0.0
 python-dotenv>=1.0
+mysql~=0.0.3
+mysql-connector-python==9.1.0

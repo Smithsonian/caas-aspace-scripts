@@ -15,9 +15,6 @@ from openpyxl.styles import Font, PatternFill
 from pathlib import Path
 from secrets import *
 
-
-
-
 logger.remove()
 log_path = Path('../logs', 'report_grouppermissions_{time:YYYY-MM-DD}.log')
 logger.add(str(log_path), format="{time}-{level}: {message}")
@@ -89,10 +86,14 @@ class ASpaceDatabase:
             raise error
         else:
             results = self.cursor.fetchall()
-        finally:
-            self.cursor.close()
-            self.connection.close()
         return results
+
+    def close_connection(self):
+        """
+        Closes the cursor and connection to the ArchivesSpace database
+        """
+        self.cursor.close()
+        self.connection.close()
 
 
 class Spreadsheet:
@@ -108,6 +109,9 @@ class Spreadsheet:
         """self.spreadsheet_filepath (str): The filepath of the spreadsheet being generated"""
         self.wb = self.generate_workbook()
         """self.wb (openpyxl.Workbook): The openpyxl workbook instance of the spreadsheet being generated"""
+        self.sheets = {}
+        """self.sheets (dict): A dictionary of all the sheets within this instance's workbook (self.wb). key = 
+        sheet-name, value = openpysl.worksheet"""
 
 
     def generate_workbook(self):
@@ -118,7 +122,6 @@ class Spreadsheet:
             wb (openpyxl.Workbook): The openpyxl workbook of the spreadsheet being generated for the data audit
             data_worksheet (str): The filepath of the data audit worksheet
         """
-
         wb = Workbook()
         try:
             wb.save(self.spreadsheet_filepath)
@@ -127,27 +130,47 @@ class Spreadsheet:
             raise invalid_file
         return wb
 
-    def write_headers(self, sheetname, headers): # TODO: write unittests for this function
+    def create_sheet(self, sheetname):
+        """
+        Takes a name of a sheet to generate within the workbook (self.wb) for this instance
+
+        Args:
+            sheetname (str): the name of the individual sheet within the workbook (self.wb)
+
+        Returns:
+            worksheet (openpysl.worksheet): An openpyxl worksheet class
+        """
+        try:
+            worksheet = self.wb.create_sheet(sheetname)
+            worksheet.title = sheetname
+        except ValueError as bad_sheettitle:
+            record_error('create_sheet() - The sheet name provided was not acceptable as a title',
+                         bad_sheettitle)
+            raise bad_sheettitle
+        else:
+            self.wb.save(self.spreadsheet_filepath)
+            self.sheets[sheetname] = worksheet
+            return worksheet
+
+
+    def write_headers(self, worksheet, headers): # TODO: write unittests for this function
         """
         Takes a list of strings and writes them to the top row for a sheet in the data audit spreadsheet
 
         Args:
-            sheetname (str): The name of sheet to be added to the data audit spreadsheet
+            worksheet (openpysl.worksheet): An openpyxl worksheet class for the worksheet you want to write to
             headers (list): List of strings to be headers on the top row of the sheet
 
         Returns:
             worksheet (openpysl.worksheet): An openpyxl worksheet class
         """
-
-        worksheet = self.wb.create_sheet(sheetname)
-        worksheet.title = sheetname
         header_index = 0
         for row in worksheet.iter_rows(min_row=1, max_col=len(headers)):
             for cell in row:
                 worksheet[cell.coordinate] = headers[header_index]
                 worksheet[cell.coordinate].font = Font(bold=True, underline='single')
                 header_index += 1
-        return worksheet
+        self.wb.save(self.spreadsheet_filepath)
 
 
 def record_error(message, status_input):
@@ -164,3 +187,30 @@ def record_error(message, status_input):
         print(f'record_error() - Input is invalid for recording error: {input_error}')
         logger.error(f'record_error() - Input is invalid for recording error: {input_error}')
 
+
+def main():
+    aspace_db = ASpaceDatabase(as_dbstag_un, as_dbstag_pw, as_dbstag_host, as_dbstag_database, as_dbstag_port)
+    report_spreadsheet = Spreadsheet(str(Path('../test_data',
+                                              f'report_grouppermissions_{str(date.today())}.xlsx')))
+    report_spreadsheet.wb.remove(report_spreadsheet.wb['Sheet'])
+    grouppermission_sheet = report_spreadsheet.create_sheet('group_permissions')
+    user_group_query = ('SELECT '
+                            'repo_id, group_code, repository.name '
+                        'FROM '
+                            '`group` AS g '
+                        'JOIN '
+                            'repository ON repository.id = g.repo_id '
+                        'ORDER BY g.repo_id')
+    all_permissions_query = ('SELECT '
+                                 '`description` '
+                             'FROM '
+	                             'permission ')
+    user_groups = aspace_db.query_database(user_group_query)
+    all_permissions = aspace_db.query_database(all_permissions_query)
+    print(all_permissions)
+    for user_group in user_groups:
+        print(user_group)
+    aspace_db.close_connection()
+
+if __name__ == "__main__":
+    main()

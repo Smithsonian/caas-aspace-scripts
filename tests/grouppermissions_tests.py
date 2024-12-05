@@ -77,6 +77,47 @@ class TestSpreadsheetClass(unittest.TestCase):
         with self.assertRaises(FileNotFoundError):
             Spreadsheet(test_spreadsheet_filepath)
 
+    def test_create_sheet(self):
+        test_spreadsheet_filepath = str(Path('../test_data', f'report_grouppermissions_{str(date.today())}.xlsx'))
+        test_spreadsheet = Spreadsheet(test_spreadsheet_filepath)
+        test_sheetname = 'test'
+        test_spreadsheet.create_sheet(test_sheetname)
+
+        test_sheetnames = test_spreadsheet.wb.sheetnames
+        self.assertIn("test", test_sheetnames)
+        self.assertIn('test', test_spreadsheet.sheets)
+        test_spreadsheet.wb.close()
+        os.remove(test_spreadsheet_filepath)
+
+    def test_create_sheet_error(self):
+        test_spreadsheet_filepath = str(Path('../test_data', f'report_grouppermissions_{str(date.today())}.xlsx'))
+        test_spreadsheet = Spreadsheet(test_spreadsheet_filepath)
+        test_sheetname = 'my:test:sheet'
+        with self.assertRaises(ValueError):
+            test_spreadsheet.create_sheet(test_sheetname)
+        test_spreadsheet.wb.close()
+        os.remove(test_spreadsheet_filepath)
+
+
+    def test_write_headers(self):
+        """
+        Test write_headers() function by writing a list of test headers to a spreadsheet and assert that those test
+        header values exist in the spreadsheet.
+        """
+        test_headers = ["test_header_1", "test_header_2", "test_header_3"]
+        test_spreadsheet_filepath = str(Path('../test_data', f'report_grouppermissions_{str(date.today())}.xlsx'))
+        test_spreadsheet = Spreadsheet(test_spreadsheet_filepath)
+        test_worksheet = test_spreadsheet.create_sheet('test')
+        test_spreadsheet.write_headers(test_worksheet, test_headers)
+
+        if "test" in test_spreadsheet.wb.sheetnames:
+            test_sheet = test_spreadsheet.wb["test"]
+            for row in test_sheet.iter_rows(max_row=1, max_col=3):
+                for cell in row:
+                    self.assertIn(cell.value, test_headers)
+        test_spreadsheet.wb.close()
+        os.remove(test_spreadsheet_filepath)
+
 class TestRecordError(unittest.TestCase):
 
     def test_str_input(self):

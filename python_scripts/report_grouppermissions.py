@@ -195,21 +195,36 @@ def main():
     report_spreadsheet.wb.remove(report_spreadsheet.wb['Sheet'])
     grouppermission_sheet = report_spreadsheet.create_sheet('group_permissions')
     user_group_query = ('SELECT '
-                            'repo_id, group_code, repository.name '
+                            'permission.description, repo.repo_code, grp.group_code '
                         'FROM '
-                            '`group` AS g '
+                            'group_permission AS gp '
                         'JOIN '
-                            'repository ON repository.id = g.repo_id '
-                        'ORDER BY g.repo_id')
+                            'permission ON permission.id = gp.permission_id '
+                        'JOIN '
+                            '`group` AS grp ON grp.id = gp.group_id '
+                        'JOIN '
+                            'repository AS repo ON repo.id = grp.repo_id '
+                        'ORDER BY '
+                            'group_id')
     all_permissions_query = ('SELECT '
                                  '`description` '
                              'FROM '
 	                             'permission ')
     user_groups = aspace_db.query_database(user_group_query)
     all_permissions = aspace_db.query_database(all_permissions_query)
-    print(all_permissions)
+    cleaned_permissions = []
+    for result in all_permissions:
+        cleaned_permissions.append(result[0])
+    groups_permissions = {}
+    group_name = ''
     for user_group in user_groups:
-        print(user_group)
+        if str(user_group[1]) + '--' + str(user_group[2]) not in groups_permissions:
+            group_name = str(user_group[1]) + '--' + str(user_group[2])
+            groups_permissions[group_name] = []
+            groups_permissions[group_name].append(user_group[0])
+        else:
+            groups_permissions[group_name].append(user_group[0])
+    print(groups_permissions['_archivesspace--searchindex'])
     aspace_db.close_connection()
 
 if __name__ == "__main__":

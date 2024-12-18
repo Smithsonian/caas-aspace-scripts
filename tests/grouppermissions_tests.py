@@ -99,22 +99,41 @@ class TestSpreadsheetClass(unittest.TestCase):
         os.remove(test_spreadsheet_filepath)
 
 
-    def test_write_headers(self):
+    def test_write_column_data(self):
         """
-        Test write_headers() function by writing a list of test headers to a spreadsheet and assert that those test
-        header values exist in the spreadsheet.
+        Test write_column_data() function by writing a list of test data to a spreadsheet and assert that those test
+        data values exist in the spreadsheet.
         """
-        test_headers = ["test_header_1", "test_header_2", "test_header_3"]
+        test_perms = {'_archivesspace--searchindex': ["test_header_1", "test_header_2", "test_header_3"],
+                        '_archivesspace--administrator': ["test_header_1", "test_header_2", "test_header_3"]}
         test_spreadsheet_filepath = str(Path('../test_data', f'report_grouppermissions_{str(date.today())}.xlsx'))
         test_spreadsheet = Spreadsheet(test_spreadsheet_filepath)
         test_worksheet = test_spreadsheet.create_sheet('test')
-        test_spreadsheet.write_headers(test_worksheet, test_headers)
+        test_spreadsheet.wb.remove(test_spreadsheet.wb['Sheet'])
+        column = 1
+        for group, levels in test_perms.items():
+            row = 1
+            test_spreadsheet.write_column_data(test_worksheet, group, column, row, header=True)
+            row += 1
+            for permission in levels:
+                test_spreadsheet.write_column_data(test_worksheet, permission, column, row)
+                row += 1
+            column += 1
 
         if "test" in test_spreadsheet.wb.sheetnames:
             test_sheet = test_spreadsheet.wb["test"]
-            for row in test_sheet.iter_rows(max_row=1, max_col=3):
-                for cell in row:
-                    self.assertIn(cell.value, test_headers)
+            column_index = 1
+            row_index = 1
+            for group, permissions in test_perms.items():
+                if row_index == 1:
+                    cell = test_sheet.cell(row=row_index, column=column_index)
+                    self.assertIn(cell.value, group)
+                else:
+                    for permission in permissions:
+                        self.assertIn(cell.value, permission)
+                        row_index += 1
+                column_index += 1
+
         test_spreadsheet.wb.close()
         os.remove(test_spreadsheet_filepath)
 

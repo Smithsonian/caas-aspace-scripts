@@ -153,23 +153,22 @@ class Spreadsheet:
             return worksheet
 
 
-    def write_headers(self, worksheet, headers): # TODO: write unittests for this function
+    def write_column_data(self, worksheet, permission, cell_column, cell_row, header=False):
         """
-        Takes a list of strings and writes them to the top row for a sheet in the data audit spreadsheet
+        Takes a list of strings and writes them to a specified column of the given worksheet
 
         Args:
             worksheet (openpysl.worksheet): An openpyxl worksheet class for the worksheet you want to write to
-            headers (list): List of strings to be headers on the top row of the sheet
-
-        Returns:
-            worksheet (openpysl.worksheet): An openpyxl worksheet class
+            permission (str): permission value to write to specific cell value
+            cell_column (int): the minimum column to write to, max will not be supplied
+            cell_row (int): the minimum row to write to, max will not be supplied
+            header (bool): if True, format the permission string with bold and underline
         """
-        header_index = 0
-        for row in worksheet.iter_rows(min_row=1, max_col=len(headers)):
-            for cell in row:
-                worksheet[cell.coordinate] = headers[header_index]
-                worksheet[cell.coordinate].font = Font(bold=True, underline='single')
-                header_index += 1
+        # for row in worksheet.iter_cols(min_col=min_column, min_row=min_row):
+        #     for cell in row:
+        worksheet.cell(row=cell_row, column=cell_column).value=permission
+        if header is True:
+            worksheet.cell(row=cell_row, column=cell_column).font=Font(bold=True, underline='single')
         self.wb.save(self.spreadsheet_filepath)
 
 
@@ -215,6 +214,7 @@ def main():
     cleaned_permissions = []
     for result in all_permissions:
         cleaned_permissions.append(result[0])
+
     groups_permissions = {}
     group_name = ''
     for user_group in user_groups:
@@ -224,7 +224,30 @@ def main():
             groups_permissions[group_name].append(user_group[0])
         else:
             groups_permissions[group_name].append(user_group[0])
-    print(groups_permissions['_archivesspace--searchindex'])
+
+    permission_index = 0
+    for permission in cleaned_permissions:
+        for group_permissions in groups_permissions.values():
+            if permission not in group_permissions:
+                group_permissions.insert(permission_index, 'FALSE')
+        permission_index += 1
+
+    # Write permissions in the first column
+    allperm_row = 2
+    for permission in cleaned_permissions:
+        report_spreadsheet.write_column_data(grouppermission_sheet, permission, 1, allperm_row)
+        allperm_row += 1
+
+    # Write permissions for each group per repository
+    column_index = 2
+    for group, permissions in groups_permissions.items():
+        row_index = 1
+        report_spreadsheet.write_column_data(grouppermission_sheet, group, column_index, row_index, header=True)
+        row_index += 1
+        for permission in permissions:
+            report_spreadsheet.write_column_data(grouppermission_sheet, permission, column_index, row_index)
+            row_index += 1
+        column_index += 1
     aspace_db.close_connection()
 
 if __name__ == "__main__":

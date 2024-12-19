@@ -5,19 +5,25 @@
 # group across all repositories.
 
 import mysql.connector as mysql
+import os
 import openpyxl.utils.exceptions
 
 from datetime import date
+from dotenv import load_dotenv, find_dotenv
 from mysql.connector import errorcode
 from loguru import logger
 from openpyxl import Workbook
 from openpyxl.styles import Font, PatternFill
 from pathlib import Path
-from secrets import *
 
+# Logging
 logger.remove()
 log_path = Path('../logs', 'report_grouppermissions_{time:YYYY-MM-DD}.log')
 logger.add(str(log_path), format="{time}-{level}: {message}")
+
+# Find  and load environment-specific .env file
+env_file = find_dotenv(f'.env.{os.getenv("ENV", "test")}')
+load_dotenv(env_file)
 
 class ASpaceDatabase:
 
@@ -188,7 +194,8 @@ def record_error(message, status_input):
 
 
 def main():
-    aspace_db = ASpaceDatabase(as_dbstag_un, as_dbstag_pw, as_dbstag_host, as_dbstag_database, as_dbstag_port)
+    aspace_db = ASpaceDatabase(os.getenv('DB_UN'), os.getenv('DB_PW'), os.getenv('DB_HOST'), os.getenv('DB_NAME'),
+                               int(os.getenv('DB_PORT')))
     report_spreadsheet = Spreadsheet(str(Path('../test_data',
                                               f'report_grouppermissions_{str(date.today())}.xlsx')))
     report_spreadsheet.wb.remove(report_spreadsheet.wb['Sheet'])
@@ -232,21 +239,20 @@ def main():
                 group_permissions.insert(permission_index, 'FALSE')
         permission_index += 1
 
-    # Write permissions in the first column
-    allperm_row = 2
-    for permission in cleaned_permissions:
-        report_spreadsheet.write_column_data(grouppermission_sheet, permission, 1, allperm_row)
-        allperm_row += 1
-
-    # Write permissions for each group per repository
-    column_index = 2
+    # Write permissions and groups to spreadsheet
+    allgroups_row = 2
     for group, permissions in groups_permissions.items():
-        row_index = 1
-        report_spreadsheet.write_column_data(grouppermission_sheet, group, column_index, row_index, header=True)
-        row_index += 1
+        report_spreadsheet.write_column_data(grouppermission_sheet, group, 1, allgroups_row)
+        allgroups_col = 2
         for permission in permissions:
-            report_spreadsheet.write_column_data(grouppermission_sheet, permission, column_index, row_index)
-            row_index += 1
+            report_spreadsheet.write_column_data(grouppermission_sheet, permission, allgroups_col, allgroups_row)
+            allgroups_col += 1
+        allgroups_row += 1
+
+    # Write header permissions
+    column_index = 2
+    for permission in cleaned_permissions:
+        report_spreadsheet.write_column_data(grouppermission_sheet, permission, column_index, 1, header=True)
         column_index += 1
     aspace_db.close_connection()
 

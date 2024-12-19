@@ -14,7 +14,11 @@ import openpyxl.utils.exceptions
 
 from python_scripts.report_grouppermissions import *
 from test_data.dometadata_testdata import *
-from secrets import *
+
+env_file = find_dotenv(f'.env.test')
+load_dotenv(env_file)
+test_dbconnection = ASpaceDatabase(os.getenv('DB_UN'), os.getenv('DB_PW'), os.getenv('DB_HOST'), os.getenv('DB_NAME'),
+                               int(os.getenv('DB_PORT')))
 
 class TestASpaceDatabaseClass(unittest.TestCase):
 
@@ -22,8 +26,6 @@ class TestASpaceDatabaseClass(unittest.TestCase):
         """
         Tests connection with good credentials as founds within the secrets.py file
         """
-        test_dbconnection = ASpaceDatabase(as_dbstag_un, as_dbstag_pw, as_dbstag_host, as_dbstag_database,
-                                           as_dbstag_port)
         self.assertIsNotNone(test_dbconnection.connection)
         self.assertIsNotNone(test_dbconnection.cursor)
 
@@ -33,17 +35,15 @@ class TestASpaceDatabaseClass(unittest.TestCase):
         in the secrets.py file
         """
         with self.assertRaises(mysql.Error):
-            ASpaceDatabase('bad_un', 'bad_pw', 'bad_host', as_dbstag_database,
-                           as_dbstag_port)
+            ASpaceDatabase('bad_un', 'bad_pw', 'bad_host', os.getenv('DB_NAME'),
+                               int(os.getenv('DB_PORT')))
 
     def test_good_query(self):
         """
         Tests that the query_database() function returns a list of users from an ASpace database
         """
         test_query = ('SELECT name, username FROM user')
-        test_connection = ASpaceDatabase(as_dbstag_un, as_dbstag_pw, as_dbstag_host, as_dbstag_database,
-                                           as_dbstag_port)
-        test_results = test_connection.query_database(test_query)
+        test_results = test_dbconnection.query_database(test_query)
         self.assertIsNotNone(test_results)
         self.assertIsInstance(test_results, list)
 
@@ -52,10 +52,8 @@ class TestASpaceDatabaseClass(unittest.TestCase):
         Tests that a badly formatted SQL query will raise a mysql.Error
         """
         test_bad_query = ('SELECT nothing, username FROM user')
-        test_connection = ASpaceDatabase(as_dbstag_un, as_dbstag_pw, as_dbstag_host, as_dbstag_database,
-                                           as_dbstag_port)
         with self.assertRaises(mysql.Error):
-            test_connection.query_database(test_bad_query)
+            test_dbconnection.query_database(test_bad_query)
 
 class TestSpreadsheetClass(unittest.TestCase):
 
@@ -63,7 +61,7 @@ class TestSpreadsheetClass(unittest.TestCase):
         """
         Tests generating an openpyxl Workbook instance and assigns it as a Spreadsheet instance variable
         """
-        test_spreadsheet_filepath = str(Path('../test_data', f'report_grouppermissions_{str(date.today())}.xlsx'))
+        test_spreadsheet_filepath = str(Path('../test_data', f'test_report_grouppermissions_{str(date.today())}.xlsx'))
         test_spreadsheet = Spreadsheet(test_spreadsheet_filepath)
         self.assertIsInstance(test_spreadsheet, Spreadsheet)
         self.assertIsInstance(test_spreadsheet.wb, openpyxl.Workbook)
@@ -78,7 +76,7 @@ class TestSpreadsheetClass(unittest.TestCase):
             Spreadsheet(test_spreadsheet_filepath)
 
     def test_create_sheet(self):
-        test_spreadsheet_filepath = str(Path('../test_data', f'report_grouppermissions_{str(date.today())}.xlsx'))
+        test_spreadsheet_filepath = str(Path('../test_data', f'test_report_grouppermissions_{str(date.today())}.xlsx'))
         test_spreadsheet = Spreadsheet(test_spreadsheet_filepath)
         test_sheetname = 'test'
         test_spreadsheet.create_sheet(test_sheetname)
@@ -90,7 +88,7 @@ class TestSpreadsheetClass(unittest.TestCase):
         os.remove(test_spreadsheet_filepath)
 
     def test_create_sheet_error(self):
-        test_spreadsheet_filepath = str(Path('../test_data', f'report_grouppermissions_{str(date.today())}.xlsx'))
+        test_spreadsheet_filepath = str(Path('../test_data', f'test_report_grouppermissions_{str(date.today())}.xlsx'))
         test_spreadsheet = Spreadsheet(test_spreadsheet_filepath)
         test_sheetname = 'my:test:sheet'
         with self.assertRaises(ValueError):
@@ -106,7 +104,7 @@ class TestSpreadsheetClass(unittest.TestCase):
         """
         test_perms = {'_archivesspace--searchindex': ["test_header_1", "test_header_2", "test_header_3"],
                         '_archivesspace--administrator': ["test_header_1", "test_header_2", "test_header_3"]}
-        test_spreadsheet_filepath = str(Path('../test_data', f'report_grouppermissions_{str(date.today())}.xlsx'))
+        test_spreadsheet_filepath = str(Path('../test_data', f'test_report_grouppermissions_{str(date.today())}.xlsx'))
         test_spreadsheet = Spreadsheet(test_spreadsheet_filepath)
         test_worksheet = test_spreadsheet.create_sheet('test')
         test_spreadsheet.wb.remove(test_spreadsheet.wb['Sheet'])

@@ -15,7 +15,7 @@ FROM
 		JOIN
 	enumeration_value AS evrole ON evrole.id = rel.role_id
 		JOIN
-	agent_record_identifier AS recordid ON recordid.id = rel.
+	agent_record_identifier AS recordid ON recordid.id = rel.role_id
 WHERE
     ao.repo_id = 21
 GROUP BY name_person.id

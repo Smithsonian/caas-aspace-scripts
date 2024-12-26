@@ -200,6 +200,7 @@ def main():
                                               f'report_grouppermissions_{str(date.today())}.xlsx')))
     report_spreadsheet.wb.remove(report_spreadsheet.wb['Sheet'])
     grouppermission_sheet = report_spreadsheet.create_sheet('group_permissions')
+
     user_group_query = ('SELECT '
                             'permission.description, repo.repo_code, grp.group_code '
                         'FROM '
@@ -210,18 +211,27 @@ def main():
                             '`group` AS grp ON grp.id = gp.group_id '
                         'JOIN '
                             'repository AS repo ON repo.id = grp.repo_id '
+                        'WHERE '
+                            'level != "global" '
                         'ORDER BY '
                             'group_id')
+
     all_permissions_query = ('SELECT '
                                  '`description` '
                              'FROM '
-	                             'permission ')
+	                             'permission '
+                             'WHERE level != "global"')
+
     user_groups = aspace_db.query_database(user_group_query)
     all_permissions = aspace_db.query_database(all_permissions_query)
+
+    # Format permissions as a list of strings
     cleaned_permissions = []
     for result in all_permissions:
         cleaned_permissions.append(result[0])
 
+    # Write user_group names as <repository_code>--<user_group_name> as keys and all their permissions as a list in
+    # group_permissions dict
     groups_permissions = {}
     group_name = ''
     for user_group in user_groups:
@@ -232,6 +242,7 @@ def main():
         else:
             groups_permissions[group_name].append(user_group[0])
 
+    # Insert FALSE into permissions list if any of the cleaned_permissions do not exist in said list
     permission_index = 0
     for permission in cleaned_permissions:
         for group_permissions in groups_permissions.values():

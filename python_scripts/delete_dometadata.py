@@ -1,11 +1,9 @@
 #!/usr/bin/env python
-import io
 # This script iterates through all the digital objects in every repository in SI's ArchivesSpace
 # instance - except Test, Training, and NMAH-AF, parses them for any data in the following fields:
 # agents, dates, extents, languages, notes, and subjects, and then deletes any data within those
 # fields except digitized date and uploads the updated digital object back to ArchivesSpace
 
-import json
 import jsonlines
 from collections import namedtuple
 from copy import deepcopy
@@ -86,7 +84,7 @@ class ArchivesSpace:
         if parameters[0] == 'page' and not isinstance(parameters[1], int):
             record_error('get_objects() - parameter not valid', parameters)
             raise ValueError
-        if parameters[0] == 'id_set' and not isinstance(parameters[1], str):  # TODO: how to handle id_set validation and multiple inputs
+        if parameters[0] == 'id_set' and not isinstance(parameters[1], str):
             record_error('get_objects() - parameter not valid', parameters)
             raise ValueError
         digital_objects = self.aspace_client.get(f'{repository_uri}/{record_type}?{parameters[0]}={parameters[1]}').json()

@@ -48,6 +48,7 @@ class ASpaceAPI:
     def get_objects(self, repository_uri, record_type, parameters=('all_ids', True)):
         """
         Intakes a repository URI and returns all the digital object IDs as a list for that repository
+
         Args:
             repository_uri (str): the repository URI
             record_type (str): the type of record object you want to get (resources, archival_objects, digital_objects,
@@ -57,7 +58,6 @@ class ASpaceAPI:
 
         Returns:
             digital_objects (list): all the digital object IDs
-
         """
         parameter_options = ['all_ids', 'page', 'id_set']
         if parameters[0] not in parameter_options:
@@ -264,6 +264,7 @@ def check_url(url):
 def record_error(message, status_input):
     """
     Prints and logs an error message and the code/parameters causing the error
+
     Args:
         message (str): message to prefix the error code
         status_input (str, tuple, bool): error code or input parameters producing the error

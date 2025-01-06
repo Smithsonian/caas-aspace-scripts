@@ -1,13 +1,12 @@
 #!/usr/bin/env python
 
 # This script consists of unittests for update_znames.py
-import copy
 import json
 import contextlib
 import os
 import unittest
 
-from python_scripts.delete_dometadata import *
+from python_scripts.one_time_scripts.delete_dometadata import *
 from test_data.dometadata_testdata import *
 from secrets import *
 

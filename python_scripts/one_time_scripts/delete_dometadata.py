@@ -21,7 +21,7 @@ from loguru import logger
 
 
 logger.remove()
-log_path = Path('../logs', 'delete_dometadata_{time:YYYY-MM-DD}.log')
+log_path = Path('../../logs', 'delete_dometadata_{time:YYYY-MM-DD}.log')
 logger.add(str(log_path), format="{time}-{level}: {message}")
 
 
@@ -242,7 +242,7 @@ def main():
     ArchivesSpace, saving the old JSON data in a separate file.
     """
     donotrun_repos = ['Test', 'TRAINING', 'NMAH-AF']
-    original_do_json_data = str(Path('../test_data', 'delete_dometadata_original_data.jsonl'))
+    original_do_json_data = str(Path('../../test_data', 'delete_dometadata_original_data.jsonl'))
     archivesspace_instance = ArchivesSpace(as_api_stag, as_un, as_pw)   # TODO: replace as_api_stag with as_api_prod
     archivesspace_instance.get_repo_info()
     for repo in archivesspace_instance.repo_info:

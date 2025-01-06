@@ -4,7 +4,7 @@
 import json
 import unittest
 
-from python_scripts.update_znames import *
+from python_scripts.one_time_scripts.update_znames import *
 from secrets import *
 from test_data.znames_testdata import *
 

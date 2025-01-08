@@ -1,0 +1,15 @@
+name: Lint with ruff
+on:
+  pull_request:
+    branches:
+      - main
+  push: 
+
+jobs:
+  lint:
+    runs-on: ubuntu-latest 
+    steps:
+    - uses: actions/checkout@v4
+    - uses: actions/setup-python@v5
+    - run: pip install ruff
+    - run: ruff check .

@@ -1,12 +1,11 @@
 #!/usr/bin/env python
 
 # This script consists of unittests for update_znames.py
-import copy
-import json
 import unittest
 
-from python_scripts.update_authorityids import *
-from secrets import *
+from python_scripts.one_time_scripts.update_authorityids import *
+
+
 # from test_data.authorityids_testdata import *
 
 

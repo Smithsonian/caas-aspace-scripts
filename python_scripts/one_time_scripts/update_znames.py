@@ -14,7 +14,7 @@ import re
 username_capture = re.compile(r'(?<=z-)(.*)(?=-expired)', re.UNICODE)
 
 logger.remove()
-log_path = Path(f'../logs', 'update_znames_{time:YYYY-MM-DD}.log')
+log_path = Path(f'../../logs', 'update_znames_{time:YYYY-MM-DD}.log')
 logger.add(str(log_path), format="{time}-{level}: {message}")
 
 

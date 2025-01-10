@@ -16,7 +16,7 @@ from secrets import *
 alphanumeric_capture = re.compile(r'[a-zA-Z0-9.-]*', re.UNICODE)
 
 logger.remove()
-log_path = Path(f'../logs', 'update_resids_{time:YYYY-MM-DD}.log')
+log_path = Path(f'../../logs', 'update_resids_{time:YYYY-MM-DD}.log')
 logger.add(str(log_path), format="{time}-{level}: {message}")
 
 

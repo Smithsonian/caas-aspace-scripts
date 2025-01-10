@@ -1,11 +1,9 @@
 #!/usr/bin/env python
-import io
 # This script iterates through all the digital objects in every repository in SI's ArchivesSpace
 # instance - except Test, Training, and NMAH-AF, parses them for any data in the following fields:
 # agents, dates, extents, languages, notes, and subjects, and then deletes any data within those
 # fields except digitized date and uploads the updated digital object back to ArchivesSpace
 
-import json
 import jsonlines
 from collections import namedtuple
 from copy import deepcopy
@@ -23,7 +21,7 @@ from loguru import logger
 
 
 logger.remove()
-log_path = Path('../logs', 'delete_dometadata_{time:YYYY-MM-DD}.log')
+log_path = Path('../../logs', 'delete_dometadata_{time:YYYY-MM-DD}.log')
 logger.add(str(log_path), format="{time}-{level}: {message}")
 
 
@@ -86,7 +84,7 @@ class ArchivesSpace:
         if parameters[0] == 'page' and not isinstance(parameters[1], int):
             record_error('get_objects() - parameter not valid', parameters)
             raise ValueError
-        if parameters[0] == 'id_set' and not isinstance(parameters[1], str):  # TODO: how to handle id_set validation and multiple inputs
+        if parameters[0] == 'id_set' and not isinstance(parameters[1], str):
             record_error('get_objects() - parameter not valid', parameters)
             raise ValueError
         digital_objects = self.aspace_client.get(f'{repository_uri}/{record_type}?{parameters[0]}={parameters[1]}').json()
@@ -244,7 +242,7 @@ def main():
     ArchivesSpace, saving the old JSON data in a separate file.
     """
     donotrun_repos = ['Test', 'TRAINING', 'NMAH-AF']
-    original_do_json_data = str(Path('../test_data', 'delete_dometadata_original_data.jsonl'))
+    original_do_json_data = str(Path('../../test_data', 'delete_dometadata_original_data.jsonl'))
     archivesspace_instance = ArchivesSpace(as_api_stag, as_un, as_pw)   # TODO: replace as_api_stag with as_api_prod
     archivesspace_instance.get_repo_info()
     for repo in archivesspace_instance.repo_info:

@@ -1,7 +1,7 @@
 # This script consists of unittests for merge_subjects.py
 import unittest
 
-from python_scripts.one_time_scripts.merge_subjects import *
+from python_scripts.repeatable.merge_subjects import *
 from test_data.subjects_testdata import *
 
 env_file = find_dotenv(f'.env.{os.getenv("ENV", "dev")}')

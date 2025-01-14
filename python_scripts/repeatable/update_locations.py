@@ -1,5 +1,7 @@
 #!/usr/bin/python3
-import jsonlines
+# This script takes a CSV file containing the URIs of locations to be updated - with at least one of the headers labeled
+# URI - and adds a 'owner repo' = {'ref': 'repository/<repo_numer>'} key-value to the location JSON retrieved from the
+# API, then posts the updated JSON to ArchivesSpace
 import os
 
 from copy import deepcopy

@@ -14,7 +14,7 @@ from secrets import *
 
 
 logger.remove()
-log_path = Path(f'../logs', 'remove-missingtitles_{time:YYYY-MM-DD}.log')
+log_path = Path(f'../../logs', 'remove-missingtitles_{time:YYYY-MM-DD}.log')
 logger.add(str(log_path), format="{time}-{level}: {message}")
 
 

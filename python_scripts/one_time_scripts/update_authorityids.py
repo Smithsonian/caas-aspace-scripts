@@ -15,7 +15,7 @@ from secrets import *
 
 
 logger.remove()
-log_path = Path(f'../logs', 'update_authorityids_{time:YYYY-MM-DD}.log')
+log_path = Path(f'../../logs', 'update_authorityids_{time:YYYY-MM-DD}.log')
 logger.add(str(log_path), format="{time}-{level}: {message}")
 
 
@@ -132,5 +132,5 @@ def run_script(accres_ids_csv):
 
 if __name__ == "__main__":
     pass
-    run_script(str(Path(f'../test_data/resource_accession_IDs_all.csv')))
+    run_script(str(Path(f'../../test_data/resource_accession_IDs_all.csv')))
 

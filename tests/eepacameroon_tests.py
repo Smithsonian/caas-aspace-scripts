@@ -6,7 +6,7 @@ import io
 import os
 import unittest
 
-from python_scripts.eepa_cameroonreport import *
+from python_scripts.one_time_scripts.eepa_cameroonreport import *
 from secrets import *
 from test_data.eepacameroon_testdata import *
 

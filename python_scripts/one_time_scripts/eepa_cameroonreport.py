@@ -12,7 +12,7 @@ from pathlib import Path
 from secrets import *
 
 logger.remove()
-log_path = Path(f'../logs', 'report_eepacameroon_{time:YYYY-MM-DD}.log')
+log_path = Path(f'../../logs', 'report_eepacameroon_{time:YYYY-MM-DD}.log')
 logger.add(str(log_path), format="{time}-{level}: {message}")
 
 
@@ -147,7 +147,7 @@ def find_abstract_scope(resource_json):
 
 def main():
     aspace_client = client_login(as_api_stag, as_un, as_pw)  # TODO: replace as_api_stag with as_api_prod
-    reportspath = Path(f'../test_data/EEPA_Cameroon_Reports').glob('*.csv')
+    reportspath = Path(f'../../test_data/EEPA_Cameroon_Reports').glob('*.csv')
     for file in reportspath:
         abstractscope_column_values = ['Abstract/Scope']
         new_report_filepath = str(file)[:-4] + '-Abstracts.csv'

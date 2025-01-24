@@ -29,7 +29,7 @@ def read_csv(missing_titles_csv):
     else:
         return missingtitle_objects
 
-testfile = read_csv(str(Path(f'../test_data/resource_accession_IDs_all.csv')))
+testfile = read_csv(str(Path(f'../../test_data/resource_accession_IDs_all.csv')))
 
 unique_characters = {}
 

@@ -1,19 +1,15 @@
 #!/usr/bin/env python
 
 # This script consists of unittests for report_grouppermissions.py
-import copy
-import json
 import contextlib
 import io
-import os
 import unittest
 
 import mysql.connector
 import openpyxl
 import openpyxl.utils.exceptions
 
-from python_scripts.report_grouppermissions import *
-from test_data.dometadata_testdata import *
+from python_scripts.repeatable.report_grouppermissions import *
 
 env_file = find_dotenv(f'.env.test')
 load_dotenv(env_file)
@@ -76,6 +72,9 @@ class TestSpreadsheetClass(unittest.TestCase):
             Spreadsheet(test_spreadsheet_filepath)
 
     def test_create_sheet(self):
+        """
+        Tests creating a sheet within an existing spreadsheet
+        """
         test_spreadsheet_filepath = str(Path('../test_data', f'test_report_grouppermissions_{str(date.today())}.xlsx'))
         test_spreadsheet = Spreadsheet(test_spreadsheet_filepath)
         test_sheetname = 'test'
@@ -88,6 +87,9 @@ class TestSpreadsheetClass(unittest.TestCase):
         os.remove(test_spreadsheet_filepath)
 
     def test_create_sheet_error(self):
+        """
+        Tests creating a bad sheet using a bad sheet name to raise a ValueError
+        """
         test_spreadsheet_filepath = str(Path('../test_data', f'test_report_grouppermissions_{str(date.today())}.xlsx'))
         test_spreadsheet = Spreadsheet(test_spreadsheet_filepath)
         test_sheetname = 'my:test:sheet'

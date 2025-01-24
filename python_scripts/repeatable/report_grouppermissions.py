@@ -18,11 +18,11 @@ from pathlib import Path
 
 # Logging
 logger.remove()
-log_path = Path('../logs', 'report_grouppermissions_{time:YYYY-MM-DD}.log')
+log_path = Path('../../logs', 'report_grouppermissions_{time:YYYY-MM-DD}.log')
 logger.add(str(log_path), format="{time}-{level}: {message}")
 
 # Find  and load environment-specific .env file
-env_file = find_dotenv(f'.env.{os.getenv("ENV", "test")}')
+env_file = find_dotenv(f'.env.{os.getenv("ENV", "dev")}')
 load_dotenv(env_file)
 
 class ASpaceDatabase:
@@ -196,7 +196,7 @@ def record_error(message, status_input):
 def main():
     aspace_db = ASpaceDatabase(os.getenv('DB_UN'), os.getenv('DB_PW'), os.getenv('DB_HOST'), os.getenv('DB_NAME'),
                                int(os.getenv('DB_PORT')))
-    report_spreadsheet = Spreadsheet(str(Path('../test_data',
+    report_spreadsheet = Spreadsheet(str(Path('../../test_data',
                                               f'report_grouppermissions_{str(date.today())}.xlsx')))
     report_spreadsheet.wb.remove(report_spreadsheet.wb['Sheet'])
     grouppermission_sheet = report_spreadsheet.create_sheet('group_permissions')

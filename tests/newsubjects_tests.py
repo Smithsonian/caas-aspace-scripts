@@ -1,7 +1,7 @@
 # This script consists of unittests for new_subjects.py
 import unittest
 
-from python_scripts.one_time_scripts.new_subjects import *
+from python_scripts.repeatable.new_subjects import *
 from test_data.subjects_testdata import *
 
 env_file = find_dotenv(f'.env.{os.getenv("ENV", "dev")}')

@@ -3,6 +3,7 @@
 # This script consists of unittests for update_znames.py
 import json
 import contextlib
+import io
 import os
 import unittest
 

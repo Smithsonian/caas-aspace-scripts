@@ -3,10 +3,12 @@ from http.client import HTTPException
 
 import mysql.connector as mysql
 import csv
+import jsonlines
 import requests
 
 from asnake.client import ASnakeClient
 from asnake.client.web_client import ASnakeAuthError
+from jsonlines import InvalidLineError
 from loguru import logger
 from mysql.connector import errorcode
 
@@ -275,3 +277,21 @@ def record_error(message, status_input):
     except TypeError as input_error:
         print(f'record_error() - Input is invalid for recording error: {input_error}')
         logger.error(f'record_error() - Input is invalid for recording error: {input_error}')
+
+
+def write_to_file(filepath, write_data):
+    """
+    Writes or appends JSON data to a specified file using jsonlines
+    Args:
+        filepath (str): the path of the file being written to
+        write_data (str): the data to be written on the given filepath
+    """
+    try:
+        with jsonlines.open(filepath, mode='a') as org_data_file:
+            try:
+                org_data_file.write(write_data)
+            except InvalidLineError as bad_write_error:
+                record_error('write_to_file() - Unable to write data to file', bad_write_error)
+        org_data_file.close()
+    except (FileNotFoundError, PermissionError, OSError) as write_file_error:
+        record_error('write_to_file() - Unable to open or access jsonl file', write_file_error)

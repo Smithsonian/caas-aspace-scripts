@@ -19,6 +19,10 @@ logger.remove()
 log_path = Path('../logs', 'update_locations_{time:YYYY-MM-DD}.log')
 logger.add(str(log_path), format="{time}-{level}: {message}")
 
+# Find  and load environment-specific .env file
+env_file = find_dotenv(f'.env.{os.getenv("ENV", "dev")}')
+load_dotenv(env_file)
+
 
 def add_repo(location_data, repository_id):
     """
@@ -47,8 +51,6 @@ def main(csv_location, repo_id):
     """
     original_location_json = str(Path('../logs', 'update_locations_original_data.jsonl'))
     print(original_location_json)
-    env_file = find_dotenv(f'.env.prod')
-    load_dotenv(env_file)
     local_aspace = ASpaceAPI(os.getenv('as_api'), os.getenv('as_un'), os.getenv('as_pw'))
     uris = read_csv(str(Path(os.getcwd(), csv_location)))
     for row in uris:

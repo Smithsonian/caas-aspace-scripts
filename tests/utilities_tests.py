@@ -86,7 +86,7 @@ class TestArchivesSpaceClass(unittest.TestCase):
                                               test_object_repo_uri)
 
         self.assertTrue(
-            r"""get_object() - Unable to retrieve object with provided URI: {'error': 'DigitalObject not found'}""" in f.getvalue())
+            r"""get_object() - Unable to retrieve object with provided URI: /repositories/12/digital_objects/10000000000000000: {'error': 'DigitalObject not found'}""" in f.getvalue())
 
     def test_aspace_post_response(self):
         """Tests that a post with an existing URI returns Status: Updated and no warnings"""
@@ -103,9 +103,50 @@ class TestArchivesSpaceClass(unittest.TestCase):
         original_object_json = self.good_aspace_connection.get_object(test_record_type,
                                                                  test_object_id,
                                                                  test_object_repo_uri)
+
         original_object_json['uri'] = 'laksjdlfieklkjfa'
         test_response = self.good_aspace_connection.update_object(original_object_json['uri'],
                                                              original_object_json)
+        self.assertIsNone(test_response)
+
+    def test_suppress_response(self):
+        """Tests that a post to suppress an object with an existing URI suppresses the record. It then unsuppresses it
+        for retesting"""
+        original_object_json = self.good_aspace_connection.get_object(test_record_type,
+                                                                 test_object_id,
+                                                                 test_object_repo_uri)
+        test_suppress = self.good_aspace_connection.update_suppression(original_object_json['uri'],True)
+        self.assertEqual(test_suppress['status'], 'Suppressed')
+        self.assertEqual(test_suppress['id'], test_object_id)
+        self.assertEqual(test_suppress['suppressed_state'], True)
+        if test_suppress['suppressed_state'] is True:
+            self.good_aspace_connection.update_suppression(original_object_json['uri'],False)
+
+    def test_unsuppress_response(self):
+        """Tests that a post to unsuppress an object with an existing URI unsuppresses the record. It first suppresses
+        the record."""
+        original_object_json = self.good_aspace_connection.get_object(test_record_type,
+                                                                 test_object_id,
+                                                                 test_object_repo_uri)
+        self.good_aspace_connection.update_suppression(original_object_json['uri'],True)
+        test_unsuppress = self.good_aspace_connection.update_suppression(original_object_json['uri'],False)
+        self.assertEqual(test_unsuppress['status'], 'Suppressed')
+        self.assertEqual(test_unsuppress['id'], test_object_id)
+        self.assertEqual(test_unsuppress['suppressed_state'],False)
+
+
+    def test_bad_suppress(self):
+        """Tests that a post to suppress an object containing a bad URI returns None with an error response"""
+        original_object_json = self.good_aspace_connection.get_object(test_record_type,
+                                                                 test_object_id,
+                                                                 test_object_repo_uri)
+        original_object_json['uri'] = 'laksjdlfieklkjfa'
+        f = io.StringIO()
+        with contextlib.redirect_stdout(f):
+            test_response = self.good_aspace_connection.update_suppression(original_object_json['uri'], True)
+
+        self.assertTrue(
+            r"""update_suppression() - Suppression failed due to following error: {'error': 'Sinatra::NotFound'}""" in f.getvalue())
         self.assertIsNone(test_response)
 
 

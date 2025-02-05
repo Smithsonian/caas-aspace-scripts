@@ -100,10 +100,13 @@ class ASpaceAPI:
         try:
             object_json = self.aspace_client.get(f'{repo_uri}/{record_type}/{object_id}').json()
         except HTTPException as get_error:
-            record_error('get_object() - Unable to retrieve object', get_error)
+            record_error(f'get_object() - Unable to retrieve object {repo_uri}/{record_type}/{object_id}',
+                         get_error)
         else:
             if 'error' in object_json:
-                record_error('get_object() - Unable to retrieve object with provided URI', object_json)
+                record_error(f'get_object() - Unable to retrieve object with provided URI: '
+                             f'{repo_uri}/{record_type}/{object_id}',
+                             object_json)
             else:
                 return object_json
 
@@ -121,8 +124,26 @@ class ASpaceAPI:
         update_message = self.aspace_client.post(f'{object_uri}', json=updated_json).json()
         if 'error' in update_message:
             record_error('update_object() - Update failed due to following error', update_message)
-            return None
-        return update_message
+        else:
+            return update_message
+
+    def update_suppression(self, object_uri, suppression):
+        """
+        Suppresses or unsuppresses the given object_uri in ArchivesSpace
+
+        Args:
+            object_uri (str): the original object's URI for posting to the client
+            suppression (bool): to suppress the object, set to True. To unsuppress, set to False
+
+        Returns:
+            update_message (dict): ArchivesSpace response or None if an error was encountered and logged
+        """
+        suppress_message = self.aspace_client.post(f'{object_uri}/suppressed',
+                                                   params={"suppressed": suppression}).json()
+        if 'error' in suppress_message:
+            record_error('update_suppression() - Suppression failed due to following error', suppress_message)
+        else:
+            return suppress_message
 
 
 class ASpaceDatabase:

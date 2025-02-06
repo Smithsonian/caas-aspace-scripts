@@ -17,7 +17,7 @@ sys.path.append(os.path.dirname('python_scripts'))  # Needed to import functions
 from python_scripts.utilities import ASpaceAPI, read_csv, record_error
 
 logger.remove()
-log_path = Path('../logs', 'suppress_resources_{time:YYYY-MM-DD}.log')
+log_path = Path('../logs', 'suppress_objects_{time:YYYY-MM-DD}.log')
 logger.add(str(log_path), format="{time}-{level}: {message}")
 
 # Find  and load environment-specific .env file
@@ -89,9 +89,14 @@ def main(csv_location, repo_id=None, object_type=None, dry_run=False):
                 if dry_run is True:
                     print(f'This is what the post will look like: {updated_object}')
                 else:
-                    update_status = local_aspace.update_object(row['uri'], updated_object)
+                    update_status = local_aspace.update_object(updated_object['uri'], updated_object)
                     if update_status is not None:
-                        local_aspace.update_suppression(updated_object['uri'], True)
+                        print(update_status)
+                        logger.info(update_status)
+                        suppress_message = local_aspace.update_suppression(updated_object['uri'], True)
+                        if suppress_message is not None:
+                            print(suppress_message)
+                            logger.info(suppress_message)
 
 
 if __name__ == '__main__':

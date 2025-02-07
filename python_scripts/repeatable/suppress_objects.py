@@ -1,8 +1,10 @@
 #!/usr/bin/python3
-# This script takes a CSV file containing the URIs of resources to suppress in the ArchivesSpace staff interface,
-# unpublish and set the finding aid status to staff only. The CSV should have a header row that reads "URI". The
-# script takes the CSV, splits the URI into the ArchivesSpace resource ID, grabs the resource JSON data,
-# then passes the data to the update_publish_status function, which modifies the JSON to publish=False and
+# This script takes a CSV file containing the URIs or URLs of objects to suppress in the ArchivesSpace staff interface,
+# unpublish and set the finding aid status to staff only (for resources). The CSV should have a header row that reads
+# "URI", and you can pass the object's repository identifier number and object type (resources, archival_objects,
+# digital_objects) as script arguments. The script takes the CSV, splits the URI into the ArchivesSpace resource ID,
+# repository ID (if not already supplied) and object type (if not already supplied), grabs the resource JSON data, then
+# passes the data to the update_publish_status function, which modifies the JSON to publish=False and
 # finding_aid_status=staff_only. Then it posts the updated JSON to ArchivesSpace and suppresses the record.
 import argparse
 import os
@@ -60,7 +62,8 @@ def update_publish_status(object_json, object_type):
 
 def main(csv_location, repo_id=None, object_type=None, dry_run=False):
     """
-    Takes a CSV of resource URIs, searches for them in ArchivesSpace, then suppresses the resources using the API
+    Takes a CSV of object URIs or URLs, searches for them in ArchivesSpace, then unpublishes, suppresses, and sets the
+    finding_aid_status if resource to staff_only using the API
 
     Args:
         csv_location (str): filepath of the CSV containing the location URIs to update
@@ -81,9 +84,9 @@ def main(csv_location, repo_id=None, object_type=None, dry_run=False):
                 repo_id = object_uri_parts[1]
             if object_type is None:
                 object_type = object_uri_parts[2]
-            original_object = local_aspace.get_object('resources',
-                                                        resource_aspace_id,
-                                                        f'repositories/{repo_id}/')
+            original_object = local_aspace.get_object(object_type,
+                                                      resource_aspace_id,
+                                                      f'repositories/{repo_id}')
             if original_object:
                 updated_object = update_publish_status(original_object, object_type)
                 if dry_run is True:

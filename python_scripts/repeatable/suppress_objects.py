@@ -1,11 +1,12 @@
 #!/usr/bin/python3
 # This script takes a CSV file containing the URIs or URLs of objects to suppress in the ArchivesSpace staff interface,
-# unpublish and set the finding aid status to staff only (for resources). The CSV should have a header row that reads
+# unpublishes and sets the finding aid status to staff only (for resources). The CSV should have a header row that reads
 # "URI", and you can pass the object's repository identifier number and object type (resources, archival_objects,
 # digital_objects) as script arguments. The script takes the CSV, splits the URI into the ArchivesSpace resource ID,
 # repository ID (if not already supplied) and object type (if not already supplied), grabs the resource JSON data, then
 # passes the data to the update_publish_status function, which modifies the JSON to publish=False and
-# finding_aid_status=staff_only. Then it posts the updated JSON to ArchivesSpace and suppresses the record.
+# finding_aid_status=staff_only (for resources only). Then it posts the updated JSON to ArchivesSpace and suppresses
+# the record.
 import argparse
 import os
 import sys

@@ -1,4 +1,5 @@
 #!/usr/bin/python3
+
 # This script contains unittests for suppress_objects.py
 import contextlib
 import io
@@ -26,3 +27,5 @@ class TestUpdatePublishStatus(unittest.TestCase):
         self.assertTrue(
             r"""update_publish_status() - provided object type is not in ['resources', 'archival_objects', 'digital_objects']: <class 'ValueError'>""" in f.getvalue())
 
+if __name__ == "__main__":
+    unittest.main(verbosity=2)

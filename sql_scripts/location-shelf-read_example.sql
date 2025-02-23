@@ -1,16 +1,8 @@
 # change the locationString as needed
 set @locationString = 'NMAH, Basement, CB-023%';
 
-    SELECT
-        distinct ev.value,
-        tc.indicator,
-        tc.barcode,
-        CONCAT('/repositories/',
-        tc.repo_id,
-        '/top_containers/',
-        tc.id) as uri,
-        resource.title,
-        replace(replace(replace(replace(replace(resource.identifier,
+    SELECT DISTINCT
+      	replace(replace(replace(replace(replace(resource.identifier,
         ',',
         '.'),
         '"',
@@ -21,7 +13,19 @@ set @locationString = 'NMAH, Basement, CB-023%';
         ''),
         '.null',
         '') as 'Resource Number',
-        l.title,
+        resource.title AS 'Resource Title',
+        l.title AS 'Location Title',
+        SUBSTRING(l.title,
+             LOCATE('[', l.title) + 1,
+             LOCATE(']', l.title) -LOCATE('[', l.title) - 1) as 'Coordinate String',
+		  ev.value AS 'Container Type',
+        tc.indicator AS 'Container Indicator',
+        cp.name AS 'Container Profile',
+        tc.barcode,
+        CONCAT('/repositories/',
+        tc.repo_id,
+        '/top_containers/',
+        tc.id) as uri,
         l.building,
         l.floor,
         l.room,
@@ -48,8 +52,7 @@ set @locationString = 'NMAH, Basement, CB-023%';
             ON tclr.sub_container_id = sc.id 
     JOIN
         instance i 
-            ON i.id = sc.instance_id # also need to handle resource 
-            and accession links 
+            ON i.id = sc.instance_id  
     JOIN
         archival_object ao 
             ON ao.id = i.archival_object_id 
@@ -59,20 +62,18 @@ set @locationString = 'NMAH, Basement, CB-023%';
     LEFT JOIN
         enumeration_value ev 
             ON tc.type_id = ev.id  
-    WHERE
+    LEFT JOIN
+    		top_container_profile_rlshp tcpr
+    			ON tcpr.top_container_id = tc.id
+    LEFT JOIN container_profile cp
+    		ON tcpr.container_profile_id = cp.id
+	 WHERE
         l.title LIKE @locationString   
     
 	UNION
-    ALL SELECT
-        distinct ev.value,
-        tc.indicator,
-        tc.barcode,
-        CONCAT('/repositories/',
-        tc.repo_id,
-        '/top_containers/',
-        tc.id) as uri,
-        resource.title,
-        replace(replace(replace(replace(replace(resource.identifier,
+    ALL 
+	     SELECT DISTINCT
+      	replace(replace(replace(replace(replace(resource.identifier,
         ',',
         '.'),
         '"',
@@ -83,7 +84,19 @@ set @locationString = 'NMAH, Basement, CB-023%';
         ''),
         '.null',
         '') as 'Resource Number',
-        l.title,
+        resource.title AS 'Resource Title',
+        l.title AS 'Location Title',
+        SUBSTRING(l.title,
+             LOCATE('[', l.title) + 1,
+             LOCATE(']', l.title) -LOCATE('[', l.title) - 1) as 'Coordinate String',
+		  ev.value AS 'Container Type',
+        tc.indicator AS 'Container Indicator',
+        cp.name AS 'Container Profile',
+        tc.barcode,
+        CONCAT('/repositories/',
+        tc.repo_id,
+        '/top_containers/',
+        tc.id) as uri,
         l.building,
         l.floor,
         l.room,
@@ -93,7 +106,7 @@ set @locationString = 'NMAH, Basement, CB-023%';
         l.coordinate_2_label,
         l.coordinate_2_indicator,
         l.coordinate_3_label,
-        l.coordinate_3_indicator   
+        l.coordinate_3_indicator 
     FROM
         location l  
     LEFT JOIN
@@ -110,28 +123,25 @@ set @locationString = 'NMAH, Basement, CB-023%';
             ON tclr.sub_container_id = sc.id 
     JOIN
         instance i 
-            ON i.id = sc.instance_id # also need to handle resource 
-            and accession links 
+            ON i.id = sc.instance_id 
     JOIN
         resource 
             ON resource.id = i.resource_id 
     LEFT JOIN
         enumeration_value ev 
             ON tc.type_id = ev.id   
+    LEFT JOIN
+    		top_container_profile_rlshp tcpr
+    			ON tcpr.top_container_id = tc.id
+    LEFT JOIN container_profile cp
+    		ON tcpr.container_profile_id = cp.id		
     WHERE
         l.title LIKE @locationString   
     
 	UNION
-    ALL SELECT
-        distinct ev.value,
-        tc.indicator,
-        tc.barcode,
-        CONCAT('/repositories/',
-        tc.repo_id,
-        '/top_containers/',
-        tc.id) as uri,
-        accession.title,
-        replace(replace(replace(replace(replace(accession.identifier,
+    ALL 
+        SELECT DISTINCT
+      	replace(replace(replace(replace(replace(accession.identifier,
         ',',
         '.'),
         '"',
@@ -142,7 +152,19 @@ set @locationString = 'NMAH, Basement, CB-023%';
         ''),
         '.null',
         '') as 'Resource Number',
-        l.title,
+        accession.title AS 'Resource Title',
+        l.title AS 'Location Title',
+        SUBSTRING(l.title,
+             LOCATE('[', l.title) + 1,
+             LOCATE(']', l.title) -LOCATE('[', l.title) - 1) as 'Coordinate String',
+		  ev.value AS 'Container Type',
+        tc.indicator AS 'Container Indicator',
+        cp.name AS 'Container Profile',
+        tc.barcode,
+        CONCAT('/repositories/',
+        tc.repo_id,
+        '/top_containers/',
+        tc.id) as uri,
         l.building,
         l.floor,
         l.room,
@@ -152,7 +174,7 @@ set @locationString = 'NMAH, Basement, CB-023%';
         l.coordinate_2_label,
         l.coordinate_2_indicator,
         l.coordinate_3_label,
-        l.coordinate_3_indicator   
+        l.coordinate_3_indicator
     FROM
         location l  
     LEFT JOIN
@@ -169,29 +191,38 @@ set @locationString = 'NMAH, Basement, CB-023%';
             ON tclr.sub_container_id = sc.id 
     JOIN
         instance i 
-            ON i.id = sc.instance_id # also need to handle resource 
-            and accession links 
+            ON i.id = sc.instance_id 
     JOIN
         accession 
             ON accession.id = i.accession_id 
     LEFT JOIN
         enumeration_value ev 
             ON tc.type_id = ev.id  
+    LEFT JOIN
+    		top_container_profile_rlshp tcpr
+    			ON tcpr.top_container_id = tc.id
+    LEFT JOIN container_profile cp
+    		ON tcpr.container_profile_id = cp.id
     WHERE
         l.title LIKE @locationString   
-    
+        
 	UNION
-    ALL SELECT
-        distinct ev.value,
-        tc.indicator,
+    ALL    
+	 SELECT DISTINCT
+        '' as 'Resource Number',
+        '' AS 'Resource Title',
+        l.title AS 'Location Title',
+        SUBSTRING(l.title,
+             LOCATE('[', l.title) + 1,
+             LOCATE(']', l.title) -LOCATE('[', l.title) - 1) as 'Coordinate String',
+		  ev.value AS 'Container Type',
+        tc.indicator AS 'Container Indicator',
+        cp.name AS 'Container Profile',
         tc.barcode,
         CONCAT('/repositories/',
         tc.repo_id,
         '/top_containers/',
         tc.id) as uri,
-        '' AS 'title',
-        '' as 'Resource Number',
-        l.title,
         l.building,
         l.floor,
         l.room,
@@ -201,7 +232,7 @@ set @locationString = 'NMAH, Basement, CB-023%';
         l.coordinate_2_label,
         l.coordinate_2_indicator,
         l.coordinate_3_label,
-        l.coordinate_3_indicator   
+        l.coordinate_3_indicator
     FROM
         location l  
     LEFT JOIN
@@ -218,9 +249,14 @@ set @locationString = 'NMAH, Basement, CB-023%';
             ON tclr.sub_container_id = sc.id 
     LEFT JOIN
         enumeration_value ev 
-            ON tc.type_id = ev.id   
+            ON tc.type_id = ev.id 
+    LEFT JOIN
+    		top_container_profile_rlshp tcpr
+    			ON tcpr.top_container_id = tc.id
+    LEFT JOIN container_profile cp
+    		ON tcpr.container_profile_id = cp.id
+		  
     WHERE
         l.title LIKE @locationString  
         AND sc.instance_id IS null
 	;
-    

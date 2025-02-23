@@ -1,8 +1,7 @@
-# change the locationString as needed
-set @locationString = 'NMAH, Basement, CB-023%';
+SET @locationString = 'NMAH, Basement, CB-023%';
 
     SELECT DISTINCT
-      	replace(replace(replace(replace(replace(resource.identifier,
+      	REPLACE(REPLACE(REPLACE(REPLACE(REPLACE(resource.identifier,
         ',',
         '.'),
         '"',
@@ -63,17 +62,16 @@ set @locationString = 'NMAH, Basement, CB-023%';
         enumeration_value ev 
             ON tc.type_id = ev.id  
     LEFT JOIN
-    		top_container_profile_rlshp tcpr
-    			ON tcpr.top_container_id = tc.id
+    	top_container_profile_rlshp tcpr
+    		ON tcpr.top_container_id = tc.id
     LEFT JOIN container_profile cp
     		ON tcpr.container_profile_id = cp.id
-	 WHERE
+	WHERE
         l.title LIKE @locationString   
     
-	UNION
-    ALL 
-	     SELECT DISTINCT
-      	replace(replace(replace(replace(replace(resource.identifier,
+	UNION ALL 
+	SELECT DISTINCT
+      	REPLACE(REPLACE(REPLACE(REPLACE(REPLACE(resource.identifier,
         ',',
         '.'),
         '"',
@@ -131,17 +129,17 @@ set @locationString = 'NMAH, Basement, CB-023%';
         enumeration_value ev 
             ON tc.type_id = ev.id   
     LEFT JOIN
-    		top_container_profile_rlshp tcpr
-    			ON tcpr.top_container_id = tc.id
-    LEFT JOIN container_profile cp
+    	top_container_profile_rlshp tcpr
+    		ON tcpr.top_container_id = tc.id
+    LEFT JOIN 
+        container_profile cp
     		ON tcpr.container_profile_id = cp.id		
     WHERE
         l.title LIKE @locationString   
     
-	UNION
-    ALL 
-        SELECT DISTINCT
-      	replace(replace(replace(replace(replace(accession.identifier,
+	UNION ALL 
+    SELECT DISTINCT
+      	REPLACE(REPLACE(REPLACE(REPLACE(REPLACE(accession.identifier,
         ',',
         '.'),
         '"',
@@ -199,16 +197,16 @@ set @locationString = 'NMAH, Basement, CB-023%';
         enumeration_value ev 
             ON tc.type_id = ev.id  
     LEFT JOIN
-    		top_container_profile_rlshp tcpr
-    			ON tcpr.top_container_id = tc.id
-    LEFT JOIN container_profile cp
+    	top_container_profile_rlshp tcpr
+    		ON tcpr.top_container_id = tc.id
+    LEFT JOIN 
+        container_profile cp
     		ON tcpr.container_profile_id = cp.id
     WHERE
         l.title LIKE @locationString   
         
-	UNION
-    ALL    
-	 SELECT DISTINCT
+	UNION ALL    
+	SELECT DISTINCT
         '' as 'Resource Number',
         '' AS 'Resource Title',
         l.title AS 'Location Title',
@@ -251,12 +249,13 @@ set @locationString = 'NMAH, Basement, CB-023%';
         enumeration_value ev 
             ON tc.type_id = ev.id 
     LEFT JOIN
-    		top_container_profile_rlshp tcpr
-    			ON tcpr.top_container_id = tc.id
-    LEFT JOIN container_profile cp
-    		ON tcpr.container_profile_id = cp.id
+    	top_container_profile_rlshp tcpr
+    		ON tcpr.top_container_id = tc.id
+    LEFT JOIN 
+        container_profile cp
+    	    ON tcpr.container_profile_id = cp.id
 		  
     WHERE
-        l.title LIKE @locationString  
-        AND sc.instance_id IS null
+        l.title LIKE @locationString 
+            AND sc.instance_id IS null
 	;

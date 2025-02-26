@@ -10,6 +10,7 @@ import pandas  # TODO: update the Wiki for this script - notsosecrets.py file wi
 import sys
 import time
 
+from collections import namedtuple
 from copy import deepcopy
 from dotenv import load_dotenv, find_dotenv
 from loguru import logger
@@ -36,7 +37,7 @@ def parseArguments():
 
     return parser.parse_args()
 
-def add_recordID(record_id, record_source, source_index, object_json, primary=False):
+def add_recordID(record_id, record_source, object_json, primary=False):
     """
     Adds a record ID to the agent_record_identifiers field and record ID source to the object JSON and returns the
     updated JSON
@@ -44,7 +45,6 @@ def add_recordID(record_id, record_source, source_index, object_json, primary=Fa
     Args:
         record_id (str): the identifier for the object as given by the identifier's source
         record_source (str): the source for the identifier
-        source_index (int): the index where the source should be added to the list of record identifiers
         object_json (dict): the original object JSON data to modify
         primary (bool): mark the record ID as the primary ID. Default is False
     Returns:
@@ -58,13 +58,14 @@ def add_recordID(record_id, record_source, source_index, object_json, primary=Fa
         raise TypeError
     else:
         updated_object_json = deepcopy(object_json)
-        if check_ids(record_source, record_id, object_json) is None:
+        id_exists = check_ids(record_source, record_id, object_json)
+        if id_exists.Status is None:
             new_record = {"primary_identifier": primary,
                           "record_identifier": record_id,
                           "source": record_source,
                           "jsonmodel_type": "agent_record_identifier"}
-            updated_object_json["agent_record_identifiers"].insert(source_index, new_record)
-            return updated_object_json
+            updated_object_json["agent_record_identifiers"].append(new_record)
+    return updated_object_json
 
 
 def check_ids(id_source, record_id, object_json):
@@ -76,20 +77,53 @@ def check_ids(id_source, record_id, object_json):
         record_id (str): the identifier for the record being checked.
         object_json (dict): the object's JSON
     Returns:
-        True: If record identifier
+        ID_Exists(NamedTuple): If record identifier already exists, return True, the record dictionary, and the index of
+        the record within object_json["agent_record_identifiers"]. If record source/identifier does not exist, return
+        None, None, None. If the record source exists but the identifiers do not match between the supplied object JSON
+        and record_id, return False, the record dictionary, and the index of the record within
+        object_json["agent_record_identifiers"].
     """
+    ID_Exists = namedtuple('ID_Exists', 'Status Record')
+    id_index = -1
     for record in object_json["agent_record_identifiers"]:
+        id_index += 1
         if id_source == record["source"]:
             if record["record_identifier"] != record_id:
                 record_error(f'check_ids() - Identifier in ASpace - {record["record_identifier"]} - '
                              f'does not match identifier provided - {record_id} - for {object_json["uri"]}',
                              "error: identifiers do not match")
-                return False
+                return ID_Exists(False, record)
             else:
-                return True
-    return None
+                return ID_Exists(True, record)
+    return ID_Exists(None, None)
 
-def main(excel_location, object_type):
+
+def sort_identifiers(object_json):
+    """
+    Sorts the record identifiers according to the given sort list
+    Args:
+        object_json (dict): the object's JSON
+
+    Returns:
+        updated_json (dict): the updated JSON with the sorted record identifiers
+    """
+    updated_object_json = deepcopy(object_json)
+    sort_order = ["wikidata", "snac", "lcnaf", "ulan", "viaf"]
+    updated_order = [None, None, None, None, None]
+    current_index = 0
+    current_order = {}
+    for record in object_json["agent_record_identifiers"]:
+        current_order[record["source"]] = {current_index: record}
+        current_index += 1
+    for source, index in current_order.items():  # TODO: I wonder if I couldn't use something better for this, like lambda or a better use of filter()
+        if source in sort_order:
+            for record_json in index.values():
+                updated_order[sort_order.index(source)] = record_json
+    updated_order_no_nones = list(filter(None, updated_order))
+    updated_object_json["agent_record_identifiers"] = updated_order_no_nones
+    return updated_object_json
+
+def main(excel_location, object_type, dry_run=False):
     """
     Takes an Excel file of agent IDs, adds the IDs to the agent JSON as Record IDs, then posts it via the ASpace API
 
@@ -97,53 +131,49 @@ def main(excel_location, object_type):
         excel_location (str): filepath of the Excel file with the agent IDs
         object_type (str): the type of object to be updated. In this case, "agents"
     """
-    original_agent_json = Path('../logs', f'update_agentids_original_data_{time.strftime("%Y-%m-%d")}.jsonl')
+    original_agent_json_data = Path('../logs', f'update_agentids_original_data_{time.strftime("%Y-%m-%d")}.jsonl')
     local_aspace = ASpaceAPI(os.getenv('as_api'), os.getenv('as_un'), os.getenv('as_pw'))
     pandas.set_option('display.max_rows', 10000)
     agent_excelfile = pandas.ExcelFile(excel_location)
     combined_and_cleaned_sheet = agent_excelfile.parse("combined and cleaned")
     combined_and_cleaned_sheet.fillna(0, inplace=True)  # replace missing cell values with 0 to sort out later - source: https://medium.com/swlh/data-science-for-beginners-how-to-handle-missing-values-with-pandas-73db5fcd46ec
-    id_sources = [header for header in combined_and_cleaned_sheet.columns.values if "_id" in header]
-    # print(combined_and_cleaned_sheet.duplicated(subset=["Aspace_link"]))
-    for row in combined_and_cleaned_sheet[:1].itertuples():
+    for row in combined_and_cleaned_sheet.itertuples():
         uri_parts = row.Aspace_link.split("/")
         original_agent_json = local_aspace.get_object(object_type, uri_parts[-1])
-        updated_object_json = deepcopy(original_agent_json)
-        sort_index = 0
-        if original_agent_json is not None:
-            print(original_agent_json["title"])  # TODO: way to do this recursively? while loop or within function?
-            if row.Wikidata_id and row.Wikidata_id != 0:
-                updated_object_json = add_recordID(row.Wikidata_id, "wikidata", sort_index,
-                                                   updated_object_json, primary=True)
-                sort_index += 1  # TODO: change the order of already existing record IDs
-            if row.SNAC_id and row.SNAC_id != 0:
-                updated_object_json = add_recordID(str(int(row.SNAC_id)), "snac", sort_index, updated_object_json)  # converting id to integer to remove extraneous decimal places, then convert to string
-                sort_index += 1
-            if row.LCNAF_id and row.LCNAF_id != 0:
-                updated_object_json = add_recordID(row.LCNAF_id, "lcnaf", sort_index, updated_object_json)
-                sort_index += 1
-            if row.ULAN_id and row.ULAN_id != 0:
-                updated_object_json = add_recordID(str(int(row.ULAN_id)), "ulan", sort_index, updated_object_json)  # converting id to integer to remove extraneous decimal places, then convert to string
-                sort_index += 1
-            if row.VIAF_id and row.VIAF_id != 0:
-                updated_object_json = add_recordID(str(int(row.VIAF_id)), "viaf", sort_index, updated_object_json)  # converting id to integer to remove extraneous decimal places, then convert to string
-        print(updated_object_json)
+        if original_agent_json:
+            updated_object_json = deepcopy(original_agent_json)
+            sort_index = 0
+            if original_agent_json is not None:
+                print(original_agent_json["title"])  # TODO: way to do this recursively? while loop or within function?
+                if row.Wikidata_id and row.Wikidata_id != 0:
+                    updated_object_json = add_recordID(row.Wikidata_id, "wikidata", updated_object_json,
+                                                       primary=True)
+                if row.SNAC_id and row.SNAC_id != 0:
+                    updated_object_json = add_recordID(str(int(row.SNAC_id)), "snac", updated_object_json)  # converting id to integer to remove extraneous decimal places, then convert to string
+                if row.LCNAF_id and row.LCNAF_id != 0:
+                    updated_object_json = add_recordID(row.LCNAF_id, "lcnaf", updated_object_json)
+                if row.ULAN_id and row.ULAN_id != 0:
+                    updated_object_json = add_recordID(str(int(row.ULAN_id)), "ulan", updated_object_json)  # converting id to integer to remove extraneous decimal places, then convert to string
+                if row.VIAF_id and row.VIAF_id != 0:
+                    if "viaf/" in str(row.VIAF_id):
+                        updated_object_json = add_recordID(str(int(row.VIAF_id[5:])), "viaf", updated_object_json)  # converting id to integer to remove extraneous decimal places, then convert to string
+                    # if not row.Wikidata_id and not row.SNAC_id and not row.LCNAF_id and not row.ULAN_id:
+                    #     print(f'ASpace Link: {row.Aspace_link}, ASpace Name: {row.name_entry}, VIAF ID: {row.VIAF_id}')
+                    else:
+                        updated_object_json = add_recordID(str(int(row.VIAF_id)), "viaf", updated_object_json)  # converting id to integer to remove extraneous decimal places, then convert to string
+            sorted_sources = sort_identifiers(updated_object_json)
+            if dry_run is True:
+                print(f'\n\n{sorted_sources}')
+            else:
+                write_to_file(str(original_agent_json_data), original_agent_json)
+                update_status = local_aspace.update_object(f'{object_type}/{uri_parts[-1]}', sorted_sources)
+                if 'error' in update_status:
+                    record_error(f'main() - Error updating location {row["uri"]}', update_status)
+                else:
+                    logger.info(update_status)
+                    print(update_status)
 
-
-    # uris = read_csv(str(Path(os.getcwd(), csv_location)))
-    # for row in uris:
-    #     location_uri = row['uri'].split('/')
-    #     location_type, location_id = location_uri[1], location_uri[2]
-    #     location_data = local_aspace.get_object(location_type, location_id)
-    #     write_to_file(original_location_json, location_data)
-    #     updated_location = add_repo(location_data, repo_id)
-    #     update_status = local_aspace.update_object(row['uri'], updated_location)
-    #     if 'error' in update_status:
-    #         record_error(f'main() - Error updating location {row["uri"]}', update_status)
-    #     else:
-    #         logger.info(update_status)
-    #         print(update_status)
 
 # Call with `python update_agentids.py <filename>.xlsx agents/people`
 if __name__ == '__main__':
-    main(excel_location=str(Path(f'{sys.argv[1]}')), object_type=str(f'{sys.argv[2]}'))
+    main(excel_location=str(Path(f'{sys.argv[1]}')), object_type=str(f'{sys.argv[2]}'), dry_run=True)

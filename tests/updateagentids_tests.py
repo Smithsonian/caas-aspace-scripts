@@ -27,8 +27,8 @@ class TestAddRecordID(unittest.TestCase):
 
     def test_bad_record_source(self):
         """Tests that a TypeError is raised if supplied with an integer for the record source"""
-        with self.assertRaises(TypeError):
-            add_recordID(test_record_id, 12043201, test_object_json)
+        with self.assertRaises(ValueError):
+            add_recordID(test_record_id, "BADSOURCE", test_object_json)
 
 
 class TestCheckIDs(unittest.TestCase):
@@ -66,7 +66,18 @@ class TestSortRecordIdentifiers(unittest.TestCase):
                 self.assertEqual(record['source'], sort_order[2])
             record_index += 1
 
+    def test_non_source(self):
+        bad_source = {"primary_identifier": primary,
+                      "record_identifier": 214115555,
+                      "source": "BADSOURCE",
+                      "jsonmodel_type": "agent_record_identifier"}
+        test_object_json["agent_record_identifiers"].append(bad_source)
+        f = io.StringIO()
+        with contextlib.redirect_stdout(f):
+            sort_identifiers(test_object_json)
 
+        self.assertTrue(
+            r"""sort_identifiers() - source provided does not match sources listed: ['wikidata', 'snac', 'lcnaf', 'ulan', 'viaf']: BADSOURCE""" in f.getvalue())
 
 if __name__ == "__main__":
     unittest.main(verbosity=2)

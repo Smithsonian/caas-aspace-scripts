@@ -3,8 +3,8 @@
 # takes the agent link from the "Aspace_link" column, grabs the agent JSON from ArchivesSpace using the API, then adds
 # a new Record ID to the agent, if an existing record ID does not already exist. Non-matching record IDs are logged and
 # the one existing in ArchivesSpace remains. Record IDs are located as columns in the sheet, named "Wikidata_id",
-# "SNAC_id", "LCNAF_id", "ULAN_id", "VIAF_id". After adding the Record ID to the JSON locally, the script sorts the
-# order of the IDs according to the above and posts the updated agent record via the ArchivesSpace API.
+# "SNAC_id", "LCNAF_id", "ULAN_id", "VIAF_id", and "local". After adding the Record ID to the JSON locally, the script
+# sorts the order of the IDs according to the above and posts the updated agent record via the ArchivesSpace API.
 import argparse
 import os
 import pandas  # TODO: update the Wiki for this script - secrets.py file will not work as will cause ImportError: cannot import name randbits when loading pandas. See https://stackoverflow.com/questions/73055157/what-does-importerror-cannot-import-name-randbits-mean
@@ -21,14 +21,14 @@ sys.path.append(os.path.dirname('python_scripts'))  # Needed to import functions
 from python_scripts.utilities import ASpaceAPI, record_error, write_to_file
 
 logger.remove()
-log_path = Path('../logs', 'update_agentids_{time:YYYY-MM-DD}.log')  # TODO: work to change this so it goes to 1 log folder, not 2
+log_path = Path('../../logs', 'update_agentids_{time:YYYY-MM-DD}.log')
 logger.add(str(log_path), format="{time}-{level}: {message}")
 
 # Find  and load environment-specific .env file
 env_file = find_dotenv(f'.env.{os.getenv("ENV", "dev")}')
 load_dotenv(env_file)
 
-SOURCES_ORDERED = ["wikidata", "snac", "lcnaf", "ulan", "viaf"]
+SOURCES_ORDERED = ["wikidata", "snac", "naf", "ulan", "viaf", "local"]
 
 def parseArguments():
     parser = argparse.ArgumentParser()
@@ -87,8 +87,8 @@ def check_ids(id_source, record_id, object_json):
     for record in object_json["agent_record_identifiers"]:
         if id_source == record["source"]:
             if record["record_identifier"] != record_id:
-                record_error(f'check_ids() - Identifier in ASpace - {record["record_identifier"]} - '
-                             f'does not match identifier provided - {record_id} - for {object_json["uri"]}',
+                record_error(f'check_ids() - Identifier in ASpace - {record["source"]}: {record["record_identifier"]} - '
+                             f'does not match identifier provided - {id_source}: {record_id} - for {object_json["uri"]}',
                              "error: identifiers do not match")
                 return ID_Exists(False, record)
             else:
@@ -100,18 +100,18 @@ def sort_identifiers(object_json):
     """
     Sorts the record identifiers according to the given sort list
     Args:
-        object_json (dict): the object's JSON
+        object_json (dict): the object's JSON data
 
     Returns:
-        updated_object_json (dict): the updated JSON with the sorted record identifiers
+        object_json (dict): the updated JSON with the sorted record identifiers
     """
-    updated_order = [None, None, None, None, None]
+    updated_order = [None, None, None, None, None, None]
     current_order = {record["source"]:record for record in object_json["agent_record_identifiers"]}
     for source, record_json in current_order.items():  # TODO: I wonder if I couldn't use something better for this, like lambda or a better use of filter()
         if source in SOURCES_ORDERED:
             updated_order[SOURCES_ORDERED.index(source)] = record_json
         else:
-            record_error(f'sort_identifiers() - source provided does not match sources listed: {SOURCES_ORDERED}', source)
+            record_error(f'sort_identifiers() - source provided does not match sources listed: {SOURCES_ORDERED} - {source}', record_json)
     updated_order_no_nones = list(filter(None, updated_order))
     object_json["agent_record_identifiers"] = updated_order_no_nones
     return object_json
@@ -126,7 +126,7 @@ def main(excel_location, object_type, dry_run=False):
         dry_run (bool): if True, it prints the changed object_json but does not post the changes to ASpace or in the
         jsonlines file
     """
-    original_agent_json_data = Path('../logs', f'update_agentids_original_data_{time.strftime("%Y-%m-%d")}.jsonl')
+    original_agent_json_data = Path('../../logs', f'update_agentids_original_data_{time.strftime("%Y-%m-%d")}.jsonl')
     local_aspace = ASpaceAPI(os.getenv('as_api'), os.getenv('as_un'), os.getenv('as_pw'))
     # pandas.set_option('display.max_rows', 10000)  # Optional for running the script locally to see all returns
     agent_excelfile = pandas.ExcelFile(excel_location)
@@ -143,7 +143,7 @@ def main(excel_location, object_type, dry_run=False):
             if row.SNAC_id and row.SNAC_id != 0:
                 updated_object_json = add_recordID(str(int(row.SNAC_id)), "snac", updated_object_json)  # converting id to integer to remove extraneous decimal places, then convert to string
             if row.LCNAF_id and row.LCNAF_id != 0:
-                updated_object_json = add_recordID(row.LCNAF_id, "lcnaf", updated_object_json)
+                updated_object_json = add_recordID(row.LCNAF_id, "naf", updated_object_json)
             if row.ULAN_id and row.ULAN_id != 0:
                 updated_object_json = add_recordID(str(int(row.ULAN_id)), "ulan", updated_object_json)  # converting id to integer to remove extraneous decimal places, then convert to string
             if row.VIAF_id and row.VIAF_id != 0:
@@ -168,4 +168,14 @@ def main(excel_location, object_type, dry_run=False):
 
 # Call with `python update_agentids.py <filename>.xlsx agents/people`
 if __name__ == '__main__':
+    args = parseArguments()
+
+    # Print arguments
+    logger.info(f'Running {sys.argv[0]} script with following arguments: ')
+    print(f'Running {sys.argv[0]} script with following arguments: ')
+    for arg in args.__dict__:
+        logger.info(str(arg) + ": " + str(args.__dict__[arg]))
+        print(str(arg) + ": " + str(args.__dict__[arg]))
+
+    # Run function
     main(excel_location=str(Path(f'{sys.argv[1]}')), object_type=str(f'{sys.argv[2]}'), dry_run=True)

@@ -116,12 +116,12 @@ def sort_identifiers(object_json):
     object_json["agent_record_identifiers"] = updated_order_no_nones
     return object_json
 
-def main(excel_location, object_type, dry_run=False):
+def main(excel_path, object_type, dry_run=False):
     """
     Takes an Excel file of agent IDs, adds the IDs to the agent JSON as Record IDs, then posts it via the ASpace API
 
     Args:
-        excel_location (str): filepath of the Excel file with the agent IDs
+        excel_path (str): filepath of the Excel file with the agent IDs
         object_type (str): the type of object to be updated. In this case, "agents"
         dry_run (bool): if True, it prints the changed object_json but does not post the changes to ASpace or in the
         jsonlines file
@@ -129,7 +129,7 @@ def main(excel_location, object_type, dry_run=False):
     original_agent_json_data = Path('../../logs', f'update_agentids_original_data_{time.strftime("%Y-%m-%d")}.jsonl')
     local_aspace = ASpaceAPI(os.getenv('as_api'), os.getenv('as_un'), os.getenv('as_pw'))
     # pandas.set_option('display.max_rows', 10000)  # Optional for running the script locally to see all returns
-    agent_excelfile = pandas.ExcelFile(excel_location)
+    agent_excelfile = pandas.ExcelFile(excel_path)
     combined_and_cleaned_sheet = agent_excelfile.parse("combined and cleaned")
     combined_and_cleaned_sheet.fillna(0, inplace=True)  # replace missing cell values with 0 to sort out later - source: https://medium.com/swlh/data-science-for-beginners-how-to-handle-missing-values-with-pandas-73db5fcd46ec
     for row in combined_and_cleaned_sheet.itertuples():
@@ -162,7 +162,7 @@ def main(excel_location, object_type, dry_run=False):
                 if 'error' in update_status:
                     record_error(f'main() - Error updating agent {row.Aspace_link}', update_status)
                 else:
-                    logger.info(update_status)
+                    logger.success(update_status)
                     print(update_status)
 
 
@@ -178,4 +178,4 @@ if __name__ == '__main__':
         print(str(arg) + ": " + str(args.__dict__[arg]))
 
     # Run function
-    main(excel_location=str(Path(f'{sys.argv[1]}')), object_type=str(f'{sys.argv[2]}'), dry_run=True)
+    main(excel_path=str(Path(f'{sys.argv[1]}')), object_type=str(f'{sys.argv[2]}'), dry_run=True)

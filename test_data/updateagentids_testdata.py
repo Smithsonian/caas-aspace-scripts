@@ -1,5 +1,5 @@
 test_record_id = "36102023"
-test_record_source = "lcnaf"
+test_record_source = "naf"
 primary=False
 test_object_json = {"lock_version": 3,
                     "publish": True,
@@ -35,7 +35,7 @@ test_object_json = {"lock_version": 3,
                          'system_mtime': '2025-02-17T16:50:42Z',
                          'user_mtime': '2025-02-17T16:50:42Z',
                          'lock_version': 0,
-                         'source': 'lcnaf',
+                         'source': 'naf',
                          'jsonmodel_type': 'agent_record_identifier'},
                         {'primary_identifier': True,
                          'record_identifier': '1111111111',

@@ -15,7 +15,7 @@ class TestAddRecordID(unittest.TestCase):
         test_updated_object = add_recordID(test_record_id, test_record_source, test_object_json)
         self.assertIsNotNone(test_updated_object["agent_record_identifiers"])
         self.assertEqual(test_updated_object["agent_record_identifiers"][1]["record_identifier"], "36102023")
-        self.assertEqual(test_updated_object["agent_record_identifiers"][1]["source"], "lcnaf")
+        self.assertEqual(test_updated_object["agent_record_identifiers"][1]["source"], "naf")
         self.assertEqual(test_updated_object["agent_record_identifiers"][1]["jsonmodel_type"],
                          "agent_record_identifier")
         self.assertFalse(test_updated_object["agent_record_identifiers"][1]["primary_identifier"])
@@ -54,7 +54,7 @@ class TestCheckIDs(unittest.TestCase):
 class TestSortRecordIdentifiers(unittest.TestCase):
 
     def test_good_sources(self):
-        sort_order = ["wikidata", "snac", "lcnaf", "ulan", "viaf"]
+        sort_order = ["wikidata", "snac", "naf", "ulan", "viaf", "local"]
         test_sorted_sources = sort_identifiers(test_object_json)
         record_index = 0
         for record in test_sorted_sources["agent_record_identifiers"]:
@@ -77,7 +77,7 @@ class TestSortRecordIdentifiers(unittest.TestCase):
             sort_identifiers(test_object_json)
 
         self.assertTrue(
-            r"""sort_identifiers() - source provided does not match sources listed: ['wikidata', 'snac', 'lcnaf', 'ulan', 'viaf']: BADSOURCE""" in f.getvalue())
+            r"""sort_identifiers() - source provided does not match sources listed: ['wikidata', 'snac', 'naf', 'ulan', 'viaf', 'local'] - BADSOURCE: {'primary_identifier': False, 'record_identifier': 214115555, 'source': 'BADSOURCE', 'jsonmodel_type': 'agent_record_identifier'}""" in f.getvalue())
 
 if __name__ == "__main__":
     unittest.main(verbosity=2)

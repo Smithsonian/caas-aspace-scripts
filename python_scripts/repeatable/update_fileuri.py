@@ -59,6 +59,10 @@ def build_digital_object(do, new_uri):
     Returns:
         do (dict): updated digital object ready to post to ArchivesSpace
     """
+    if do['file_versions'][0]['file_uri'].endswith('.pdf'):
+        do['file_versions'][0]['use_statement'] = 'application-pdf'
+    if do['file_versions'][0]['file_uri'].endswith('.mp3'):
+        do['file_versions'][0]['use_statement'] = 'audio-service'
     do['file_versions'][0]['file_uri'] = new_uri
 
     return do

@@ -31,6 +31,7 @@ load_dotenv(env_file)
 SOURCES_ORDERED = ["wikidata", "snac", "naf", "ulan", "viaf", "local"]
 
 def parseArguments():
+    """Parses the arguments fed to the script from the terminal or within a run configuration"""
     parser = argparse.ArgumentParser()
 
     parser.add_argument("excelPath", help="path to Excel input file", type=str)
@@ -116,6 +117,25 @@ def sort_identifiers(object_json):
     object_json["agent_record_identifiers"] = updated_order_no_nones
     return object_json
 
+def set_primary(object_json):
+    """
+    Sets the primary record ID for the first record in the agent_record_identifiers list, sets all other record IDs
+    primary = False
+    Args:
+        object_json (dict): the object's JSON data
+
+    Returns:
+        object_json (dict): the updated JSON with the corrected primary record identifiers
+    """
+    index = 0
+    for record in object_json["agent_record_identifiers"]:
+        if index == 0:
+            record["primary_identifier"] = True
+        else:
+            record["primary_identifier"] = False
+        index += 1
+    return object_json
+
 def main(excel_path, object_type, dry_run=False):
     """
     Takes an Excel file of agent IDs, adds the IDs to the agent JSON as Record IDs, then posts it via the ASpace API
@@ -154,11 +174,13 @@ def main(excel_path, object_type, dry_run=False):
                 else:
                     updated_object_json = add_recordID(str(int(row.VIAF_id)), "viaf", updated_object_json)  # converting id to integer to remove extraneous decimal places, then convert to string
             sorted_sources = sort_identifiers(updated_object_json)
+            updated_primary_identifiers = set_primary(sorted_sources)
             if dry_run is True:
-                print(f'{sorted_sources}')
+                print(f'{updated_primary_identifiers}')
             else:
                 write_to_file(str(original_agent_json_data), original_agent_json)
-                update_status = local_aspace.update_object(f'{object_type}/{uri_parts[-1]}', sorted_sources)
+                update_status = local_aspace.update_object(f'{object_type}/{uri_parts[-1]}',
+                                                           updated_primary_identifiers)
                 if 'error' in update_status:
                     record_error(f'main() - Error updating agent {row.Aspace_link}', update_status)
                 else:
@@ -178,4 +200,4 @@ if __name__ == '__main__':
         print(str(arg) + ": " + str(args.__dict__[arg]))
 
     # Run function
-    main(excel_path=str(Path(f'{sys.argv[1]}')), object_type=str(f'{sys.argv[2]}'), dry_run=True)
+    main(excel_path=str(Path(f'{sys.argv[1]}')), object_type=str(f'{sys.argv[2]}'))

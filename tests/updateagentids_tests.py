@@ -79,5 +79,41 @@ class TestSortRecordIdentifiers(unittest.TestCase):
         self.assertTrue(
             r"""sort_identifiers() - source provided does not match sources listed: ['wikidata', 'snac', 'naf', 'ulan', 'viaf', 'local'] - BADSOURCE: {'primary_identifier': False, 'record_identifier': 214115555, 'source': 'BADSOURCE', 'jsonmodel_type': 'agent_record_identifier'}""" in f.getvalue())
 
+
+class TestSetPrimary(unittest.TestCase):
+
+    def test_no_primary(self):
+        test_object_json["agent_record_identifiers"][2]["primary_identifier"] = False
+        updated_primary = set_primary(test_object_json)
+        index = 0
+        for record_id in updated_primary["agent_record_identifiers"]:
+            if index == 0:
+                self.assertTrue(record_id["primary_identifier"])
+            else:
+                self.assertFalse(record_id["primary_identifier"])
+            index += 1
+
+    def test_one_primary(self):
+        updated_primary = set_primary(test_object_json)
+        index = 0
+        for record_id in updated_primary["agent_record_identifiers"]:
+            if index == 0:
+                self.assertTrue(record_id["primary_identifier"])
+            else:
+                self.assertFalse(record_id["primary_identifier"])
+            index += 1
+
+    def test_multiple_primary(self):
+        test_object_json["agent_record_identifiers"][0]["primary_identifier"] = True
+        test_object_json["agent_record_identifiers"][1]["primary_identifier"] = True
+        updated_primary = set_primary(test_object_json)
+        index = 0
+        for record_id in updated_primary["agent_record_identifiers"]:
+            if index == 0:
+                self.assertTrue(record_id["primary_identifier"])
+            else:
+                self.assertFalse(record_id["primary_identifier"])
+            index += 1
+
 if __name__ == "__main__":
     unittest.main(verbosity=2)

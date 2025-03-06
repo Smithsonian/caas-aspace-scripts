@@ -1,12 +1,11 @@
 #!/usr/bin/env python
-# This script generates a spreadsheet report that lists all the permissions in archivesspace by the first column, then
-# each subsequent column is ever user group in an ArchivesSpace instance. If a user group has a permission, it is marked
-# as TRUE in the spreadsheet or if not, FALSE. This is to check to make sure permissions are the same for each user
-# group across all repositories.
+# This script generates a spreadsheet report that lists all the permissions in archivesspace by the first row, with
+# each column displaying the permission and each row displaying the user group. If a user group has a permission, it is
+# marked with the text of that permission in the spreadsheet or if not, FALSE. This is to check to make sure permissions
+# are the same for each user group across all repositories.
 
 import mysql.connector as mysql
 import os
-import openpyxl.utils.exceptions
 
 from datetime import date
 from dotenv import load_dotenv, find_dotenv

@@ -2,7 +2,7 @@
 -- It also includes a count of all digital objects without a digital object type per repository.
 
 SELECT
-	repo.name as repository, ifnull(ev.value, "NO TYPE") as digital_object_type, COUNT(ifnull(ev.value, 1)) as count
+	repo.name as repository, ifnull(ev.value, "NO TYPE") as digital_object_type, COUNT(ifnull(ev.value, 0)) as count
 FROM
 	digital_object AS dobj
 LEFT JOIN

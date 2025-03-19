@@ -1,0 +1,40 @@
+interactions:
+- request:
+    body: password=[REDACTED]&expiring=False
+    headers:
+      Accept:
+      - application/json
+      Accept-Encoding:
+      - gzip, deflate
+      Connection:
+      - keep-alive
+      Content-Length:
+      - '29'
+      Content-Type:
+      - application/x-www-form-urlencoded
+      User-Agent:
+      - ArchivesSnake/0.1
+    method: POST
+    uri: http://localhost:4567/users/admin/login
+  response:
+    body:
+      string: '{"session":"16f12b6efaadd4ad3acb0caa56c7c7314b4fda82bc1b259df5b62e860848ec49","user":{"lock_version":2,"username":"admin","name":"Administrator","is_system_user":true,"create_time":"2025-03-19T14:16:31Z","system_mtime":"2025-03-19T14:17:36Z","user_mtime":"2025-03-19T14:17:36Z","is_active_user":true,"jsonmodel_type":"user","groups":[],"is_admin":true,"uri":"/users/1","agent_record":{"ref":"/agents/people/1"},"permissions":{"/repositories/1":["update_location_record","delete_vocabulary_record","update_subject_record","delete_subject_record","update_agent_record","delete_agent_record","update_vocabulary_record","update_enumeration_record","merge_subject_record","merge_agent_record","update_container_profile_record","update_location_profile_record","administer_system","manage_users","become_user","view_all_records","create_repository","delete_repository","transfer_repository","index_system","manage_repository","update_accession_record","update_resource_record","update_digital_object_record","update_event_record","delete_event_record","suppress_archival_record","transfer_archival_record","delete_archival_record","view_suppressed","view_repository","update_classification_record","delete_classification_record","mediate_edits","import_records","cancel_importer_job","create_job","cancel_job","manage_subject_record","manage_agent_record","view_agent_contact_record","manage_vocabulary_record","manage_enumeration_record","merge_agents_and_subjects","merge_archival_record","manage_rde_templates","update_container_record","manage_container_record","manage_container_profile_record","manage_location_profile_record","update_assessment_record","delete_assessment_record","manage_assessment_attributes","manage_custom_report_templates"],"_archivesspace":["administer_system","manage_users","become_user","view_all_records","create_repository","delete_repository","transfer_repository","index_system","manage_repository","update_accession_record","update_resource_record","update_digital_object_record","update_event_record","delete_event_record","suppress_archival_record","transfer_archival_record","delete_archival_record","view_suppressed","view_repository","update_classification_record","delete_classification_record","mediate_edits","import_records","cancel_importer_job","create_job","cancel_job","manage_subject_record","manage_agent_record","view_agent_contact_record","manage_vocabulary_record","manage_enumeration_record","merge_agents_and_subjects","merge_archival_record","manage_rde_templates","update_container_record","manage_container_record","manage_container_profile_record","manage_location_profile_record","update_assessment_record","delete_assessment_record","manage_assessment_attributes","manage_custom_report_templates","update_location_record","delete_vocabulary_record","update_subject_record","delete_subject_record","update_agent_record","delete_agent_record","update_vocabulary_record","update_enumeration_record","merge_subject_record","merge_agent_record","update_container_profile_record","update_location_profile_record"]}},"expire_after_seconds":604800}
+
+        '
+    headers:
+      Cache-Control:
+      - private, must-revalidate, max-age=0
+      Content-Length:
+      - '3098'
+      Content-Type:
+      - application/json
+      Date:
+      - Wed, 19 Mar 2025 14:17:36 GMT
+      Server:
+      - Jetty(9.4.44.v20210927)
+      X-Content-Type-Options:
+      - nosniff
+    status:
+      code: 200
+      message: OK
+version: 1

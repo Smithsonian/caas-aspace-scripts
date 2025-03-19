@@ -200,4 +200,4 @@ if __name__ == '__main__':
         print(str(arg) + ": " + str(args.__dict__[arg]))
 
     # Run function
-    main(excel_path=str(Path(f'{sys.argv[1]}')), object_type=str(f'{sys.argv[2]}'))
+    main(excel_path=str(Path(f'{sys.argv[1]}')), object_type=str(f'{sys.argv[2]}'), dry_run=bool(f'{sys.argv[3]}'))

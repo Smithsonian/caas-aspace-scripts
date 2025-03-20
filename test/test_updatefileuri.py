@@ -1,28 +1,31 @@
 # This script consists of unittests for update_fileuri.py
 import unittest
 
+from test.vcr_utils import vcr
 from python_scripts.repeatable.update_fileuri import *
 from test_data.fileuri_testdata import *
 
-# Hardcode to dev env
-env_file = find_dotenv(f'.env.dev')
-load_dotenv(env_file)
-local_aspace = client_login(os.getenv('as_api'), os.getenv('as_un'), os.getenv('as_pw'))
+@vcr.use_cassette()
+def setUpModule():
+    # Hardcode to dev env
+    env_file = find_dotenv(f'.env.dev')
+    load_dotenv(env_file)
+    global local_aspace
+    local_aspace = client_login(os.getenv('as_api'), os.getenv('as_un'), os.getenv('as_pw'))
 
 class TestGetDigitalObject(unittest.TestCase):
 
+    @vcr.use_cassette
     def test_get_digital_object(self):
         """Tests that the existing digital object can be retrieved"""
-        repo_id = test_update_file_uri_metadata['repository']['ref'].split('/repositories/')[1]
-        digital_object_id = test_update_file_uri_metadata['uri'].rsplit('/',1)[1]
-        test_response = get_digital_object(local_aspace, repo_id, digital_object_id)
+        test_response = get_digital_object(local_aspace, 2, 1)
         self.assertIsInstance(test_response, dict)
         self.assertNotIn('error', test_response)
 
+    @vcr.use_cassette
     def test_get_missing_digital_object(self):
         """Tests that a missing digital object returns an error"""
-        repo_id = test_update_file_uri_metadata['repository']['ref'].split('/repositories/')[1]
-        test_response = get_digital_object(local_aspace, repo_id, '600') # Some unusually high made up number
+        test_response = get_digital_object(local_aspace, 2, 600) # Some unusually high made up number
         self.assertIsNone(test_response)
 
 class TestBuildDigitalObject(unittest.TestCase):
@@ -50,16 +53,16 @@ class TestBuildDigitalObject(unittest.TestCase):
 
 class TestDigitalObjects(unittest.TestCase):
 
+    @vcr.use_cassette
     def test_aspace_post_response(self):
-        repo_id = test_update_file_uri_metadata['repository']['ref'].split('/repositories/')[1]
-        digital_object_id = test_update_file_uri_metadata['uri'].rsplit('/',1)[1]
-        test_response = update_digital_object(local_aspace, repo_id, digital_object_id, test_update_file_uri_metadata)
+        test_response = update_digital_object(local_aspace, 2, 1, test_update_file_uri_metadata)
         self.assertEqual(test_response['status'], 'Updated')
         self.assertEqual(test_response['warnings'], [])
 
+    @vcr.use_cassette
     def test_bad_post(self):
         repo_id = test_update_file_uri_metadata['repository']['ref'].split('/repositories/')[1]
-        test_response = update_digital_object(local_aspace, repo_id, '600', test_update_file_uri_metadata) # Some unusually high made up number
+        test_response = update_digital_object(local_aspace, 2, 600, test_update_file_uri_metadata) # Some unusually high made up number
         self.assertIn('error', test_response)
         self.assertEqual(test_response['error'], 'DigitalObject not found')
 

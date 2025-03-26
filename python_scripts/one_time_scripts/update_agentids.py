@@ -7,7 +7,7 @@
 # sorts the order of the IDs according to the above and posts the updated agent record via the ArchivesSpace API.
 import argparse
 import os
-import pandas  # TODO: update the Wiki for this script - secrets.py file will not work as will cause ImportError: cannot import name randbits when loading pandas. See https://stackoverflow.com/questions/73055157/what-does-importerror-cannot-import-name-randbits-mean
+import pandas
 import sys
 import time
 
@@ -146,7 +146,8 @@ def main(excel_path, object_type, dry_run=False):
         dry_run (bool): if True, it prints the changed object_json but does not post the changes to ASpace or in the
         jsonlines file
     """
-    original_agent_json_data = Path('../../logs', f'update_agentids_original_data_{time.strftime("%Y-%m-%d")}.jsonl')
+    original_agent_json_data = Path('../../logs',
+                                    f'update_agentids_original_data_{time.strftime("%Y-%m-%d")}.jsonl')
     local_aspace = ASpaceAPI(os.getenv('as_api'), os.getenv('as_un'), os.getenv('as_pw'))
     # pandas.set_option('display.max_rows', 10000)  # Optional for running the script locally to see all returns
     agent_excelfile = pandas.ExcelFile(excel_path)
@@ -169,6 +170,8 @@ def main(excel_path, object_type, dry_run=False):
             if row.VIAF_id and row.VIAF_id != 0:
                 if "viaf/" in str(row.VIAF_id):
                     updated_object_json = add_recordID(str(int(row.VIAF_id[5:])), "viaf", updated_object_json)  # converting id to integer to remove extraneous decimal places, then convert to string
+                # The below code is used to print out data about Agents that ONLY have a VIAF ID, since that could
+                # be useful for future investigations into the usefulness of certain record IDs.
                 # if not row.Wikidata_id and not row.SNAC_id and not row.LCNAF_id and not row.ULAN_id:
                 #     print(f'ASpace Link: {row.Aspace_link}, ASpace Name: {row.name_entry}, VIAF ID: {row.VIAF_id}')
                 else:

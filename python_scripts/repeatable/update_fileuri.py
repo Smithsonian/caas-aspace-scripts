@@ -6,7 +6,6 @@ import argparse
 import os
 import sys
 
-from asnake.aspace import ASpace
 from dotenv import load_dotenv, find_dotenv
 from loguru import logger
 from pathlib import Path
@@ -14,7 +13,7 @@ from python_scripts.utilities import check_url, client_login, read_csv
 
 # Logging
 logger.remove()
-log_path = Path(f'./logs', 'update_fileuri_{time:YYYY-MM-DD}.log')
+log_path = Path('./logs', 'update_fileuri_{time:YYYY-MM-DD}.log')
 logger.add(str(log_path), format="{time}-{level}: {message}")
 
 # Find  and load environment-specific .env file
@@ -107,9 +106,12 @@ def main(updated_file_uri_csv, dry_run):
         repo_id = obj['repo_id']
         digital_object_id = obj['digital_object_id']
         new_uri = obj['updated_file_uri']
-        if check_url(new_uri):
+        check_uri = obj['check_uri'] or new_uri # In some cases - for example mp3s rendered via a javascript viewer - 
+        # we want to check the direct `mads/id/` url and not the `mads/view` player url, as that viewer will always 
+        # return 200 even when the asset is missing.
+        if check_url(check_uri):
             do = get_digital_object(client, repo_id, digital_object_id)
-            if not do is None:
+            if do is not None:
                 data = build_digital_object(do, new_uri)
                 if not dry_run:
                     update_digital_object(client, repo_id, digital_object_id, data)

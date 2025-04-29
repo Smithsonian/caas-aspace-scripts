@@ -1,5 +1,5 @@
 -- Retrieves all agent_persons that are linked to in the CFCH repository. Updating this script to another repository is possible by changing the ao.repo_id code to the desired repository.
--- This is a test commit
+
 SELECT
     name_person.sort_name AS agent_name, name_person.agent_person_id AS agent_id, evname.value AS name_source, evrole.value AS role
 FROM

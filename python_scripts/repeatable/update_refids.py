@@ -1,5 +1,5 @@
 #!/usr/bin/python3
-# This script takes a CSV of URIs as inputs and grabs all the archival objects associated with the resource and updates
+# This script takes a CSV of archival object URIs as inputs, grabs the JSON data for each archival object, and updates
 # the archival objects' update_refid field to True, posting them back to ArchivesSpace which regenerates the refids.
 import argparse
 import os
@@ -33,9 +33,9 @@ def parseArguments():
 
 def main(csv_path, dry_run=False):
     """
-    This script takes a CSV of URIs as inputs and grabs all the archival objects associated with the resource and
-    updates the archival objects' update_refid field to True, posting them back to ArchivesSpace which regenerates the
-    refids.
+    This script takes a CSV of archival object URIs as inputs, grabs all the archival objects' JSON data using the API,
+    and updates the archival objects' update_refid field to True, posting them back to ArchivesSpace which regenerates
+    the refids.
 
     The CSV should have the following data structure:
     - Column 1 header = uri

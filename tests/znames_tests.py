@@ -66,7 +66,7 @@ class TestUpdateUsernames(unittest.TestCase):
 
     def test_aspace_post_response(self):
         self.local_aspace = client_login(as_api, as_un, as_pw)
-        updated_lock_version = self.local_aspace.get(f'/users/7').json()['lock_version']  # users/7 should be viewer
+        updated_lock_version = self.local_aspace.get('/users/7').json()['lock_version']  # users/7 should be viewer
         viewer_user['lock_version'] = updated_lock_version
         test_response = update_usernames(self.local_aspace, viewer_user)
         self.assertEqual(test_response['status'], 'Updated')

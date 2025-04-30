@@ -10,7 +10,7 @@ from loguru import logger
 from pathlib import Path
 
 logger.remove()
-log_path = Path(f'./logs', 'merge_subjects_{time:YYYY-MM-DD}.log')
+log_path = Path('./logs', 'merge_subjects_{time:YYYY-MM-DD}.log')
 logger.add(str(log_path), format="{time}-{level}: {message}")
 
 # Find  and load environment-specific .env file
@@ -87,7 +87,7 @@ def check_subject(client, subj_id, subj_title):
         None (NoneType): When an error getting the subject
     """
     existing_subj = get_subject(client, subj_id)
-    if not 'error' in existing_subj:
+    if 'error' not in existing_subj:
         existing_title = existing_subj['terms'][0]['term']
         return existing_title == subj_title
     
@@ -142,7 +142,7 @@ def main(merge_subjects_csv):
         candidate_id = subj['aspace_subject_id']
         destination_match = check_subject(client, destination_id, subj['Merge into'])
         candidate_match = check_subject(client, candidate_id, subj['title'])
-        if not destination_match is None and not candidate_match is None:
+        if destination_match is not None and candidate_match is not None:
             if destination_match and candidate_match:
                 merge_subject(client, f'/subjects/{subj["aspace_subject_id2"]}', f'/subjects/{subj["aspace_subject_id"]}')
             elif not destination_match and candidate_match:

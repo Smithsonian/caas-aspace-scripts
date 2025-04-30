@@ -10,7 +10,7 @@ from loguru import logger
 from pathlib import Path
 
 sys.path.append(os.path.dirname('python_scripts'))  # Needed to import functions from utilities.py
-from python_scripts.utilities import ASpaceAPI, read_csv, record_error, write_to_file
+from python_scripts.utilities import ASpaceAPI, read_csv, write_to_file
 
 logger.remove()
 log_path = Path('../../logs', 'update_refids_{time:YYYY-MM-DD}.log')

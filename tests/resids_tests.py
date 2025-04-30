@@ -25,14 +25,14 @@ class TestRemoveAlphanums(unittest.TestCase):
 
     def test_no_change(self):
         """Tests that the returned string is not changed by remove_nonalphanums()"""
-        no_changes = f'NMAI.AC.001.038'
+        no_changes = 'NMAI.AC.001.038'
         updated_value = remove_nonalphanums(no_changes)
         self.assertIsInstance(updated_value, str)
         self.assertEqual(no_changes, updated_value)
 
     def test_change_identifier(self):
         """Tests that the returned string is changed by remove_nonalphanums()"""
-        change_value = f'''["NAA.1982-20:'''
+        change_value = '''["NAA.1982-20:'''
         updated_value = remove_nonalphanums(change_value)
         self.assertIsInstance(updated_value, str)
         self.assertEqual(updated_value, f'NAA.1982.20')
@@ -40,15 +40,15 @@ class TestRemoveAlphanums(unittest.TestCase):
     def test_non_ascii(self):
         """Tests that remove_nonalphanums() fails gracefully when encountering non-ASCII characters"""
         non_ascii_characters = {
-            'no_alphanums': f'''!@#$%^&*()_|\\?'/,~` ''',
-            'non_ascii': f'''é, à, ö, ñ, ü''',
-            'non_latin': f'''漢, こんにちは, به متنی''',
-            'symbols': f'''©, ®, €, £, µ, ¥''',
-            'emojis': f'''😀, 🌍, 🎉, 👋'''}
+            'no_alphanums': '''!@#$%^&*()_|\\?'/,~` ''',
+            'non_ascii': '''é, à, ö, ñ, ü''',
+            'non_latin': '''漢, こんにちは, به متنی''',
+            'symbols': '''©, ®, €, £, µ, ¥''',
+            'emojis': '''😀, 🌍, 🎉, 👋'''}
         for incompatible_values in non_ascii_characters.values():
             no_value = remove_nonalphanums(incompatible_values)
             self.assertIsInstance(no_value, str)
-            self.assertEqual(no_value, f'')
+            self.assertEqual(no_value, '')
 
 
 # class TestParseZnames(unittest.TestCase):

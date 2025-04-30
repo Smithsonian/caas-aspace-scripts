@@ -8,14 +8,13 @@ import csv
 from asnake.client import ASnakeClient
 from asnake.client.web_client import ASnakeAuthError
 from collections import namedtuple
-from itertools import islice
 from loguru import logger
 from pathlib import Path
 from secrets import *
 
 
 logger.remove()
-log_path = Path(f'../../logs', 'update_authorityids_{time:YYYY-MM-DD}.log')
+log_path = Path('../../logs', 'update_authorityids_{time:YYYY-MM-DD}.log')
 logger.add(str(log_path), format="{time}-{level}: {message}")
 
 
@@ -98,8 +97,9 @@ def update_authorityids(sbjagt_metadata, test=""):
     Returns:
         new_obj (tuple): returns ERROR, PASS, or UPDATED, then the message or new subject/agent metadata
     """
-    Update = namedtuple('Update', 'Status Message')
-    new_sbjagt = copy.deepcopy(sbjagt_metadata)
+    # Update = namedtuple('Update', 'Status Message')
+    # new_sbjagt = copy.deepcopy(sbjagt_metadata)
+    pass
 
 
 def run_script(accres_ids_csv):
@@ -119,8 +119,8 @@ def run_script(accres_ids_csv):
     #         repos[identifier["repo_id"]] = ArchivesSpace(identifier["repo_id"])
     repos = {identifier["repo_id"]: ArchivesSpace(identifier["repo_id"])
              for identifier in identifiers if identifier["repo_id"] not in repos}
-    for identifier in identifiers:
-        object_metadata = repos[identifier["repo_id"]].get_object_metadata(identifier["uri"])
+    # for identifier in identifiers:
+    #     object_metadata = repos[identifier["repo_id"]].get_object_metadata(identifier["uri"])
     print(len(repos))
     print(repos)
 
@@ -132,5 +132,5 @@ def run_script(accres_ids_csv):
 
 if __name__ == "__main__":
     pass
-    run_script(str(Path(f'../../test_data/resource_accession_IDs_all.csv')))
+    run_script(str(Path('../../test_data/resource_accession_IDs_all.csv')))
 

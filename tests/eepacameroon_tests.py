@@ -26,14 +26,13 @@ class TestClientLogin(unittest.TestCase):
 class TestReadCSV(unittest.TestCase):
 
     def test_good_csv(self):
-        test_camerooncsvs = read_csv(str(Path(f'../test_data/EEPA_Cameroon_Reports/'
-                                             f'Cameroon - List of Archival Collection- URI.csv')))
+        test_camerooncsvs = read_csv(str(Path('../test_data/EEPA_Cameroon_Reports/Cameroon - List of Archival Collection- URI.csv')))
         self.assertIsNotNone(test_camerooncsvs)
         for row in test_camerooncsvs:
             self.assertIsInstance(row, dict)
 
     def test_bad_csv(self):
-        test_missingcsv = read_csv(str(Path(f'../test_data/EEPA_Cameroon_Reports/fake.csv')))
+        test_missingcsv = read_csv(str(Path('../test_data/EEPA_Cameroon_Reports/fake.csv')))
         self.assertRaises(FileNotFoundError)
         self.assertEqual(test_missingcsv, None)
 
@@ -41,15 +40,14 @@ class TestReadCSV(unittest.TestCase):
 class TestWriteCSV(unittest.TestCase):
 
     def test_good_csv(self):
-        old_test_file = str(Path(f'../test_data/EEPA_Cameroon_Reports/Cameroon - List of Archival Collection- URI.csv'))
-        new_test_file = str(Path(f'../test_data/EEPA_Cameroon_Reports/Cameroon - List of Archival Collection- '
-                                 f'Abstracts.csv'))
+        old_test_file = str(Path('../test_data/EEPA_Cameroon_Reports/Cameroon - List of Archival Collection- URI.csv'))
+        new_test_file = str(Path('../test_data/EEPA_Cameroon_Reports/Cameroon - List of Archival Collection- '
+                                 'Abstracts.csv'))
         test_values = ['Abstract/Scope']
         for row in open(old_test_file):
             test_values.append('blahblahblah')
         write_csv(old_test_file, new_test_file, test_values)
-        self.assertTrue(os.path.isfile(f'../test_data/EEPA_Cameroon_Reports/'
-                                           f'Cameroon - List of Archival Collection- Abstracts.csv'))
+        self.assertTrue(os.path.isfile('../test_data/EEPA_Cameroon_Reports/Cameroon - List of Archival Collection- Abstracts.csv'))
         with open(new_test_file, 'r', newline='', encoding='utf-8') as readcsv:
             csvreader = csv.reader(readcsv)
             row_count = 0
@@ -63,8 +61,8 @@ class TestWriteCSV(unittest.TestCase):
         os.remove(new_test_file)
 
     def test_bad_csv(self):
-        old_test_file = str(Path(f'../test_data/EEPA_Cameroon_Reports/DOESNOTEXIST.csv'))
-        new_test_file = str(Path(f'../test_data/EEPA_Cameroon_Reports/BADOUTPUT.csv'))
+        old_test_file = str(Path('../test_data/EEPA_Cameroon_Reports/DOESNOTEXIST.csv'))
+        new_test_file = str(Path('../test_data/EEPA_Cameroon_Reports/BADOUTPUT.csv'))
         test_values = ['Abstract/Scope', 'blahblahblah']
         f = io.StringIO()
         with contextlib.redirect_stdout(f):
@@ -77,15 +75,15 @@ class TestGetResourceMetadata(unittest.TestCase):
 
     def test_good_resource(self):
         self.local_aspace = client_login(as_api_stag, as_un, as_pw)
-        test_resource_uri = f'/repositories/20/resources/4804'  # Has Abstract and Scope and Contents
+        test_resource_uri = '/repositories/20/resources/4804'  # Has Abstract and Scope and Contents
         test_resource_json = get_resource_metadata(test_resource_uri, self.local_aspace)
         self.assertIsInstance(test_resource_json, dict)
-        self.assertEqual(test_resource_json['title'], f'World War One Theater Lantern Slides')
+        self.assertEqual(test_resource_json['title'], 'World War One Theater Lantern Slides')
 
 
     def test_bad_uri(self):
         self.local_aspace = client_login(as_api_stag, as_un, as_pw)
-        test_bad_uri = f'/repositories/20/resources/4804a'
+        test_bad_uri = '/repositories/20/resources/4804a'
         get_resource_metadata(test_bad_uri, self.local_aspace)
         f = io.StringIO()
         with contextlib.redirect_stdout(f):

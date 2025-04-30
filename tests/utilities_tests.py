@@ -11,7 +11,7 @@ from python_scripts.utilities import *
 from test_data.utilities_testdata import *
 
 # Hardcode to dev env
-env_file = find_dotenv(f'.env.dev')
+env_file = find_dotenv('.env.dev')
 load_dotenv(env_file)
 local_aspace = client_login(os.getenv('as_api'), os.getenv('as_un'), os.getenv('as_pw'))
 test_dbconnection = ASpaceDatabase(os.getenv('db_un'), os.getenv('db_pw'), os.getenv('db_host'), os.getenv('db_name'),
@@ -194,14 +194,14 @@ class TestReadCSV(unittest.TestCase):
 
     def test_good_csv(self):
         """Tests reading an existing CSV file and returns data"""
-        test_subjects = read_csv(str(Path(f'./test_data/mergesubjects_testdata.csv')))
+        test_subjects = read_csv(str(Path('./test_data/mergesubjects_testdata.csv')))
         self.assertIsNotNone(test_subjects)
         for row in test_subjects:
             self.assertIsInstance(row, dict)
 
     def test_bad_csv(self):
         """Tests reading a non-existant CSV returns a FileNotFound error and that test_subjects is None"""
-        test_subjects = read_csv(str(Path(f'./test_data/fake.csv')))
+        test_subjects = read_csv(str(Path('./test_data/fake.csv')))
         self.assertRaises(FileNotFoundError)
         self.assertEqual(test_subjects, None)
 

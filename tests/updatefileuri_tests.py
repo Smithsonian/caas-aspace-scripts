@@ -29,21 +29,21 @@ class TestBuildDigitalObject(unittest.TestCase):
 
     def test_build_digital_object(self):
         """Tests that the digital object is built as expected"""
-        test_dos = read_csv(str(Path(f'./test_data/updatefileuri_testdata.csv')))
+        test_dos = read_csv(str(Path('./test_data/updatefileuri_testdata.csv')))
         for row in test_dos:
             updated_do = build_digital_object(test_update_file_uri_metadata, row['updated_file_uri'])
             self.assertEqual(row['updated_file_uri'], updated_do['file_versions'][0]['file_uri'])
 
     def test_build_digital_object_pdf(self):
         """Tests that the digital object is built as expected when a pdf"""
-        test_dos = read_csv(str(Path(f'./test_data/updatefileuri_testdata.csv')))
+        test_dos = read_csv(str(Path('./test_data/updatefileuri_testdata.csv')))
         for row in test_dos:
             updated_do = build_digital_object(test_update_file_uri_metadata_pdf, row['updated_file_uri'])
             self.assertEqual('application-pdf', updated_do['file_versions'][0]['use_statement'])
 
     def test_build_digital_object_mp3(self):
         """Tests that the digital object is built as expected when a mp3"""
-        test_dos = read_csv(str(Path(f'./test_data/updatefileuri_testdata.csv')))
+        test_dos = read_csv(str(Path('./test_data/updatefileuri_testdata.csv')))
         for row in test_dos:
             updated_do = build_digital_object(test_update_file_uri_metadata_mp3, row['updated_file_uri'])
             self.assertEqual('audio-service', updated_do['file_versions'][0]['use_statement'])

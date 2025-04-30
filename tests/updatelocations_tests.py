@@ -1,7 +1,5 @@
 #!/usr/bin/python3
 # This script contains unittests for update_locations.py
-import contextlib
-import io
 import unittest
 
 from dotenv import load_dotenv, find_dotenv

@@ -35,7 +35,7 @@ class TestRemoveAlphanums(unittest.TestCase):
         change_value = '''["NAA.1982-20:'''
         updated_value = remove_nonalphanums(change_value)
         self.assertIsInstance(updated_value, str)
-        self.assertEqual(updated_value, f'NAA.1982.20')
+        self.assertEqual(updated_value, 'NAA.1982.20')
 
     def test_non_ascii(self):
         """Tests that remove_nonalphanums() fails gracefully when encountering non-ASCII characters"""

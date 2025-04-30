@@ -5,7 +5,7 @@ from python_scripts.repeatable.update_fileuri import *
 from test_data.fileuri_testdata import *
 
 # Hardcode to dev env
-env_file = find_dotenv(f'.env.dev')
+env_file = find_dotenv('.env.dev')
 load_dotenv(env_file)
 local_aspace = client_login(os.getenv('as_api'), os.getenv('as_un'), os.getenv('as_pw'))
 

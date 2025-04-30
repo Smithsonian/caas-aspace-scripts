@@ -2,12 +2,10 @@
 
 # This script intakes a CSV of all subjects and agends in ArchivesSpace to update their Authority IDs to match the
 # following standard: <https://<authority_url>/<authority_id>>
-import copy
 import csv
 
 from asnake.client import ASnakeClient
 from asnake.client.web_client import ASnakeAuthError
-from collections import namedtuple
 from loguru import logger
 from pathlib import Path
 from secrets import *

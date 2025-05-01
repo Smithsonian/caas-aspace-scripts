@@ -12,7 +12,7 @@ from dotenv import load_dotenv, find_dotenv
 from mysql.connector import errorcode
 from loguru import logger
 from openpyxl import Workbook
-from openpyxl.styles import Font, PatternFill
+from openpyxl.styles import Font
 from pathlib import Path
 
 # Logging

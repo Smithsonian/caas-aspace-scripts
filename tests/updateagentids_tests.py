@@ -2,7 +2,7 @@
 # This script contains unittests for update_agentids.py
 import contextlib
 import io
-import pandas
+# import pandas
 import unittest
 
 from python_scripts.one_time_scripts.update_agentids import *

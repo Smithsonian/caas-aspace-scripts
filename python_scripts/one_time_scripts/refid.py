@@ -13,7 +13,7 @@ from python_scripts.utilities import client_login, read_csv
 
 # Logging
 logger.remove()
-log_path = Path(f'./logs', 'update_refid_{time:YYYY-MM-DD}.log')
+log_path = Path('./logs', 'update_refid_{time:YYYY-MM-DD}.log')
 logger.add(str(log_path), format="{time}-{level}: {message}")
 
 # Find  and load environment-specific .env file

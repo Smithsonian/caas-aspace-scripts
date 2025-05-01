@@ -11,7 +11,7 @@ import openpyxl.utils.exceptions
 
 from python_scripts.repeatable.report_grouppermissions import *
 
-env_file = find_dotenv(f'.env.dev')
+env_file = find_dotenv('.env.dev')
 load_dotenv(env_file)
 test_dbconnection = ASpaceDatabase(os.getenv('DB_UN'), os.getenv('DB_PW'), os.getenv('DB_HOST'), os.getenv('DB_NAME'),
                                int(os.getenv('DB_PORT')))
@@ -67,7 +67,7 @@ class TestSpreadsheetClass(unittest.TestCase):
         """
         Tests generating an openpyxl Workbook instance with a bad filepath to make sure it raises an error
         """
-        test_spreadsheet_filepath = str(f'//bad_filepath')
+        test_spreadsheet_filepath = str('//bad_filepath')
         with self.assertRaises(FileNotFoundError):
             Spreadsheet(test_spreadsheet_filepath)
 

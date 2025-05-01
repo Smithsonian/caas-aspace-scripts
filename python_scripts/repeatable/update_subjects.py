@@ -10,7 +10,7 @@ from loguru import logger
 from pathlib import Path
 
 logger.remove()
-log_path = Path(f'./logs', 'update_subjects_{time:YYYY-MM-DD}.log')
+log_path = Path('./logs', 'update_subjects_{time:YYYY-MM-DD}.log')
 logger.add(str(log_path), format="{time}-{level}: {message}")
 
 # Find  and load environment-specific .env file
@@ -141,7 +141,7 @@ def main(updated_subjects_csv):
     for subj in updated_subjects:
         existing_subj_id = subj['aspace_subject_id']
         existing_subj = get_subject(client, existing_subj_id)
-        if not existing_subj is None:
+        if existing_subj is not None:
             data = build_subject(existing_subj, subj)
             update_subject(client, existing_subj_id, data)
 

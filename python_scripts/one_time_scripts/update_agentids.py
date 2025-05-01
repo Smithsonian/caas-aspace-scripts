@@ -54,7 +54,7 @@ def add_recordID(record_id, record_source, object_json, primary=False):
     Returns:
         object_json (dict): the updated JSON with the newly added record ID
     """
-    if type(record_id) != str:
+    if type(record_id) is not str:
         record_error(f'add_recordID() error - invalid record identifier: {record_id}', TypeError)
         raise TypeError
     elif record_source not in SOURCES_ORDERED:

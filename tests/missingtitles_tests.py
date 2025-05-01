@@ -23,13 +23,13 @@ class TestClientLogin(unittest.TestCase):
 class TestReadCSV(unittest.TestCase):
 
     def test_good_csv(self):
-        test_missinguris = read_csv(str(Path(f'../test_data/MissingTitles_BeGone.csv')))
+        test_missinguris = read_csv(str(Path('../test_data/MissingTitles_BeGone.csv')))
         self.assertIsNotNone(test_missinguris)
         for row in test_missinguris:
             self.assertIsInstance(row, dict)
 
     def test_bad_csv(self):
-        test_missinguris = read_csv(str(Path(f'../test_data/fake.csv')))
+        test_missinguris = read_csv(str(Path('../test_data/fake.csv')))
         self.assertRaises(FileNotFoundError)
         self.assertEqual(test_missinguris, None)
 

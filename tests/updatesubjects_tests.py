@@ -22,13 +22,13 @@ class TestClientLogin(unittest.TestCase):
 class TestReadCSV(unittest.TestCase):
 
     def test_good_csv(self):
-        test_subjects = read_csv(str(Path(f'./test_data/updatesubjects_testdata.csv')))
+        test_subjects = read_csv(str(Path('./test_data/updatesubjects_testdata.csv')))
         self.assertIsNotNone(test_subjects)
         for row in test_subjects:
             self.assertIsInstance(row, dict)
 
     def test_bad_csv(self):
-        test_subjects = read_csv(str(Path(f'./test_data/fake.csv')))
+        test_subjects = read_csv(str(Path('./test_data/fake.csv')))
         self.assertRaises(FileNotFoundError)
         self.assertEqual(test_subjects, None)
 
@@ -50,7 +50,7 @@ class TestBuildSubject(unittest.TestCase):
 
     def test_build_subjects(self):
         """Tests that the subject is built as expected"""
-        test_subjects = read_csv(str(Path(f'./test_data/updatesubjects_testdata.csv')))
+        test_subjects = read_csv(str(Path('./test_data/updatesubjects_testdata.csv')))
         for row in test_subjects:
             updated_subj = build_subject(test_update_subject_metadata, row)
             self.assertEqual(row['new_title'], updated_subj['terms'][0]['term'])

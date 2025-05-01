@@ -10,7 +10,7 @@ from loguru import logger
 from pathlib import Path
 
 logger.remove()
-log_path = Path(f'./logs', 'new_subjects_{time:YYYY-MM-DD}.log')
+log_path = Path('./logs', 'new_subjects_{time:YYYY-MM-DD}.log')
 logger.add(str(log_path), format="{time}-{level}: {message}")
 
 # Find  and load environment-specific .env file

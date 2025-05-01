@@ -8,7 +8,6 @@ import re
 
 from asnake.client import ASnakeClient
 from asnake.client.web_client import ASnakeAuthError
-from collections import namedtuple
 from loguru import logger
 from pathlib import Path
 from secrets import *
@@ -16,7 +15,7 @@ from secrets import *
 alphanumeric_capture = re.compile(r'[a-zA-Z0-9.-]*', re.UNICODE)
 
 logger.remove()
-log_path = Path(f'../../logs', 'update_resids_{time:YYYY-MM-DD}.log')
+log_path = Path('../../logs', 'update_resids_{time:YYYY-MM-DD}.log')
 logger.add(str(log_path), format="{time}-{level}: {message}")
 
 
@@ -40,7 +39,7 @@ def client_login(as_api, as_un, as_pw):
         logger.error(f'Failed to authorize ASnake client. ERROR: {e}')
         return ASnakeAuthError
     else:
-        logger.info(f'Connected to ASnake client')
+        logger.info('Connected to ASnake client')
         return client
 
 def read_csv(all_ids_csv):
@@ -130,8 +129,8 @@ def update_resids(aspace_client, updated_resource):
 
 
 def main():
-    aspace_client = client_login(as_api_stag, as_un, as_pw)  # TODO: replace as_api_stag with as_api_prod
-    resources = read_csv(f'../test_data/resource_accession_IDs_all.csv')
+    # aspace_client = client_login(as_api_stag, as_un, as_pw)  # TODO: replace as_api_stag with as_api_prod
+    resources = read_csv('../test_data/resource_accession_IDs_all.csv')
     for resource in resources:
         identifier_values = json.loads(resource['identifier'])
         update_identifiers = []

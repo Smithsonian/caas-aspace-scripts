@@ -14,7 +14,7 @@ import re
 username_capture = re.compile(r'(?<=z-)(.*)(?=-expired)', re.UNICODE)
 
 logger.remove()
-log_path = Path(f'../../logs', 'update_znames_{time:YYYY-MM-DD}.log')
+log_path = Path('../../logs', 'update_znames_{time:YYYY-MM-DD}.log')
 logger.add(str(log_path), format="{time}-{level}: {message}")
 
 
@@ -53,7 +53,7 @@ def get_userdata(client):
         users_data (list): list of dictionaries with all users metadata in ArchivesSpace
     """
     users_data = []
-    user_ids = client.get(f'/users', params={'all_ids': True}).json()
+    user_ids = client.get('/users', params={'all_ids': True}).json()
     for user_id in user_ids:
         user_data = client.get(f'/users/{user_id}').json()
         users_data.append(user_data)

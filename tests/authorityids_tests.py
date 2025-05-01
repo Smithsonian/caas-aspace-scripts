@@ -43,13 +43,13 @@ class TestArchivesSpaceClass(unittest.TestCase):
 class TestReadCSV(unittest.TestCase):
 
     def test_good_csv(self):
-        test_ids = read_csv(str(Path(f'../test_data/resource_accession_IDs_all.csv')))
+        test_ids = read_csv(str(Path('../test_data/resource_accession_IDs_all.csv')))
         self.assertIsNotNone(test_ids)
         for row in test_ids:
             self.assertIsInstance(row, dict)
 
     def test_bad_csv(self):
-        test_ids = read_csv(str(Path(f'../test_data/fake.csv')))
+        test_ids = read_csv(str(Path('../test_data/fake.csv')))
         self.assertRaises(FileNotFoundError)
         self.assertEqual(test_ids, None)
 

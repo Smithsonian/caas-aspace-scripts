@@ -14,7 +14,7 @@ from secrets import *
 
 
 logger.remove()
-log_path = Path(f'../../logs', 'remove-missingtitles_{time:YYYY-MM-DD}.log')
+log_path = Path('../../logs', 'remove-missingtitles_{time:YYYY-MM-DD}.log')
 logger.add(str(log_path), format="{time}-{level}: {message}")
 
 
@@ -174,5 +174,5 @@ def run_script(missing_titles_csv):
 
 
 if __name__ == "__main__":
-    run_script(str(Path(f'../test_data/MissingTitles_BeGone.csv')))
-    print(f'TESTING')
+    run_script(str(Path('../test_data/MissingTitles_BeGone.csv')))
+    print('TESTING')

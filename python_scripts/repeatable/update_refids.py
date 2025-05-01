@@ -64,7 +64,7 @@ def main(csv_path, jsonl_path, dry_run=False):
                     print(post_response)
 
 
-# Call with `python update_refids.py <filpath>.csv`
+# Call with `python update_refids.py <csv_filpath>.csv <jsonl_filepath>.jsonl`
 if __name__ == '__main__':
     args = parseArguments()
 

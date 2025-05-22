@@ -310,3 +310,7 @@ test_error_json = {
     "repository": {"ref": "/repositories/20"},
     "tree": {"ref": "/repositories/20/digital_objects/3819/tree"}
 }
+
+test_location_delete = {'building': 'NMAH-SHF',
+                        'coordinate_1_label': 'Test Shelf',
+                        'coordinate_1_indicator': '602668'}

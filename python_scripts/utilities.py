@@ -145,6 +145,23 @@ class ASpaceAPI:
         else:
             return suppress_message
 
+    def delete_object(self, object_uri):
+        """
+        Deletes the given object from ArchivesSpace, given the object's URI. WARNING: deletions in ArchivesSpace are
+        permanent!
+
+        Args:
+            object_uri (str): the object's URI for deletion
+
+        Returns:
+            update_message (dict): ArchivesSpace response or None if an error was encountered and logged
+        """
+        delete_message = self.aspace_client.delete(f'{object_uri}').json()
+        if 'error' in delete_message:
+            record_error('delete_object() - Delete failed due to following error', delete_message)
+        else:
+            return delete_message
+
 
 class ASpaceDatabase:
 

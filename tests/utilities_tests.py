@@ -156,7 +156,7 @@ class TestArchivesSpaceClass(unittest.TestCase):
         # first check the object exists
         test_location = self.good_aspace_connection.aspace_client.post("/locations", json=test_location_delete).json()
         record_type, location_id = test_location["uri"][1:].split("/")
-        if not "error" in test_location:
+        if "error" not in test_location:
             test_delete = self.good_aspace_connection.delete_object(test_location["uri"])
             if "error" in test_delete:
                 self.fail()

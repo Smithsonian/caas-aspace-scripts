@@ -47,7 +47,7 @@ def retrieve_object_json(object_uri, local_aspace):
         uri_parts = object_uri['uri'].split('/')
         object_type, object_id = uri_parts[-2], uri_parts[-1]
     except IndexError as spliterror:
-        record_error(f'retrieve_object_json() - Failed to split URI', spliterror)
+        record_error('retrieve_object_json() - Failed to split URI', spliterror)
         return None
     else:
         if "repositories" in uri_parts:

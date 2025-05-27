@@ -150,6 +150,39 @@ class TestArchivesSpaceClass(unittest.TestCase):
         self.assertIsNone(test_response)
 
 
+    def test_good_delete(self):
+        """Tests that a given object is deleted from ArchivesSpace via no results when searching for it after
+        deletion"""
+        # first check the object exists
+        test_location = self.good_aspace_connection.aspace_client.post("/locations", json=test_location_delete).json()
+        record_type, location_id = test_location["uri"][1:].split("/")
+        if "error" not in test_location:
+            test_delete = self.good_aspace_connection.delete_object(test_location["uri"])
+            if "error" in test_delete:
+                self.fail()
+            else:
+                f = io.StringIO()
+                with contextlib.redirect_stdout(f):
+                    test_response = self.good_aspace_connection.get_object(record_type, location_id)
+
+                self.assertTrue(
+                    f'get_object() - Unable to retrieve object with provided URI: {test_location["uri"]}' in f.getvalue())
+
+                self.assertIsNone(test_response)
+
+
+    def test_bad_delete(self):
+        """Tests that the given object URI returns None with an error response"""
+        test_delete = "/repositories/1000000/resources/915534548632131"
+        f = io.StringIO()
+        with contextlib.redirect_stdout(f):
+            test_response = self.good_aspace_connection.delete_object(test_delete)
+
+        self.assertTrue(
+            r"""delete_object() - Delete failed due to following error: {'error': {'repo_id': ['Failed validation -- The Repository must exist']}}""" in f.getvalue())
+        self.assertIsNone(test_response)
+
+
 class TestASpaceDatabaseClass(unittest.TestCase):
 
     def test_good_connection(self):

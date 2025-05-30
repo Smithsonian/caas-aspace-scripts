@@ -72,9 +72,8 @@ def main(jsonl_path, dry_run=False):
                      'AND '
                         'coordinate_1_indicator LIKE "0_" '
                      'ORDER BY coordinate_1_indicator')
-    print(os.getenv('as_api'))
     sql_results = as_database.query_database(find_mapcases)
-    for result in sql_results[:1]:
+    for result in sql_results:
         location_json = local_aspace.get_object('locations', result[0])
         write_to_file(jsonl_path, location_json)
         updated_location = strip_coordinate_leadzero(location_json)

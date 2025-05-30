@@ -1,6 +1,8 @@
 #!/usr/bin/python3
-# This script takes a CSV of URIs and object type as inputs, grabs all the objects' JSON data using the API, saves
-# them to a jsonL file using the jsonl_path input, and then deletes them in ArchivesSpace.
+# This script finds locations with the label "MapCase" and looks for those that have leading zeros in their indicators
+# such as 01, 02, etc. It then removes the leading zeros for coordinate_1_indicators and searches for and removes
+# leading zeros from coordinate_2_indicators as well. It then posts the updates to those specific locations to ASpace.
+# An SQL query is uses to find the appropriate locations.
 import argparse
 import os
 import sys
@@ -50,11 +52,10 @@ def strip_coordinate_leadzero(location_json):
 
 def main(jsonl_path, dry_run=False):
     """
-    This script takes a CSV of URIs and object type as inputs, grabs all the objects' JSON data using the API, saves
-    them to a jsonL file using the jsonl_path input, and then deletes them in ArchivesSpace.
-    The CSV should have the following data structure:
-    - Column 1 header = uri
-    - Column 1 rows = /locations/#######
+    This script finds locations with the label "MapCase" and looks for those that have leading zeros in their indicators
+    such as 01, 02, etc. It then removes the leading zeros for coordinate_1_indicators and searches for and removes
+    leading zeros from coordinate_2_indicators as well. It then posts the updates to those specific locations to ASpace.
+    An SQL query is uses to find the appropriate locations.
 
     Args:
         jsonl_path (str): filepath of the jsonL file for storing JSON data of objects before updates - backup

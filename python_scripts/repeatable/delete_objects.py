@@ -1,5 +1,5 @@
 #!/usr/bin/python3
-# This script takes a CSV of URIs as an input, grabs all the objects'JSON data using the API, saves
+# This script takes a CSV of URIs as an input, grabs all the objects' JSON data using the API, saves
 # them to a jsonL file using the jsonl_path input, and then deletes them in ArchivesSpace.
 import argparse
 import os

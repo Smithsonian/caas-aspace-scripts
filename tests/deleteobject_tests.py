@@ -29,7 +29,7 @@ class TestArchivesSpaceClass(unittest.TestCase):
         """Tests that a local URI (one beginning with 'repositories/##/' is retrieved"""
         uri_parts = test_digital_object_dates['uri'].split('/')
         test_digobj = self.good_aspace_connection.get_object(uri_parts[-2], uri_parts[-1], f'{uri_parts[1]}/{uri_parts[2]}')
-        if test_digobj is not None:
+        if test_digobj:
             get_test_digobj = retrieve_object_json({'uri': test_digobj['uri']}, self.good_aspace_connection)
             self.assertIsNotNone(get_test_digobj)
             self.assertEqual(get_test_digobj['digital_object_id'], 'NMAI.AC.066.ref20')

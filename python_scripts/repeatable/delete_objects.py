@@ -1,5 +1,5 @@
 #!/usr/bin/python3
-# This script takes a CSV of URIs and object type as inputs, grabs all the objects' JSON data using the API, saves
+# This script takes a CSV of URIs as an input, grabs all the objects' JSON data using the API, saves
 # them to a jsonL file using the jsonl_path input, and then deletes them in ArchivesSpace.
 import argparse
 import os
@@ -9,10 +9,8 @@ from dotenv import load_dotenv, find_dotenv
 from loguru import logger
 from pathlib import Path
 
-from python_scripts.one_time_scripts.delete_dometadata import record_error
-
 sys.path.append(os.path.dirname('python_scripts'))  # Needed to import functions from utilities.py
-from python_scripts.utilities import ASpaceAPI, read_csv, write_to_file
+from python_scripts.utilities import ASpaceAPI, record_error, read_csv, write_to_file
 
 logger.remove()
 log_path = Path('../../logs', 'delete_objects_{time:YYYY-MM-DD}.log')
@@ -57,10 +55,9 @@ def retrieve_object_json(object_uri, local_aspace):
             object_json = local_aspace.get_object(object_type, object_id)
         return object_json
 
-
 def main(csv_path, jsonl_path, dry_run=False):
     """
-    This script takes a CSV of URIs and object type as inputs, grabs all the objects' JSON data using the API, saves
+    This script takes a CSV of URIs as an input, grabs all the objects' JSON data using the API, saves
     them to a jsonL file using the jsonl_path input, and then deletes them in ArchivesSpace.
 
     The CSV should have the following data structure:
@@ -78,14 +75,16 @@ def main(csv_path, jsonl_path, dry_run=False):
         write_to_file(jsonl_path, object_json)
         if object_json:
             if dry_run:
-                print(f'Object would be deleted: {uri['uri']}')
+                message = f"Object would be deleted: {uri['uri']}"
+                print(message)
+                logger.info(message)
             else:
                 post_response = local_aspace.delete_object(object_json['uri'])
                 if post_response:
                     print(post_response)
+                    logger.info(post_response)
 
-
-# Call with `python delete_objects.py <csv_filpath>.csv <jsonl_filepath>.jsonl <object type>`
+# Call with `python delete_objects.py <csv_filpath>.csv <jsonl_filepath>.jsonl`
 if __name__ == '__main__':
     args = parseArguments()
 
@@ -97,4 +96,4 @@ if __name__ == '__main__':
         print(str(arg) + ": " + str(args.__dict__[arg]))
 
     # Run function
-    main(csv_path=args.csvPath, jsonl_path= args.jsonPath, objectType=args.objectType, dry_run=args.dry_run)
+    main(csv_path=args.csvPath, jsonl_path= args.jsonPath, dry_run=args.dry_run)

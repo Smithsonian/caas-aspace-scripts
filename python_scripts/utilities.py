@@ -59,7 +59,7 @@ class ASpaceAPI:
             ('id_set',' [1,2,3,etc.]) Default is ('all_ids', 'True')
 
         Returns:
-            digital_objects (list): all the digital object IDs
+            record_objects (list): all the record object IDs
         """
         parameter_options = ['all_ids', 'page', 'id_set']
         if parameters[0] not in parameter_options:
@@ -75,14 +75,14 @@ class ASpaceAPI:
             record_error('get_objects() - parameter not valid', parameters)
             raise ValueError
         if isinstance(parameters[1], list):
-            digital_objects = []
+            record_objects = []
             for identifier in parameters[1]:
-                digital_objects.append(self.aspace_client.get(
+                record_objects.append(self.aspace_client.get(
                     f'{repository_uri}/{record_type}?{parameters[0]}={str(identifier)}').json())
         else:
-            digital_objects = self.aspace_client.get(
+            record_objects = self.aspace_client.get(
                 f'{repository_uri}/{record_type}?{parameters[0]}={parameters[1]}').json()
-        return digital_objects
+        return record_objects
 
     def get_object(self, record_type, object_id, repo_uri=''):
         """

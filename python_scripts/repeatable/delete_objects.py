@@ -79,6 +79,7 @@ def main(csv_path, jsonl_path, dry_run=False):
         if object_json:
             if dry_run:
                 print(f'Object would be deleted: {uri['uri']}')
+                logger.info(f'Object would be deleted: {uri['uri']}')
             else:
                 post_response = local_aspace.delete_object(object_json['uri'])
                 if post_response:

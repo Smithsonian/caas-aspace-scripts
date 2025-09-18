@@ -14,7 +14,7 @@ from loguru import logger
 from pathlib import Path
 
 sys.path.append(os.path.dirname('python_scripts'))  # Needed to import functions from utilities.py
-from python_scripts.utilities import ASpaceAPI, ASpaceDatabase, read_csv
+from python_scripts.utilities import ASpaceDatabase, read_csv
 
 logger.remove()
 log_path = Path('./logs', 'delete_aaadigobjs_{time:YYYY-MM-DD}.log')

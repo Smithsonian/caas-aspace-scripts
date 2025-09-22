@@ -90,8 +90,8 @@ def main(csv_path, jsonl_path, dry_run=False):
                     unique_uris.append(digobj_uri[0])
                     digobjs_uris.append([digobj_uri[0]])
         else:
-            logger.info(f'Could not find and associated digital object with: {refID["refID"]}')
-            print(f'Could not find and associated digital object with: {refID["refID"]}')
+            logger.info(f'Could not find an associated digital object with: {refID["refID"]}')
+            print(f'Could not find an associated digital object with: {refID["refID"]}')
     with open('aaa_delete_daos.csv', 'w', encoding='UTF-8', newline='') as daofile:
         daowriter = csv.writer(daofile)
         daowriter.writerows(digobjs_uris)

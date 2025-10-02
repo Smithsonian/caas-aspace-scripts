@@ -92,6 +92,8 @@ def main(csv_path, jsonl_path, dry_run=False):
         else:
             logger.info(f'Could not find an associated digital object with: {refID["refID"]}')
             print(f'Could not find an associated digital object with: {refID["refID"]}')
+    if os.path.exists(str(Path(os.getcwd(), 'aaa_delete_daos.csv'))):
+        os.remove(str(Path(os.getcwd(), 'aaa_delete_daos.csv')))
     with open('aaa_delete_daos.csv', 'w', encoding='UTF-8', newline='') as daofile:
         daowriter = csv.writer(daofile)
         daowriter.writerows(digobjs_uris)

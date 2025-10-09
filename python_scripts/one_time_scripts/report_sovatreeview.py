@@ -10,6 +10,7 @@ import os
 import requests
 import sys
 
+from bs4 import BeautifulSoup
 from dotenv import load_dotenv, find_dotenv
 from loguru import logger
 from pathlib import Path
@@ -71,48 +72,56 @@ def main(dry_run=False):
     """
     as_database = ASpaceDatabase(os.getenv('db_un'), os.getenv('db_pw'), os.getenv('db_host'), os.getenv('db_name'),
                                  os.getenv('db_port'))
-    published_resources = ('SELECT '
-                               'res.ead_id AS eadid, res.id '
-                           'FROM '
-                               'archival_object AS ao '
-                                   'RIGHT JOIN '
-                               'resource AS res ON res.id = ao.root_record_id '
-                           'WHERE '
-                               'res.publish IS TRUE '
-                                   'AND res.finding_aid_status_id = 261446 '
-                                   'AND ao.root_record_id IS NOT NULL '
-                                   'AND ao.repo_id != 11 '
-                                   'AND ao.repo_id != 23 '
-                                   'AND ao.repo_id != 50 '
-                           'GROUP BY res.ead_id, res.id '
-                           'ORDER BY res.ead_id ASC')
-    pub_res_waos = as_database.query_database(published_resources)
+    no_aspace_eadid = []
+    no_matching_eadid = []
     no_treeview = [['ead_id', 'fancytree_url']]
     no_treeview_count = 0
-    for ead_id in pub_res_waos:
-        treeview_url = "https://sova.si.edu/fancytree/" + str(ead_id[0])
-        treeview_status = has_treeview(treeview_url)
-        if treeview_status is False:
-            archival_objects = ('SELECT '
-                                'ao.ref_id '
-                                'FROM '
-                                'archival_object AS ao '
-                                'WHERE '
-                                f'ao.root_record_id = {ead_id[1]} '
-                                'AND ao.parent_id IS NULL '
-                                'AND ao.publish IS TRUE')
-            pub_aos = as_database.query_database(archival_objects)
-            if pub_aos:
-                no_treeview_count += 1
-                no_treeview.append([ead_id[0], treeview_url])
-                print(f'{ead_id[0]}, {treeview_url}')
-                logger.info(f'EAD with no fancytree response: {ead_id[0]}, {treeview_url}')
-    with open('sova_fancytree_report.csv', 'w', encoding='UTF-8', newline='') as csv_report:
-        notree_writer = csv.writer(csv_report)
-        notree_writer.writerows(no_treeview)
-        csv_report.close()
+    page = requests.get("https://sirismm.si.edu/EADs/?C=M;O=D")
+    soup = BeautifulSoup(page.content, "html.parser")
+    for ead_ref in soup.find_all("a")[4:]:
+        ead_id = str(ead_ref['href'][:-8])  # remove -ead.xml ending
+        aspace_id_query = ('SELECT '
+                           'res.ead_id, res.id '
+                           'FROM '
+                           '`resource` AS res '
+                           'WHERE '
+                          f'res.ead_id LIKE "{ead_id}"')
+        get_aspace_id = as_database.query_database(aspace_id_query)
+        if not get_aspace_id:
+            no_aspace_eadid.append(ead_id)
+        elif ead_id != get_aspace_id[0][0]:
+            no_matching_eadid.append(get_aspace_id[0][0])
+        else:
+            aspace_id = get_aspace_id[0][1]
+            treeview_url = "https://sova.si.edu/fancytree/" + ead_id
+            treeview_status = has_treeview(treeview_url)
+            if treeview_status is False:
+                archival_objects = ('SELECT '
+                                    'ao.ref_id '
+                                    'FROM '
+                                    'archival_object AS ao '
+                                    'RIGHT JOIN '
+                                    '`resource` AS res ON res.id = ao.root_record_id '
+                                    'WHERE '
+                                   f'ao.root_record_id = {aspace_id} '
+                                    'AND ao.parent_id IS NULL '
+                                    'AND ao.publish IS TRUE '
+                                    'AND res.finding_aid_status_id = 261446')
+                pub_aos = as_database.query_database(archival_objects)
+                if pub_aos:
+                    no_treeview_count += 1
+                    no_treeview.append([ead_id, treeview_url])
+                    print(f'{ead_id}, {treeview_url}')
+                    logger.info(f'EAD with no fancytree response: {ead_id}, {treeview_url}')
+    if dry_run:
+        with open('sova_fancytree_report.csv', 'w', encoding='UTF-8', newline='') as csv_report:
+            notree_writer = csv.writer(csv_report)
+            notree_writer.writerows(no_treeview)
+            csv_report.close()
     print(f'Total EADs without Treeview: {no_treeview_count}')
     logger.info(f'Total EADs without Treeview: {no_treeview_count}')
+    logger.info(f'No matching EAD IDs in ASpace: {no_aspace_eadid}')
+    logger.info(f'Non-matching EAD IDs: {no_matching_eadid}')
 
 
 # Call with `python report_sovatreeview.py`

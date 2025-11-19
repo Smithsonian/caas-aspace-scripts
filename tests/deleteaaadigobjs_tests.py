@@ -1,4 +1,4 @@
-# This script consists of unittests for shared utilities.py
+# This script consists of unittests for shared delete_aaadigobjs.py
 import unittest
 
 from python_scripts.one_time_scripts.delete_aaadigobjs import *

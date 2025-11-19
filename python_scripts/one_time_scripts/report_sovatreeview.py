@@ -30,9 +30,6 @@ def parseArguments():
     """Parses the arguments fed to the script from the terminal or within a run configuration"""
     parser = argparse.ArgumentParser()
 
-    # parser.add_argument("csvPath", help="path to CSV input file", type=str)
-    # parser.add_argument("jsonPath", help="path to the JSONL file for storing data", type=str)
-    parser.add_argument("-dR", "--dry-run", help="dry run?", action='store_true')
     parser.add_argument("--version", action="version", version='%(prog)s - Version 1.0')
 
     return parser.parse_args()
@@ -52,7 +49,7 @@ def has_treeview(url):
     else:
         return True
 
-def main(dry_run=False):
+def main():
     """
     This script finds resource records with a finding aid status of "Publish (sync with EDAN/SOVA)" and that have a
     published archival object on the highest level component (c01), takes the list of EAD IDs from those resources,
@@ -64,11 +61,6 @@ def main(dry_run=False):
     - Column 1 rows = aaa.bartmace
     - Column 2 header = fancytree_url
     - Column 2 rows = https://sova.si.edu/fancytree/aaa.bartmace
-
-    Args:
-        # csv_path (str): filepath of the CSV file with the archival object URIs
-        # jsonl_path (str): filepath of the jsonL file for storing JSON data of objects before updates - backup
-        dry_run (bool): if True, it prints the changed object_json but does not post the changes to ASpace
     """
     as_database = ASpaceDatabase(os.getenv('db_un'), os.getenv('db_pw'), os.getenv('db_host'), os.getenv('db_name'),
                                  os.getenv('db_port'))
@@ -113,11 +105,10 @@ def main(dry_run=False):
                     no_treeview.append([ead_id, treeview_url])
                     print(f'{ead_id}, {treeview_url}')
                     logger.info(f'EAD with no fancytree response: {ead_id}, {treeview_url}')
-    if dry_run:
-        with open('sova_fancytree_report.csv', 'w', encoding='UTF-8', newline='') as csv_report:
-            notree_writer = csv.writer(csv_report)
-            notree_writer.writerows(no_treeview)
-            csv_report.close()
+    with open('sova_fancytree_report.csv', 'w', encoding='UTF-8', newline='') as csv_report:
+        notree_writer = csv.writer(csv_report)
+        notree_writer.writerows(no_treeview)
+        csv_report.close()
     print(f'Total EADs without Treeview: {no_treeview_count}')
     logger.info(f'Total EADs without Treeview: {no_treeview_count}')
     logger.info(f'No matching EAD IDs in ASpace: {no_aspace_eadid}')
@@ -136,4 +127,4 @@ if __name__ == '__main__':
         print(str(arg) + ": " + str(args.__dict__[arg]))
 
     # Run function
-    main(dry_run=args.dry_run)
+    main()

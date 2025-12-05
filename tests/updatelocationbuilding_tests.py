@@ -1,8 +1,6 @@
 # This script consists of unittests for update_locationbuilding.py
 import unittest
 
-import mysql.connector
-
 from python_scripts.utilities import *
 from python_scripts.one_time_scripts.update_locationbuilding import *
 from test_data.location_testdata import *

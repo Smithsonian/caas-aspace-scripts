@@ -39,8 +39,9 @@ def parseArguments():
 def location_ids(original_building_name, aspace_db_connection):
     """
     Performs an SQL search for a building name and returns the location IDs of all that match.
+
     Args:
-        original_building_name (str): the text of the building name to search for in the Locations table
+        original_building_name (str): the text of the building name to search for in the location table
         aspace_db_connection (ASpaceDatabase instance): connection instance to the ASpace database
 
     Returns:
@@ -55,7 +56,7 @@ def location_ids(original_building_name, aspace_db_connection):
 
 def update_building_name(location_json, updated_name):
     """
-    Searches for a leading zero in a coordinate indicator and removes it if present. Returns the updated JSON data.
+    Takes a location JSON record and replaces the building value with the provided updated_name.
 
     Args:
         location_json (dict): the JSON data for the location object

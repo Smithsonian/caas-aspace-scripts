@@ -2,10 +2,10 @@
 import contextlib
 import io
 import json
+import mysql.connector
 import os
 import unittest
 
-import mysql.connector
 from dotenv import load_dotenv, find_dotenv
 from pathlib import Path
 from python_scripts.utilities import *
@@ -94,7 +94,6 @@ class TestArchivesSpaceClass(unittest.TestCase):
         original_object_json = self.good_aspace_connection.get_object(test_record_type,
                                                                  test_object_id,
                                                                  test_object_repo_uri)
-        print(original_object_json)
         test_response = self.good_aspace_connection.update_object(original_object_json['uri'],
                                                              original_object_json)
         self.assertEqual(test_response['status'], 'Updated')

@@ -102,9 +102,10 @@ def main(original_building, updated_building, jsonl_path, dry_run=False):
         if dry_run:
             print(f'This is the updated location: {updated_location}')
         else:
-            update_result = local_aspace.update_object(updated_location['uri'], updated_location)
-            print(update_result)
-            logger.info(update_result)
+            if updated_location:
+                update_result = local_aspace.update_object(updated_location['uri'], updated_location)
+                print(update_result)
+                logger.info(update_result)
 
 
 # Call with `python update_locationbuilding.py ob=<original_building_name> uB=<updated_building_name> <jsonl_filepath>.jsonl <log_folder_path>`

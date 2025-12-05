@@ -1,6 +1,6 @@
 test_record_type = 'digital_objects'
-test_object_id = 20
-test_object_repo_uri = '/repositories/12'
+test_object_id = 1250203
+test_object_repo_uri = '/repositories/11'
 test_object_user_identifier = 'NMAI.AC.066.ref21.1'
 
 test_digital_object_dates = {'lock_version': 1,

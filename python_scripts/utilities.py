@@ -224,7 +224,7 @@ class ASpaceDatabase:
         """
         try:
             self.cursor.execute(statement)
-        except mysql.Error as error:
+        except mysql.ProgrammingError as error:
             record_error('query_database() - SQL query was invalid', error)
             raise error
         else:

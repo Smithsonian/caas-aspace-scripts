@@ -3,7 +3,7 @@
 import unittest
 
 from dotenv import load_dotenv, find_dotenv
-from python_scripts.repeatable.update_locations import *
+from python_scripts.repeatable.update_locationrepo import *
 from python_scripts.utilities import *
 
 # Hardcode to dev env

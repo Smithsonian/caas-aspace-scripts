@@ -5,6 +5,7 @@ import json
 import os
 import unittest
 
+import mysql.connector
 from dotenv import load_dotenv, find_dotenv
 from pathlib import Path
 from python_scripts.utilities import *
@@ -211,13 +212,16 @@ class TestASpaceDatabaseClass(unittest.TestCase):
         with self.assertRaises(mysql.Error):
             test_dbconnection.query_database(test_bad_query)
 
-    def test_invalid_query(self):  # TODO: this test keeps failing because not properly escaping the error
-        """Tests that an invalid building location name returns an escaped error"""
+    def test_invalid_query(self):
+        """Tests that an invalid building location name (") returns an escaped error"""
         invalid_query_syntax = '"'
         test_query = ('SELECT location.id FROM location '
                          'WHERE '
                          f'location.building = "{invalid_query_syntax}"')
-        self.assertRaises(mysql.ProgrammingError, test_dbconnection.query_database(test_query))
+        with self.assertRaises(mysql.ProgrammingError) as raised_exception:
+            test_dbconnection.query_database(test_query)
+        mysql_error = raised_exception.exception
+        self.assertEqual(mysql_error.msg, r'''You have an error in your SQL syntax; check the manual that corresponds to your MySQL server version for the right syntax to use near '"""' at line 1''')
 
 
 class TestClientLogin(unittest.TestCase):

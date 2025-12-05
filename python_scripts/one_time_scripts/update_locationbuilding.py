@@ -60,7 +60,7 @@ def update_building_name(location_json, updated_name):
 
     Args:
         location_json (dict): the JSON data for the location object
-        updated_name (str): the building name to update
+        updated_name (str): the new building name
 
     Returns:
         updated_location (dict): the updated JSON data without leading zeros if present in coordinate indicators

@@ -1,6 +1,4 @@
 #!/usr/bin/env python
-from http.client import HTTPException
-
 import mysql.connector as mysql
 import csv
 import jsonlines
@@ -8,6 +6,7 @@ import requests
 
 from asnake.client import ASnakeClient
 from asnake.client.web_client import ASnakeAuthError
+from http.client import HTTPException
 from jsonlines import InvalidLineError
 from loguru import logger
 from mysql.connector import errorcode

@@ -16,7 +16,7 @@ from loguru import logger
 from pathlib import Path
 
 sys.path.append(os.path.dirname('python_scripts'))  # Needed to import functions from utilities.py
-from python_scripts.utilities import ASpaceAPI, ASpaceDatabase, record_error
+from python_scripts.utilities import ASpaceAPI, ASpaceDatabase, record_error, write_to_file
 
 # Find  and load environment-specific .env file
 env_file = find_dotenv(f'.env.{os.getenv("ENV", "dev")}')
@@ -136,8 +136,8 @@ def main(original_building, jsonl_path, updated_building=None, move_floor=False,
     matching_ids = location_ids(original_building, as_database)
     location_uris = []
     for location_id in matching_ids:
-        # location_json = local_aspace.get_object('locations', location_id)
-        # write_to_file(jsonl_path, location_json)
+        location_json = local_aspace.get_object('locations', location_id)
+        write_to_file(jsonl_path, location_json)
         location_uris.append(f'/locations/{location_id}')
         if move_floor:
             updated_location = move_room_to_floor(location_json)

@@ -8,7 +8,7 @@ import sys
 from dotenv import load_dotenv, find_dotenv
 from loguru import logger
 from pathlib import Path
-from python_scripts.utilities import check_url, client_login, read_csv
+from python_scripts.utilities import client_login, read_csv
 
 # Logging
 logger.remove()

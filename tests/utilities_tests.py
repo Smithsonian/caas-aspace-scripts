@@ -2,6 +2,7 @@
 import contextlib
 import io
 import json
+import mysql.connector
 import os
 import unittest
 
@@ -60,7 +61,7 @@ class TestArchivesSpaceClass(unittest.TestCase):
     def test_get_digobjs_set(self):
         """Tests getting an ID Set of digital objects returns the list of digital objects from the API"""
         self.good_aspace_connection.get_repo_info()
-        id_set_values = [20,1204715,314276]
+        id_set_values = [183037,1204715,314276]
         test_digitalobjects = self.good_aspace_connection.get_objects(self.good_aspace_connection.repo_info[1]['uri'],
                                                                  test_record_type,
                                                                  ('id_set', id_set_values))
@@ -86,7 +87,7 @@ class TestArchivesSpaceClass(unittest.TestCase):
                                               test_object_repo_uri)
 
         self.assertTrue(
-            r"""get_object() - Unable to retrieve object with provided URI: /repositories/12/digital_objects/10000000000000000: {'error': 'DigitalObject not found'}""" in f.getvalue())
+            r"""get_object() - Unable to retrieve object with provided URI: /repositories/11/digital_objects/10000000000000000: {'error': 'DigitalObject not found'}""" in f.getvalue())
 
     def test_aspace_post_response(self):
         """Tests that a post with an existing URI returns Status: Updated and no warnings"""
@@ -209,6 +210,17 @@ class TestASpaceDatabaseClass(unittest.TestCase):
         test_bad_query = ('SELECT nothing, username FROM user')
         with self.assertRaises(mysql.Error):
             test_dbconnection.query_database(test_bad_query)
+
+    def test_invalid_query(self):
+        """Tests that an invalid building location name (") returns an escaped error"""
+        invalid_query_syntax = '"'
+        test_query = ('SELECT location.id FROM location '
+                         'WHERE '
+                         f'location.building = "{invalid_query_syntax}"')
+        with self.assertRaises(mysql.ProgrammingError) as raised_exception:
+            test_dbconnection.query_database(test_query)
+        mysql_error = raised_exception.exception
+        self.assertEqual(mysql_error.msg, r'''You have an error in your SQL syntax; check the manual that corresponds to your MySQL server version for the right syntax to use near '"""' at line 1''')
 
 
 class TestClientLogin(unittest.TestCase):

@@ -262,16 +262,17 @@ def client_login(as_api, as_un, as_pw):
         return client
 
 
-def read_csv(csv_file):
+def read_csv(csv_file, encoding_type='UTF-8'):
     """
     Args:
         csv_file (str): filepath for the subjects csv
+        encoding_type (str): the encoding type you want to use for the file provided
 
     Returns:
         csv_dict (list): a list of subjects to update and their metadata based on the csv contents
     """
     try:
-        open_csv = open(csv_file, 'r', encoding='UTF-8')
+        open_csv = open(csv_file, 'r', encoding=encoding_type)
         csv_dict = csv.DictReader(open_csv)
     except IOError as csverror:
         logger.error(f'ERROR reading csv file: {csverror}')

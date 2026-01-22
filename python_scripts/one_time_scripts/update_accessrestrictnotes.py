@@ -51,6 +51,7 @@ def main(accessrestrict_csv, backup_jsonl, dry_run=False):
     resources = read_csv(accessrestrict_csv, encoding_type='UTF-8-SIG')
     for resource in resources:
         if resource['updated_access_note']:
+            accessrestrict_count = 0
             uri_components = resource['resource_uri'].split('/')
             original_resource_data = local_aspace.get_object(uri_components[3], uri_components[4], f'{uri_components[1]}/{uri_components[2]}')
             write_to_file(backup_jsonl, original_resource_data)
@@ -58,21 +59,27 @@ def main(accessrestrict_csv, backup_jsonl, dry_run=False):
             for note in updated_resource['notes']:
                 if 'type' in note:
                     if note['type'] == 'accessrestrict':
-                        if len(note['subnotes']) > 1:
-                            logger.warning(f'There are more than 1 subnotes to this accessrestrict note. Only the '
-                                           f'first subnote will be updated.\n{note["subnotes"]}')
-                        old_accessrestrict = note['subnotes'][0]['content']
-                        note['subnotes'][0]['content'] = resource['updated_access_note']
-                        if dry_run:
-                            logger.info(f'{resource["Id"]}\n'
-                                        f'Old accessrestrict note: {old_accessrestrict}\n'
-                                        f'Updated accessrestrict note: {resource["updated_access_note"]}')
-                            print(f'{resource["Id"]}\n'
-                                  f'Old accessrestrict note: {old_accessrestrict}\n'
-                                  f'Updated accessrestrict note: {resource["updated_access_note"]}\n\n')
+                        if accessrestrict_count == 0:
+                            if len(note['subnotes']) > 1:
+                                logger.warning(f'There are more than 1 subnotes to this accessrestrict note. Only the '
+                                               f'first subnote will be updated.\n{note["subnotes"]}')
+                            old_accessrestrict = note['subnotes'][0]['content']
+                            note['subnotes'][0]['content'] = resource['updated_access_note']
+                            if dry_run:
+                                logger.info(f'{resource["Id"]}\n'
+                                            f'Old accessrestrict note: {old_accessrestrict}\n'
+                                            f'Updated accessrestrict note: {resource["updated_access_note"]}')
+                                print(f'{resource["Id"]}\n'
+                                      f'Old accessrestrict note: {old_accessrestrict}\n'
+                                      f'Updated accessrestrict note: {resource["updated_access_note"]}\n\n')
+                            else:
+                                update_message = local_aspace.update_object(resource['resource_uri'], updated_resource)
+                                logger.info(f'main() - Updated {resource["Id"]}: {update_message}')
+                                print(f'main() - Updated {resource["Id"]}: {update_message}')
+                            accessrestrict_count += 1
                         else:
-                            update_message = local_aspace.update_object(resource['resource_uri'], updated_resource)
-                            logger.info(f'main() - Updated {resource["Id"]}: {update_message}')
+                            logger.info(f'main() - More than 1 accessrestrict note exists, only updating the first. '
+                                        f'Additional accessrestrict notes: {note}')
 
 
 

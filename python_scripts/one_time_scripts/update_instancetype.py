@@ -53,13 +53,14 @@ def main(instances_csv, jsonl_path, dry_run=False):
                     if 'digital_object' in instance:
                         pass
                     else:
+                        original_instance_type = instance['instance_type']
                         instance['instance_type'] = archival_object['updated_instance_value']
                         if dry_run:
-                            print(f'{archival_object['ao_refID']}: {instance['instance_type']} > '
-                                  f'{archival_object['updated_instance_value']}')
-                            logger.info(f'{archival_object['ao_refID']}: {instance['instance_type']} > '
-                                        f'{archival_object['updated_instance_value']}')
-                        else:
+                            print(f'{archival_object['ao_refID']}: {original_instance_type} > '
+                                  f'{instance['instance_type']}')
+                            logger.info(f'{archival_object['ao_refID']}: {original_instance_type} > '
+                                        f'{instance['instance_type']}')
+                        else:  # TODO: This only updates the first instance - receive 'The record you tried to update has been modified since you fetched it.' when trying to update subsequent instances
                             post_result = aspace_api.update_object(ao_json['uri'], ao_json)
                             print(post_result)
                             logger.info(post_result)

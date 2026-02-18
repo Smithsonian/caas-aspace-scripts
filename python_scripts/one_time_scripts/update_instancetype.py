@@ -1,5 +1,8 @@
 #!/usr/bin/python3
-# This script
+# This script takes a CSV containing archival object IDs, retrieves the archival object JSON from the ArchivesSpace
+# API, checks for container instances associated with the archival object, updates the FIRST instance's instance type
+# to the updated_instance_value, then posts the result back to ArchivesSpace.
+# NOTE: This script is hard-coded to work with NMAH
 import argparse
 import os
 import sys
@@ -33,7 +36,12 @@ def parseArguments():
 
 def main(instances_csv, jsonl_path, dry_run=False):
     """
-    This script
+    NOTE: This script is hard-coded to work with NMAH in the repo_uri parameter when calling aspace_api.get_object()
+    Takes a CSV containing archival object IDs (column ao_ID), archival object ref IDs (column ao_refID),
+    and the value of the instance to update to (column updated_instance_value), retrieves the archival object JSON from
+    the ArchivesSpace API, checks for container instances associated with the archival object, updates the FIRST
+    instance's instance type to the updated_instance_value, then posts the result back to ArchivesSpace.
+
 
     Args:
         instances_csv (str): filepath of the CSV containing archival object URIs and instance type value to update
@@ -66,7 +74,7 @@ def main(instances_csv, jsonl_path, dry_run=False):
                             logger.info(post_result)
 
 
-# Call with `python update_instancetype.py <jsonl_filepath>.jsonl <log_folder_path>`
+# Call with `python update_instancetype.py <instances_csv_filepath>.csv <jsonl_filepath>.jsonl <log_folder_path>`
 if __name__ == "__main__":
     args = parseArguments()
 

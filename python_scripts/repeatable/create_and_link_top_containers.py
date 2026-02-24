@@ -24,7 +24,8 @@ def parseArguments():
     """Parses the arguments fed to the script from the terminal or within a run configuration"""
     parser = argparse.ArgumentParser()
 
-    parser.add_argument("csvPath", help="path to CSV input file", type=str)
+    parser.add_argument("csvInPath", help="path to CSV input file", type=str)
+    parser.add_argument("csvOutPath", help="path to CSV output file", type=str)
     parser.add_argument("repoId", help="repo id for new locations", type=int)
     parser.add_argument("-dR", "--dry-run", help="dry run?", action='store_true')
     parser.add_argument("--version", action="version", version='%(prog)s - Version 1.0')
@@ -118,7 +119,7 @@ def build_updated_rec(rec, tc_uri, row):
 
     return rec
 
-def main(csv_path, repo_id, dry_run=False):
+def main(csv_in_path, csv_out_path, repo_id, dry_run=False):
     """
     This script takes a CSV of top container data, creates those new top containers, and
     (optionally) links those new top containers to an archival object or resource.
@@ -136,15 +137,15 @@ def main(csv_path, repo_id, dry_run=False):
     - location_id (optional), ex: 1
     
     Args:
-        csv_path (str): filepath of the CSV file with top container, instance, and linked object data
+        csv_in_path (str): filepath of the CSV file with top container, instance, and linked object data
+        csv_out_path (str): filepath of the CSV to log to
         repo_id (int): repo_id of the locations to be created
         dry_run (bool): if True, it prints the changed object_json but does not post the changes to ASpace
     """
     local_aspace = ASpaceAPI(os.getenv('as_api'), os.getenv('as_un'), os.getenv('as_pw'))
-    with open('./logs/output.csv', mode='w', newline='', encoding='utf-8') as outfile:
-        for row in read_csv(csv_path):
+    with open(csv_out_path, mode='w', newline='', encoding='utf-8') as outfile:
+        for row in read_csv(csv_in_path):
             row['mode'] = 'test update' if dry_run else 'updated'
-
             top_container_uri = ''
             record_to_link = row['link_to_uri']
 
@@ -198,4 +199,4 @@ if __name__ == '__main__':
         print(str(arg) + ": " + str(args.__dict__[arg]))
 
     # Run function
-    main(csv_path=args.csvPath, repo_id=args.repoId, dry_run=args.dry_run)
+    main(csv_in_path=args.csvInPath, csv_out_path=args.csvOutPath, repo_id=args.repoId, dry_run=args.dry_run)

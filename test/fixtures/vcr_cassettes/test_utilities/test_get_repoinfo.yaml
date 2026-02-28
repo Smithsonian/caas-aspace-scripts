@@ -1,0 +1,40 @@
+interactions:
+- request:
+    body: null
+    headers:
+      Accept:
+      - application/json
+      Accept-Encoding:
+      - gzip, deflate
+      Connection:
+      - keep-alive
+      User-Agent:
+      - ArchivesSnake/0.1
+      X-ArchivesSpace-Session:
+      - '[REDACTED]'
+    method: GET
+    uri: http://localhost:4567/repositories
+  response:
+    body:
+      string: '[{"lock_version":0,"repo_code":"test_repo_37","name":"Test repository
+        392","created_by":"admin","last_modified_by":"admin","create_time":"2026-02-27T23:18:03Z","system_mtime":"2026-02-27T23:18:03Z","user_mtime":"2026-02-27T23:18:03Z","publish":false,"oai_is_disabled":false,"slug":"test_repo_37","is_slug_auto":true,"position":1,"country":"US","jsonmodel_type":"repository","uri":"/repositories/2","display_string":"Test
+        repository 392 (test_repo_37)","agent_representation":{"ref":"/agents/corporate_entities/1"}}]
+
+        '
+    headers:
+      Cache-Control:
+      - private, must-revalidate, max-age=0
+      Content-Length:
+      - '516'
+      Content-Type:
+      - application/json
+      Date:
+      - Fri, 27 Feb 2026 23:20:15 GMT
+      Server:
+      - Jetty(9.4.44.v20210927)
+      X-Content-Type-Options:
+      - nosniff
+    status:
+      code: 200
+      message: OK
+version: 1

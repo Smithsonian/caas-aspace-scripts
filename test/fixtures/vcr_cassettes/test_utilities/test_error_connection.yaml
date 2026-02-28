@@ -1,0 +1,65 @@
+interactions:
+- request:
+    body: password=[REDACTED]&expiring=False
+    headers:
+      Accept:
+      - application/json
+      Accept-Encoding:
+      - gzip, deflate
+      Connection:
+      - keep-alive
+      Content-Length:
+      - '31'
+      Content-Type:
+      - application/x-www-form-urlencoded
+      User-Agent:
+      - ArchivesSnake/0.1
+    method: POST
+    uri: https://www.cnn.com/users/garbage/login
+  response:
+    body:
+      string: "\n<?xml version=\"1.0\" encoding=\"utf-8\"?>\n<!DOCTYPE html PUBLIC
+        \"-//W3C//DTD XHTML 1.0 Strict//EN\"\n \"http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd\">\n<html>\n
+        \ <head>\n    <title>405 Method Not Allowed</title>\n  </head>\n  <body>\n
+        \   <h1>Error 405 Method Not Allowed</h1>\n    <p>Method Not Allowed</p>\n
+        \   <h3>Error 54113</h3>\n    <p>Details: cache-iad-kcgs7200144-IAD 1772236856
+        3874063794</p>\n    <hr>\n    <p>Varnish cache server</p>\n  </body>\n</html>\n"
+    headers:
+      Accept-Ranges:
+      - bytes
+      Connection:
+      - close
+      Content-Length:
+      - '452'
+      Content-Type:
+      - text/html; charset=utf-8
+      Date:
+      - Sat, 28 Feb 2026 00:00:55 GMT
+      Retry-After:
+      - '0'
+      Vary:
+      - Origin
+      Via:
+      - 1.1 varnish
+      X-Cache:
+      - MISS
+      X-Cache-Hits:
+      - '0'
+      X-Served-By:
+      - cache-iad-kcgs7200144-IAD
+      X-Timer:
+      - S1772236856.811282,VS0,VE2
+      allow:
+      - GET, HEAD, POST, PUT, DELETE, OPTIONS
+      alt-svc:
+      - h3=":443";ma=86400,h3-29=":443";ma=86400,h3-27=":443";ma=86400
+      set-cookie:
+      - SecGpc=0; Domain=.cnn.com; Path=/; SameSite=None; Secure
+      - countryCode=US; Domain=.cnn.com; Path=/; SameSite=None; Secure
+      - stateCode=MD; Domain=.cnn.com; Path=/; SameSite=None; Secure
+      - geoData=baltimore|MD|21230|US|NA|-500|cable|39.270|-76.630|512; Domain=.cnn.com;
+        Path=/; SameSite=None; Secure
+    status:
+      code: 405
+      message: Method Not Allowed
+version: 1

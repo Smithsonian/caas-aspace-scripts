@@ -187,7 +187,7 @@ def main(csv_in_path, csv_out_path, repo_id, dry_run=False):
             writer.writeheader()
             writer.writerow(row)
 
-# Call with `python create_and_link_top_containers.py <filename>.csv`
+# Call with `python create_and_link_top_containers.py <input_filename>.csv <output_filename>.csv <repo_id>`
 if __name__ == '__main__':
     args = parseArguments()
 

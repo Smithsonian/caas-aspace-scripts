@@ -1,0 +1,42 @@
+interactions:
+- request:
+    body: null
+    headers:
+      Accept:
+      - application/json
+      Accept-Encoding:
+      - gzip, deflate
+      Connection:
+      - keep-alive
+      User-Agent:
+      - ArchivesSnake/0.1
+      X-ArchivesSpace-Session:
+      - '[REDACTED]'
+    method: GET
+    uri: http://localhost:4567/search?aq=%7B%22jsonmodel_type%22:%20%22advanced_query%22,%20%22query%22:%20%7B%22jsonmodel_type%22:%20%22boolean_query%22,%20%22op%22:%20%22AND%22,%20%22subqueries%22:%20%5B%7B%22jsonmodel_type%22:%20%22field_query%22,%20%22field%22:%20%22title%22,%20%22value%22:%20%22Profile%201%20%5B3.1d,%201.1h,%202.1w%20Feet%5D%22%7D%5D%7D%7D&type%5B%5D=location_profile&page=1
+  response:
+    body:
+      string: '{"page_size":10,"first_page":1,"last_page":1,"this_page":1,"offset_first":1,"offset_last":1,"total_hits":1,"results":[{"id":"/location_profiles/1","uri":"/location_profiles/1","title":"Profile
+        1 [3.1d, 1.1h, 2.1w Feet]","title_ws":"Profile 1 [3.1d, 1.1h, 2.1w Feet]","primary_type":"location_profile","types":["location_profile"],"json":"{\"lock_version\":1,\"name\":\"Profile
+        1\",\"height\":\"1.1\",\"width\":\"2.1\",\"depth\":\"3.1\",\"created_by\":\"admin\",\"last_modified_by\":\"admin\",\"create_time\":\"2026-02-27T23:18:08Z\",\"system_mtime\":\"2026-02-27T23:18:08Z\",\"user_mtime\":\"2026-02-27T23:18:08Z\",\"dimension_units\":\"feet\",\"jsonmodel_type\":\"location_profile\",\"uri\":\"/location_profiles/1\",\"display_string\":\"Profile
+        1 [3.1d, 1.1h, 2.1w Feet]\"}","suppressed":false,"publish":false,"system_generated":false,"repository":"global","dimension_units_enum_s":["feet"],"created_by":"admin","last_modified_by":"admin","user_mtime":"2026-02-27T23:18:08Z","system_mtime":"2026-02-27T23:18:08Z","create_time":"2026-02-27T23:18:08Z","display_string":"Profile
+        1 [3.1d, 1.1h, 2.1w Feet]","location_profile_width_u_sstr":["2.1"],"location_profile_height_u_sstr":["1.1"],"location_profile_depth_u_sstr":["3.1"],"location_profile_dimension_units_u_sstr":["feet"],"jsonmodel_type":"location_profile"}],"facets":{"facet_queries":{},"facet_fields":{},"facet_ranges":{},"facet_intervals":{},"facet_heatmaps":{}}}
+
+        '
+    headers:
+      Cache-Control:
+      - private, must-revalidate, max-age=0
+      Content-Length:
+      - '1422'
+      Content-Type:
+      - application/json
+      Date:
+      - Fri, 27 Feb 2026 23:26:33 GMT
+      Server:
+      - Jetty(9.4.44.v20210927)
+      X-Content-Type-Options:
+      - nosniff
+    status:
+      code: 200
+      message: OK
+version: 1

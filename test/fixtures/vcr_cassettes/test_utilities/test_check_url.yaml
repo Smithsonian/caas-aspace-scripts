@@ -1,0 +1,61 @@
+interactions:
+- request:
+    body: null
+    headers:
+      Accept:
+      - '*/*'
+      Accept-Encoding:
+      - gzip, deflate
+      Connection:
+      - keep-alive
+      User-Agent:
+      - python-requests/2.32.5
+    method: HEAD
+    uri: https://www.si.edu/
+  response:
+    body:
+      string: ''
+    headers:
+      Accept-Ranges:
+      - bytes
+      Age:
+      - '555'
+      Cache-Control:
+      - max-age=3600, public
+      Cache-Tag:
+      - 7ef4,67mu,4ik5,akh6,ceqx,3la0,a9l9,5sjb,8v13,akcm,9oc8,92oz,eiqt,5f6o,56fy,69xd,c7jm,2t4d,5mjs,a6hc,d5k0,8zcz,6wa5,9hg8,5b6d,bh8e,49ps,4zy5,ddyu,269x,xx5k,air6,8hkh,2cih,76pm,15my,e2ve,32qc,14dr,gi9e,ek6e,30lv,5y42,ai6b,4zx7,7p2u,a0dt,azk8,5fcw,9eop,4jal,43ij,c7vy,4r78,612y,5ojh,dnny,mjik,2mmp,61ez,652b,9p84,4135,9bwx,e0sx,4z2p,dkcn,e0n3,4vqa,1pt8,dvn1,a61c,6s3m,761j,e3sj,egrw,blkf,cqmo,bg2t,90mt,6oaw,ap5p,9nsq,7mmq,dvuq,30vv,3ioj,3o1s,cfbm,a3pw,2mv6,8o9z,e6cl,9xul,botr,6zk3,8fn7,4yu5,6oo8,9509,8na8,6kh8,11nu,6j7l,bwz3,86b6,f2yy,68ut,4ew9,y2rp,f491,cizj,9k85,byjd,61zi,9wq6,3v6l,507c,6kv5,7qui,1utv,19fn,ape4,armi,66yw,2tse,9uu5,9s4p,c6dr,1yaf,buex,fdjd,4ewr,v88a,4q95,987j,9vlk,8ecy,dva1,16na,8hmr,boel,bxu6,cych,az06,55qg,a939,5933,7oer,9zr4,dbdb,bcw3,2o2w,dmuw,448d,fscp,7vy1,99t3,2v94,aim4,5lvs,2gdr,7us7,6rqp,eac7,1sqp,1ku8,3y2q,76of,2e4u,bwxz,dawc,2p95,5qvi,9i79,9k23,3ss9,3767,2izy,4rqs,areh,av5a,8vp3,2ahf,5sis,89yd,2v2f,36rv,b8al,ezjy,dnvn,dx66,auws,usch,2ehc,5ey6,9it6,23as,8tqo,d7gd,68ro,6lis,ze8p,cqls,ox6i,xscb,9kgm,2so5,6uxo,disl,27ih,1tmg,fha5,6ll2,488b,43zv,9620,1a2u,e3qe,4wsq,6k8l,5r3n,chxi,9cv4,zud6,3a9e,budt,67ld,3yeb,64kn,cfxw,12xp,2ivj,26zd,14jn,e5s8,4uor,4t2h,52lv,def3,dioi,9zmd,3sl8,emiz
+      Connection:
+      - Keep-Alive
+      Content-Encoding:
+      - gzip
+      Content-Length:
+      - '34773'
+      Content-Type:
+      - text/html; charset=UTF-8
+      Content-language:
+      - en
+      Date:
+      - Fri, 27 Feb 2026 23:20:16 GMT
+      ETag:
+      - '"1772231489"'
+      Expires:
+      - Fri, 27 Feb 2026 23:31:33 GMT
+      Last-Modified:
+      - Fri, 27 Feb 2026 22:31:29 GMT
+      Referrer-Policy:
+      - no-referrer-when-downgrade
+      Vary:
+      - Cookie, Accept-Encoding
+      X-Content-Type-Options:
+      - nosniff
+      - nosniff
+      X-Drupal-Cache:
+      - HIT
+      X-Drupal-Dynamic-Cache:
+      - UNCACHEABLE (poor cacheability)
+      X-Frame-Options:
+      - SAMEORIGIN
+    status:
+      code: 200
+      message: OK
+version: 1

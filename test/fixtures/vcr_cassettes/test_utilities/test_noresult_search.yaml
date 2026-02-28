@@ -1,0 +1,38 @@
+interactions:
+- request:
+    body: null
+    headers:
+      Accept:
+      - application/json
+      Accept-Encoding:
+      - gzip, deflate
+      Connection:
+      - keep-alive
+      User-Agent:
+      - ArchivesSnake/0.1
+      X-ArchivesSpace-Session:
+      - '[REDACTED]'
+    method: GET
+    uri: http://localhost:4567/repositories/2/search?aq=%7B%22jsonmodel_type%22:%20%22advanced_query%22,%20%22query%22:%20%7B%22jsonmodel_type%22:%20%22boolean_query%22,%20%22op%22:%20%22AND%22,%20%22subqueries%22:%20%5B%7B%22jsonmodel_type%22:%20%22field_query%22,%20%22field%22:%20%22title%22,%20%22value%22:%20%22Test%20resource%2010%22,%20%22literal%22:%20true%7D%5D%7D%7D&type%5B%5D=resource&page=1
+  response:
+    body:
+      string: '{"page_size":10,"first_page":1,"last_page":0,"this_page":1,"offset_first":1,"offset_last":0,"total_hits":0,"results":[],"facets":{"facet_queries":{},"facet_fields":{},"facet_ranges":{},"facet_intervals":{},"facet_heatmaps":{}}}
+
+        '
+    headers:
+      Cache-Control:
+      - private, must-revalidate, max-age=0
+      Content-Length:
+      - '228'
+      Content-Type:
+      - application/json
+      Date:
+      - Fri, 27 Feb 2026 23:24:26 GMT
+      Server:
+      - Jetty(9.4.44.v20210927)
+      X-Content-Type-Options:
+      - nosniff
+    status:
+      code: 200
+      message: OK
+version: 1

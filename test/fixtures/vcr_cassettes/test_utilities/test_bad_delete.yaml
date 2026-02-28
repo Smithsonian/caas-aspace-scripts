@@ -1,0 +1,40 @@
+interactions:
+- request:
+    body: null
+    headers:
+      Accept:
+      - application/json
+      Accept-Encoding:
+      - gzip, deflate
+      Connection:
+      - keep-alive
+      Content-Length:
+      - '0'
+      User-Agent:
+      - ArchivesSnake/0.1
+      X-ArchivesSpace-Session:
+      - '[REDACTED]'
+    method: DELETE
+    uri: http://localhost:4567/repositories/1000000/resources/915534548632131
+  response:
+    body:
+      string: '{"error":{"repo_id":["Failed validation -- The Repository must exist"]}}
+
+        '
+    headers:
+      Cache-Control:
+      - private, must-revalidate, max-age=0
+      Content-Length:
+      - '73'
+      Content-Type:
+      - application/json
+      Date:
+      - Fri, 27 Feb 2026 23:20:15 GMT
+      Server:
+      - Jetty(9.4.44.v20210927)
+      X-Content-Type-Options:
+      - nosniff
+    status:
+      code: 400
+      message: Bad Request
+version: 1

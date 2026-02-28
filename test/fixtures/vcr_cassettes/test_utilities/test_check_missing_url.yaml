@@ -1,0 +1,57 @@
+interactions:
+- request:
+    body: null
+    headers:
+      Accept:
+      - '*/*'
+      Accept-Encoding:
+      - gzip, deflate
+      Connection:
+      - keep-alive
+      User-Agent:
+      - python-requests/2.32.5
+    method: HEAD
+    uri: https://www.si.edu/nothinghere
+  response:
+    body:
+      string: ''
+    headers:
+      Cache-Control:
+      - max-age=3600, public
+      Cache-Tag:
+      - 7ef4,67mu,4ik5,akh6,ceqx,3la0,a9l9,5sjb,8v13,akcm,9oc8,92oz,eiqt,5f6o,56fy,6vp4,c7jm,2t4d,5mjs,a6hc,d5k0,8zcz,6wa5,9hg8,5b6d,bh8e,49ps,4zy5,ddyu,269x,xx5k,air6,8hkh,2cih,76pm,15my,e2ve,32qc,14dr,gi9e,ek6e,30lv,5y42,ai6b,4zx7,7p2u,a0dt,azk8,5fcw,9eop,4jal,43ij,c7vy,4r78,612y,5ojh,b0iy,2mmp,deic,mjik,3o1s,cfbm,2b4w,9uu5,dioi,ezjy,7d4k,4imp,e6cl,fscp,fha5,6ll2,488b,2v2f,4rqs,43zv,9620,1a2u,e3qe,4wsq,89yd,6k8l,5r3n,chxi,8vp3,y2rp,9cv4,zud6,3a9e,budt,2ahf,67ld,3yeb,64kn,cfxw,12xp,2ivj,26zd,14jn,e5s8,4uor,4t2h,52lv,def3,9zmd,3sl8,alj5,emiz
+      Connection:
+      - keep-alive
+      Content-Length:
+      - '44633'
+      Content-Type:
+      - text/html; charset=UTF-8
+      Content-language:
+      - en
+      Date:
+      - Fri, 27 Feb 2026 22:41:16 GMT
+      ETag:
+      - '"1772232075"'
+      Expires:
+      - Sun, 19 Nov 1978 05:00:00 GMT
+      Last-Modified:
+      - Fri, 27 Feb 2026 22:41:15 GMT
+      Server:
+      - nginx
+      Vary:
+      - Cookie
+      X-Content-Type-Options:
+      - nosniff
+      - nosniff
+      X-Drupal-Cache:
+      - HIT
+      X-Drupal-Dynamic-Cache:
+      - UNCACHEABLE (poor cacheability)
+      X-Frame-Options:
+      - SAMEORIGIN
+      X-Generator:
+      - Drupal 10 (https://www.drupal.org)
+    status:
+      code: 404
+      message: Not Found
+version: 1

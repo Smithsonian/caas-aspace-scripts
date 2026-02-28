@@ -151,15 +151,17 @@ class ASpaceAPI:
 
         Args:
             query (dict): a valid ArchivesSpace json query
-            repo_id (int): an optional repo_id to search in
+            obj_type (int): an *optional* object type (e.g. 'top_container', 'resource', etc.) to filter search results by
+            repo_id (int): an *optional* repo_id to search in
 
         Returns:
             result (list): ArchivesSpace response or None
         """
+        type_filter = '' if obj_type is None else f'&type[]={obj_type}'
         if repo_id:
-            search_results = self.aspace_client.get(f'/repositories/{repo_id}/search?aq={json.dumps(query)}&type[]={obj_type}&page=1').json()
+            search_results = self.aspace_client.get(f'/repositories/{repo_id}/search?aq={json.dumps(query)}{type_filter}&page=1').json()
         else:
-            search_results = self.aspace_client.get(f'/search?aq={json.dumps(query)}&type[]={obj_type}&page=1').json()
+            search_results = self.aspace_client.get(f'/search?aq={json.dumps(query)}{type_filter}&page=1').json()
         if 'error' in search_results:
             record_error('search_object() - Search failed due to following error', search_results)
         else:

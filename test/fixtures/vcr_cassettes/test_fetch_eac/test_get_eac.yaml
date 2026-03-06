@@ -1,0 +1,170 @@
+interactions:
+- request:
+    body: null
+    headers:
+      Accept:
+      - application/json
+      Accept-Encoding:
+      - gzip, deflate
+      Connection:
+      - keep-alive
+      User-Agent:
+      - ArchivesSnake/0.1
+      X-ArchivesSpace-Session:
+      - '[REDACTED]'
+    method: GET
+    uri: http://localhost:4567/repositories/2/archival_contexts/corporate_entities/3.xml
+  response:
+    body:
+      string: "<?xml version=\"1.0\" encoding=\"UTF-8\"?>\n<eac-cpf xml:lang=\"eng\"
+        xmlns=\"urn:isbn:1-931666-33-4\" xmlns:html=\"http://www.w3.org/1999/xhtml\"
+        xmlns:xlink=\"http://www.w3.org/1999/xlink\" xmlns:xsi=\"http://www.w3.org/2001/XMLSchema-instance\"
+        xsi:schemaLocation=\"urn:isbn:1-931666-33-4 https://eac.staatsbibliothek-berlin.de/schema/cpf.xsd\">\n
+        \ <control>\n    <recordId>n  6789</recordId>\n    <otherRecordId localType=\"other_unmapped\">l
+        6789</otherRecordId>\n    <maintenanceStatus>revised</maintenanceStatus>\n
+        \   <publicationStatus>approved</publicationStatus>\n    <maintenanceAgency>\n
+        \     <agencyName>Agency Name</agencyName>\n      <descriptiveNote>\n        <p>Maintenance
+        Agency Note</p>\n      </descriptiveNote>\n    </maintenanceAgency>\n    <languageDeclaration>\n
+        \     <language languageCode=\"eng\">English</language>\n      <script scriptCode=\"Latn\">Latin</script>\n
+        \     <descriptiveNote>\n        <p>Language Note</p>\n      </descriptiveNote>\n
+        \   </languageDeclaration>\n    <conventionDeclaration>\n      <abbreviation>rda</abbreviation>\n
+        \     <citation lastDateTimeVerified=\"2025-07-18T00:00:00+00:00\" xlink:actuate=\"none\"
+        xlink:arcrole=\"Xlink Arcrole Attribute\" xlink:href=\"File URI\" xlink:role=\"Xlink
+        Role Attribute\" xlink:show=\"embed\" xlink:title=\"Xlink Title Attribute\">Citation
+        1</citation>\n      <descriptiveNote>\n        <p>Descriptive Note</p>\n      </descriptiveNote>\n
+        \   </conventionDeclaration>\n    <conventionDeclaration>\n      <abbreviation>aacr</abbreviation>\n
+        \     <citation lastDateTimeVerified=\"2025-07-18T00:00:00+00:00\" xlink:actuate=\"none\"
+        xlink:arcrole=\"Xlink Arcrole Attribute\" xlink:href=\"File URI\" xlink:role=\"Xlink
+        Role Attribute\" xlink:show=\"embed\" xlink:title=\"Xlink Title Attribute\">Citation
+        2</citation>\n      <descriptiveNote>\n        <p>Descriptive Note</p>\n      </descriptiveNote>\n
+        \   </conventionDeclaration>\n    <maintenanceHistory>\n      <maintenanceEvent>\n
+        \       <eventType>created</eventType>\n        <eventDateTime standardDateTime=\"2025-07-18T00:00:00+00:00\"/>\n
+        \       <agentType>human</agentType>\n        <agent>Agent</agent>\n        <eventDescription>Descriptive
+        Note</eventDescription>\n      </maintenanceEvent>\n      <maintenanceEvent>\n
+        \       <eventType>cancelled</eventType>\n        <eventDateTime standardDateTime=\"2025-07-18T00:00:00+00:00\"/>\n
+        \       <agentType>machine</agentType>\n        <agent>Agent</agent>\n        <eventDescription>Descriptive
+        Note</eventDescription>\n      </maintenanceEvent>\n    </maintenanceHistory>\n
+        \   <sources>\n      <source lastDateTimeVerified=\"2025-07-18T00:00:00+00:00\"
+        xlink:actuate=\"onRequest\" xlink:arcrole=\"Xlink Arcrole Attribute\" xlink:href=\"File
+        URI\" xlink:role=\"Xlink Role Attribute\" xlink:show=\"none\" xlink:title=\"Xlink
+        Title Attribute\">\n        <sourceEntry>Source Entry 1</sourceEntry>\n        <descriptiveNote>\n
+        \         <p>Descriptive Note</p>\n        </descriptiveNote>\n      </source>\n
+        \     <source lastDateTimeVerified=\"2025-07-18T00:00:00+00:00\" xlink:actuate=\"other\"
+        xlink:arcrole=\"Xlink Arcrole Attribute\" xlink:href=\"File URI\" xlink:role=\"Xlink
+        Role Attribute\" xlink:show=\"other\" xlink:title=\"Xlink Title Attribute\">\n
+        \       <sourceEntry>Source Entry 2</sourceEntry>\n        <descriptiveNote>\n
+        \         <p>Descriptive Note</p>\n        </descriptiveNote>\n      </source>\n
+        \   </sources>\n    <rightsDeclaration>\n      <abbr>public_domain</abbr>\n
+        \     <citation arcrole=\"Xlink Arcrole Attribute\" href=\"File URI\" role=\"Xlink
+        Role Attribute\">This record is made available under an Universal 1.0 Public
+        Domain Dedication Creative Commons license.</citation>\n      <descriptiveNote>\n
+        \       <p>Descriptive Note</p>\n      </descriptiveNote>\n    </rightsDeclaration>\n
+        \   <rightsDeclaration>\n      <abbr>non_commercial_no_derivatives</abbr>\n
+        \     <citation arcrole=\"Xlink Arcrole Attribute\" href=\"File URI\" role=\"Xlink
+        Role Attribute\">This record is made available under an Attribution-NonCommercial-NoDerivatives
+        4.0 International Creative Commons license.</citation>\n      <descriptiveNote>\n
+        \       <p>Descriptive Note</p>\n      </descriptiveNote>\n    </rightsDeclaration>\n
+        \ </control>\n  <cpfDescription>\n    <identity>\n      <entityId localType=\"loc\">Entity
+        IDs 1</entityId>\n      <entityId localType=\"lac\">Entity IDs 2</entityId>\n
+        \     <entityType>corporateBody</entityType>\n      <nameEntryParallel>\n
+        \       <nameEntry scriptCode=\"Latn\" transliteration=\"ala-lc\" xml:lang=\"eng\">\n
+        \         <part localType=\"primary_name\">Primary 1</part>\n          <part
+        localType=\"subordinate_name_1\">Sub 1-1</part>\n          <part localType=\"subordinate_name_2\">Sub
+        1-2</part>\n          <part localType=\"numeration\">Number</part>\n          <part
+        localType=\"qualifier\">Qualifier 1</part>\n          <part localType=\"location\">Location
+        1</part>\n          <part localType=\"dates\">1800-1900</part>\n          <preferredForm>local</preferredForm>\n
+        \         <authorizedForm>local</authorizedForm>\n        </nameEntry>\n        <useDates>\n
+        \         <dateRange localType=\"usage\">\n            <fromDate standardDate=\"1800\">1800</fromDate>\n
+        \           <toDate standardDate=\"1900\">1900</toDate>\n          </dateRange>\n
+        \       </useDates>\n        <nameEntry scriptCode=\"Latn\" transliteration=\"ala-lc\"
+        xml:lang=\"eng\">\n          <part localType=\"primary_name\">Parallel Primary
+        1</part>\n          <part localType=\"subordinate_name_1\">Sub Parallel 1-1</part>\n
+        \         <part localType=\"subordinate_name_2\">Sub Parallel 1-2</part>\n
+        \         <part localType=\"numeration\">Parallel Number</part>\n          <part
+        localType=\"qualifier\">Parallel Qualifier</part>\n          <part localType=\"location\">Location
+        2</part>\n          <part localType=\"dates\">Parallel Dates</part>\n        </nameEntry>\n
+        \     </nameEntryParallel>\n      <nameEntry scriptCode=\"Latf\" xml:lang=\"ger\">\n
+        \       <part localType=\"primary_name\">Primary 2</part>\n        <part localType=\"subordinate_name_1\">Sub
+        2-1</part>\n        <part localType=\"subordinate_name_2\">Sub 2-2</part>\n
+        \       <part localType=\"numeration\">Number</part>\n        <part localType=\"qualifier\">Qualifier</part>\n
+        \       <part localType=\"location\">Location 2</part>\n        <part localType=\"dates\">Dates</part>\n
+        \       <alternativeForm>naf</alternativeForm>\n      </nameEntry>\n    </identity>\n
+        \   <description>\n      <existDates>\n        <dateRange localType=\"existence\">\n
+        \         <fromDate standardDate=\"1800-01-01\">1800</fromDate>\n          <toDate
+        standardDate=\"1900-12-31\">1900</toDate>\n        </dateRange>\n        <date
+        localType=\"existence\" notBefore=\"1800\">1800</date>\n      </existDates>\n
+        \     <languagesUsed>\n        <languageUsed>\n          <language languageCode=\"eng\">English</language>\n
+        \         <script scriptCode=\"Latn\">Latin</script>\n          <descriptiveNote>\n
+        \           <p>Content 1</p>\n          </descriptiveNote>\n        </languageUsed>\n
+        \     </languagesUsed>\n      <places>\n        <place>\n          <placeRole>Associated
+        Country</placeRole>\n          <placeEntry vocabularySource=\"mesh\">geographic
+        Term 1</placeEntry>\n          <date localType=\"usage\" standardDate=\"1800\">1800</date>\n
+        \         <descriptiveNote>\n            <p>Content 1</p>\n          </descriptiveNote>\n
+        \       </place>\n      </places>\n      <occupations>\n        <occupation>\n
+        \         <term>occupation Term 1</term>\n          <descriptiveNote>\n            <p>Text
+        content</p>\n          </descriptiveNote>\n          <placeEntry>geographic
+        Term 1</placeEntry>\n        </occupation>\n      </occupations>\n      <functions>\n
+        \       <function>\n          <term>function Term 1</term>\n          <date
+        localType=\"usage\" standardDate=\"1800\">1800</date>\n          <descriptiveNote>\n
+        \           <p>Content 1</p>\n          </descriptiveNote>\n          <placeEntry>geographic
+        Term 1</placeEntry>\n        </function>\n      </functions>\n      <localDescriptions
+        localType=\"archivesspace\">\n        <localDescription localType=\"associatedSubject\">\n
+        \         <term>topical Term 1</term>\n        </localDescription>\n      </localDescriptions>\n
+        \     <generalContext>\n        <p>Content 1.</p>\n        <list localType=\"defined\">\n
+        \         <item localType=\"Item\">1</item>\n          <item localType=\"Item\">2</item>\n
+        \       </list>\n        <outline>\n          <level>\n            <level>\n
+        \             <item>Item 1</item>\n              <item>Item 2</item>\n              <level>\n
+        \               <item>Item 3</item>\n              </level>\n            </level>\n
+        \         </level>\n        </outline>\n      </generalContext>\n      <biogHist>\n
+        \       <abstract>Abstract 1 Content 1.--Abstract 1 Content 2.</abstract>\n
+        \     </biogHist>\n    </description>\n    <relations>\n      <resourceRelation
+        lastDateTimeVerified=\"2025-07-18T00:00:00+00:00\" resourceRelationType=\"creatorOf\"
+        xlink:actuate=\"none\" xlink:arcrole=\"Xlink Arcrole Attribute\" xlink:href=\"File
+        URI\" xlink:role=\"Xlink Role Attribute\" xlink:show=\"embed\" xlink:title=\"Xlink
+        Title Attribute\">\n        <relationEntry>Related External Resource 1</relationEntry>\n
+        \       <date localType=\"usage\" standardDate=\"1900\">1800</date>\n        <placeEntry>geographic
+        Term 1</placeEntry>\n      </resourceRelation>\n      <resourceRelation lastDateTimeVerified=\"2025-07-18T00:00:00+00:00\"
+        resourceRelationType=\"other\" xlink:actuate=\"none\" xlink:arcrole=\"Xlink
+        Arcrole Attribute\" xlink:href=\"File URI\" xlink:role=\"Xlink Role Attribute\"
+        xlink:show=\"embed\" xlink:title=\"Xlink Title Attribute\">\n        <relationEntry>Related
+        External Resource 2</relationEntry>\n      </resourceRelation>\n      <cpfRelation
+        cpfRelationType=\"associative\" xlink:arcrole=\"Relationship URI\" xlink:href=\"http://localhost:8081/agents/people/1\"
+        xlink:type=\"simple\">\n        <relationEntry>Administrator</relationEntry>\n
+        \       <descriptiveNote>\n          <p>Description</p>\n        </descriptiveNote>\n
+        \     </cpfRelation>\n      <cpfRelation cpfRelationType=\"hierarchical\"
+        xlink:arcrole=\"Relationship URI\" xlink:href=\"http://localhost:8081/agents/people/1\"
+        xlink:type=\"simple\">\n        <relationEntry>Administrator</relationEntry>\n
+        \       <descriptiveNote>\n          <p>Description</p>\n        </descriptiveNote>\n
+        \     </cpfRelation>\n    </relations>\n    <alternativeSet>\n      <setComponent
+        lastDateTimeVerified=\"2025-07-18T00:00:00+00:00\" xlink:actuate=\"none\"
+        xlink:arcrole=\"Xlink Role Attribute\" xlink:href=\"File URI\" xlink:role=\"Xlink
+        Role Attribute\" xlink:show=\"replace\" xlink:title=\"Xlink Title Attribute\">\n
+        \       <componentEntry>Set Component 1</componentEntry>\n        <descriptiveNote>\n
+        \         <p>Descriptive Note</p>\n        </descriptiveNote>\n      </setComponent>\n
+        \     <setComponent lastDateTimeVerified=\"2025-07-18T00:00:00+00:00\" xlink:actuate=\"onLoad\"
+        xlink:arcrole=\"Xlink Arcrole Attribute\" xlink:href=\"File URI\" xlink:role=\"Xlink
+        Role Attribute\" xlink:show=\"embed\" xlink:title=\"Xlink Title Attribute\">\n
+        \       <componentEntry>Set Component 2</componentEntry>\n        <descriptiveNote>\n
+        \         <p>Descriptive Note</p>\n        </descriptiveNote>\n      </setComponent>\n
+        \   </alternativeSet>\n  </cpfDescription>\n</eac-cpf>\n\n"
+    headers:
+      Cache-Control:
+      - private, must-revalidate, max-age=0
+      Content-Length:
+      - '10903'
+      Content-Type:
+      - application/xml
+      Date:
+      - Mon, 09 Mar 2026 23:24:47 GMT
+      Server:
+      - Jetty(9.4.44.v20210927)
+      X-Content-Type-Options:
+      - nosniff
+      X-Frame-Options:
+      - SAMEORIGIN
+      X-XSS-Protection:
+      - 1; mode=block
+    status:
+      code: 200
+      message: OK
+version: 1

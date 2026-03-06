@@ -11,19 +11,20 @@ def filter_json_response_body(fields, replacement='[REDACTED]'):
     """
     def before_record_callback(response):
         string_body = response['body']['string'].decode('utf8')
-
-        if string_body is not None:
+        try:
             body = json.loads(string_body)
             
             for field in fields:
                 if field in body:
                     body[field] = replacement
             
-            response['body']['string'] = json.dumps(body).encode('utf8')
-            
+            response['body']['string'] = json.dumps(body).encode()
+            return response
+        # Response could be something other than JSON (e.g. xml export endpoints)
+        except json.JSONDecodeError:
             return response
     
-        return before_record_callback
+    return before_record_callback
 
 vcr = VCR(
     before_record_response=filter_json_response_body(fields=['session']),

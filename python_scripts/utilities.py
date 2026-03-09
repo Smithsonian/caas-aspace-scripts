@@ -1,6 +1,7 @@
 #!/usr/bin/env python
 import mysql.connector as mysql
 import csv
+import json
 import jsonlines
 import requests
 
@@ -143,6 +144,29 @@ class ASpaceAPI:
             record_error('update_suppression() - Suppression failed due to following error', suppress_message)
         else:
             return suppress_message
+
+    def search_objects(self, query, obj_type=None, repo_id=None):
+        """
+        Searches ArchivesSpace for the given payload and optional repo and returns the results list.
+
+        Args:
+            query (dict): a valid ArchivesSpace json query
+            obj_type (int): an *optional* object type (e.g. 'top_container', 'resource', etc.) to filter search results by
+            repo_id (int): an *optional* repo_id to search in
+
+        Returns:
+            result (list): ArchivesSpace response or None
+        """
+        type_filter = '' if obj_type is None else f'&type[]={obj_type}'
+        if repo_id:
+            search_results = self.aspace_client.get(f'/repositories/{repo_id}/search?aq={json.dumps(query)}{type_filter}&page=1').json()
+        else:
+            search_results = self.aspace_client.get(f'/search?aq={json.dumps(query)}{type_filter}&page=1').json()
+        if 'error' in search_results:
+            record_error('search_object() - Search failed due to following error', search_results)
+        else:
+            if len(search_results['results']) > 0:
+                return search_results['results']
 
     def delete_object(self, object_uri):
         """

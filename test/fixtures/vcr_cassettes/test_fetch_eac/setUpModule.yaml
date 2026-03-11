@@ -18,10 +18,10 @@ interactions:
     uri: http://localhost:4567/users/admin/login
   response:
     body:
-      string: '{"session": "[REDACTED]", "user": {"lock_version": 59, "username":
+      string: '{"session": "[REDACTED]", "user": {"lock_version": 63, "username":
         "admin", "name": "Administrator", "source": "DBAuth", "is_system_user": true,
-        "create_time": "2026-02-27T23:17:23Z", "system_mtime": "2026-03-09T23:24:47Z",
-        "user_mtime": "2026-03-09T23:24:47Z", "is_active_user": true, "jsonmodel_type":
+        "create_time": "2026-02-27T23:17:23Z", "system_mtime": "2026-03-10T21:22:29Z",
+        "user_mtime": "2026-03-10T21:22:29Z", "is_active_user": true, "jsonmodel_type":
         "user", "groups": [], "is_admin": true, "uri": "/users/1", "agent_record":
         {"ref": "/agents/people/1"}, "permissions": {"/repositories/1": ["update_location_record",
         "delete_vocabulary_record", "update_subject_record", "delete_subject_record",
@@ -65,7 +65,7 @@ interactions:
       Content-Type:
       - application/json
       Date:
-      - Mon, 09 Mar 2026 23:24:47 GMT
+      - Tue, 10 Mar 2026 21:22:29 GMT
       Server:
       - Jetty(9.4.44.v20210927)
       X-Content-Type-Options:

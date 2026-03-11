@@ -3,6 +3,7 @@
 # agent_id, for a set of agents and downloads the resulting EAC-CPF representations
 # of those agents to a given destination directory.
 import argparse
+import json
 import os
 import sys
 
@@ -35,10 +36,14 @@ def parseArguments():
 
 def get_eac(local_aspace, row):
     agent_xml = local_aspace.aspace_client.get(f"/repositories/{row['repo_id']}/archival_contexts/{row['agent_type']}/{row['agent_id']}.xml").text
-    if 'error' in agent_xml:
-        record_error(f"get() - Failed to retrieve '/repositories/{row['repo_id']}/archival_contexts/{row['agent_type']}/{row['agent_id']}.xml' due to following error: ", agent_xml)
-    else:
-        return agent_xml
+    agent_json = ''
+    try:
+        agent_json = json.loads(agent_xml)            
+    finally:
+        if agent_json:
+            record_error(f"get() - Failed to retrieve '/repositories/{row['repo_id']}/archival_contexts/{row['agent_type']}/{row['agent_id']}.xml' due to following error: ", agent_json)
+        else:
+            return agent_xml
 
 def make_or_create_file_path(output_dir, row):
     file_path = os.path.join(output_dir, f"{row['agent_type']}_{row['agent_id']}.xml")

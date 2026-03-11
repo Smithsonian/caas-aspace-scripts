@@ -357,3 +357,21 @@ def write_to_file(filepath, write_data):
         org_data_file.close()
     except (FileNotFoundError, PermissionError, OSError) as write_file_error:
         record_error('write_to_file() - Unable to open or access jsonl file', write_file_error)
+
+# With time/need this could be generalized and merged with the above if we wanted to make
+# write_to_file less jsonlines specific
+def write_to_xml_file(file_path, xml_data):
+    """
+    Writes to an XML file
+    Args:
+        filepath (str): the path of the file being written to
+        xml_data (str): the xml to be written
+    """
+    try:
+        with open(file_path, 'w') as file:
+            file.write(xml_data)
+            logger.info(f"Successfully wrote XML file to {file_path}")
+            print(f"Successfully wrote XML file to {file_path}")
+    except IOError as e:
+        logger.info(f'Error writing file: {e}')
+        print(f'Error writing file: {e}')

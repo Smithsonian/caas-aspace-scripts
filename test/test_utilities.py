@@ -3,6 +3,7 @@ import contextlib
 import io
 import json
 import os
+import tempfile
 import unittest
 
 from test.vcr_utils import vcr
@@ -366,41 +367,40 @@ class TestCheckUrl(unittest.TestCase):
         self.assertIsNone(test_response)
 
 class TestWriteToFile(unittest.TestCase):
+    def setUp(self):
+        self.temp_file = tempfile.NamedTemporaryFile(suffix='.jsonl', delete=False)
+        self.file_path = self.temp_file.name
+
+    def tearDown(self):
+        if os.path.exists(self.file_path):
+            os.remove(self.file_path)
 
     @vcr.use_cassette
     def test_new_data(self):
         """Tests creating a new jsonlines file for original metadata saving if needed in case of data remediation"""
-        test_filepath = str(Path('test/fixtures', 'test_file.jsonl'))
-        print(test_filepath)
         test_digital_object = local_aspace.get_object('digital_objects',
                                                       3,
                                                       '/repositories/2')
-        if os.path.isfile(test_filepath):
-            os.remove(test_filepath)
-        write_to_file(test_filepath, test_digital_object)
-        self.assertTrue(os.path.isfile(test_filepath))
-        with open(test_filepath, 'r') as test_reader:
+        write_to_file(self.file_path, test_digital_object)
+        self.assertTrue(os.path.isfile(self.file_path))
+        with open(self.file_path, 'r') as test_reader:
             for row_data in test_reader:
                 test_data = json.loads(row_data)
                 self.assertEqual(test_data['digital_object_id'], test_digital_object['digital_object_id'])
-        os.remove(test_filepath)
 
     @vcr.use_cassette
     def test_append_data(self):
         """Tests appending to an existing jsonlines file"""
-        test_filepath = str(Path('test/fixtures', 'test_file.jsonl'))
         test_digital_object_1 = local_aspace.get_object('digital_objects',
                                                         1,
                                                         '/repositories/2')
         test_digital_object_2 = local_aspace.get_object('digital_objects',
                                                         2,
                                                         '/repositories/2')
-        if os.path.isfile(test_filepath):
-            os.remove(test_filepath)
-        write_to_file(test_filepath, test_digital_object_1)
-        self.assertTrue(os.path.isfile(test_filepath))
-        write_to_file(test_filepath, test_digital_object_2)
-        with open(test_filepath, 'r') as test_reader:
+        write_to_file(self.file_path, test_digital_object_1)
+        self.assertTrue(os.path.isfile(self.file_path))
+        write_to_file(self.file_path, test_digital_object_2)
+        with open(self.file_path, 'r') as test_reader:
             counter = 0
             for row_data in test_reader:
                 counter += 1
@@ -412,7 +412,6 @@ class TestWriteToFile(unittest.TestCase):
                     self.assertEqual(test_data['digital_object_id'],
                                      test_digital_object_2['digital_object_id'])
             self.assertEqual(counter, 2)
-        os.remove(test_filepath)
 
     def test_bad_file(self):
         """Tests trying to make a jsonlines file with a bad filename, which should log and print an error"""
@@ -423,6 +422,39 @@ class TestWriteToFile(unittest.TestCase):
             print(f.getvalue())
         self.assertTrue(r"""write_to_file() - Unable to open or access jsonl file: [Errno 2] No such file or directory: '../test_data/test_bad_filepath$&@.jID(#*&^%'""" in f.getvalue())
 
+class TestWriteToXmlFile(unittest.TestCase):
+
+    def setUp(self):
+        self.temp_file = tempfile.NamedTemporaryFile(suffix=".xml", delete=False)
+        self.file_path = self.temp_file.name
+
+    def tearDown(self):
+        if os.path.exists(self.file_path):
+            os.remove(self.file_path)
+    
+    def test_good_xml_file(self):
+        """Tests writing a new xml file"""
+        # Note: We're using a pre-recorded life-like XML file here, so if this ever gets deleted, we need to re-record
+        # before this test will pass.
+        with vcr.use_cassette('test/fixtures/vcr_cassettes/test_fetch_eac/test_get_eac.yaml') as cassette:
+            f = io.StringIO()
+            with contextlib.redirect_stdout(f):
+                xml_str = str(cassette.responses[0]['body']['string'], 'utf-8')
+                write_to_xml_file(self.file_path, xml_str)
+                self.assertTrue(os.path.exists(self.file_path))
+                self.assertTrue(os.path.getsize(self.file_path) > 0)
+                with open(self.file_path, "r") as xml_file:
+                    file_content = xml_file.read()
+                    self.assertIn('<eac-cpf', file_content, f"'<eac-cpf' not found in {self.file_path}")
+                    self.assertIn('Primary 1', file_content, f"'Primary 1' not found in {self.file_path}")
+            self.assertTrue(r"""Successfully wrote XML file to""" in f.getvalue())
+
+    def test_bad_xml_file_path(self):
+        """Tests problems writing a new xml file"""
+        f = io.StringIO()
+        with contextlib.redirect_stdout(f):
+            write_to_xml_file('missing/file/path.xml', 'abc')
+        self.assertTrue(r"""Error writing file:""" in f.getvalue())
 
 if __name__ == "__main__":
     unittest.main(verbosity=2)

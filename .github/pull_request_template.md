@@ -17,7 +17,7 @@
 - [ ] ⬇️ Have you merged the latest upstream changes into your branch? 
 - [ ] 🧪 Have you added tests to cover these changes?  If not, why:
 
-[//]: # (- [ ] 🤖 Have automated checks &#40;if any&#41; passed?  If not, please explain for the reviewer:)
+- [ ] 🤖 Have automated checks *if any* passed?  If not, please explain for the reviewer:
 
 - [ ] 📘 Have you updated/added any relevant readmes/wiki pages/comments in the codebase?
 - [ ] 📚 Have you updated/added any external documentation (e.g. Confluence, AirTable, GitHub Projects)?

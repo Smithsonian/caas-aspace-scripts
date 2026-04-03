@@ -13,7 +13,7 @@ sys.path.append(os.path.dirname('python_scripts'))  # Needed to import functions
 from python_scripts.utilities import ASpaceAPI, read_csv
 
 logger.remove()
-log_path = Path('./logs', 'create_and_link_top_containers_{time:YYYY-MM-DDTHH:MM:SS}.log')
+log_path = Path('./logs', 'create_and_link_top_containers_{time:YYYY-MM-DDTHH-MM-SS}.log')
 logger.add(str(log_path), format="{time}-{level}: {message}")
 
 # Find  and load environment-specific .env file
@@ -57,7 +57,7 @@ def build_tc_query(row):
                         'jsonmodel_type': 'field_query',
                         'field': 'indicator_u_icusort',
                         'value': row['top_container_indicator'],
-                        'literal': True
+                        # 'literal': True
                     }
                 ]
             }
@@ -160,7 +160,8 @@ def main(csv_in_path, csv_out_path, repo_id, dry_run=False):
                     post_response = local_aspace.update_object(f'/repositories/{repo_id}/top_containers', data)
                     logger.info(post_response)
                     print(post_response)
-                    top_container_uri = post_response['uri']
+                    if post_response is not None:
+                        top_container_uri = post_response['uri']
                 else:
                     top_container_uri = data
                     logger.info(f'The following top container would be created:\n{top_container_uri}')
@@ -186,6 +187,7 @@ def main(csv_in_path, csv_out_path, repo_id, dry_run=False):
             writer = csv.DictWriter(outfile, fieldnames=list(row.keys()))
             writer.writeheader()
             writer.writerow(row)
+        outfile.close()
 
 # Call with `python create_and_link_top_containers.py <input_filename>.csv <output_filename>.csv <repo_id>`
 if __name__ == '__main__':

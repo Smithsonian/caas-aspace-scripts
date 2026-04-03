@@ -82,7 +82,6 @@ def main(accessrestrict_csv, backup_jsonl, dry_run=False):
                                         f'Additional accessrestrict notes: {note}')
 
 
-
 # Call with `python update_accessrestrictnotes.py <csvPath>.csv <jsonl_filepath>.jsonl <log_folder_path>`
 if __name__ == '__main__':
     args = parseArguments()

@@ -1,3 +1,4 @@
+#!/usr/bin/python3
 # This script creates new top containers in bulk and links as instances to other records
 import argparse
 import csv
@@ -172,7 +173,7 @@ def main(csv_in_path, csv_out_path, repo_id, dry_run=False):
             if record_to_link and top_container_uri is not None:
                 if not dry_run:
                     parts = record_to_link.split('/')
-                    record_to_link = local_aspace.get_object(parts[3], parts[4], f'{parts[1]}/{parts[2]}/')
+                    record_to_link = local_aspace.get_object(parts[3], parts[4], f'{parts[1]}/{parts[2]}')
                     rec_data = build_updated_rec(record_to_link, top_container_uri, row)
                     record_to_link_uri = record_to_link['uri']
                     rec_post_response = local_aspace.update_object(record_to_link['uri'], rec_data)

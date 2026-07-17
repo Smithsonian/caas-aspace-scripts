@@ -46,6 +46,7 @@ class ASpaceAPI:
             return self.repo_info
         print(f'get_repo_info() - There are no repositories in the Archivesspace Instance: {self.repo_info}')
         logger.info(f'get_repo_info() - There are no repositories in the Archivesspace Instance: {self.repo_info}')
+        return None
 
     def get_objects(self, repository_uri, record_type, parameters=('all_ids', True)):
         """
@@ -124,6 +125,7 @@ class ASpaceAPI:
         update_message = self.aspace_client.post(f'{object_uri}', json=updated_json).json()
         if 'error' in update_message:
             record_error('update_object() - Update failed due to following error', update_message)
+            return None
         else:
             return update_message
 
@@ -164,9 +166,12 @@ class ASpaceAPI:
             search_results = self.aspace_client.get(f'/search?aq={json.dumps(query)}{type_filter}&page=1').json()
         if 'error' in search_results:
             record_error('search_object() - Search failed due to following error', search_results)
+            return None
         else:
             if len(search_results['results']) > 0:
                 return search_results['results']
+            else:
+                return None
 
     def delete_object(self, object_uri):
         """
@@ -182,6 +187,7 @@ class ASpaceAPI:
         delete_message = self.aspace_client.delete(f'{object_uri}').json()
         if 'error' in delete_message:
             record_error('delete_object() - Delete failed due to following error', delete_message)
+            return None
         else:
             return delete_message
 
@@ -364,7 +370,7 @@ def write_to_xml_file(file_path, xml_data):
     """
     Writes to an XML file
     Args:
-        filepath (str): the path of the file being written to
+        file_path (str): the path of the file being written to
         xml_data (str): the xml to be written
     """
     try:

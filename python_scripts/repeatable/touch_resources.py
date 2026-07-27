@@ -13,7 +13,7 @@ sys.path.append(os.path.dirname('python_scripts'))  # Needed to import functions
 from python_scripts.utilities import ASpaceAPI, read_csv, record_error, write_to_file
 
 logger.remove()
-log_path = Path('../logs', 'suppress_objects_{time:YYYY-MM-DD}.log')
+log_path = Path('../logs', 'touch_resources_{time:YYYY-MM-DD}.log')
 logger.add(str(log_path), format="{time}-{level}: {message}")
 
 # Find  and load environment-specific .env file

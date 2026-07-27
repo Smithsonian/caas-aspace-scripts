@@ -46,7 +46,10 @@ def prepare_edan_data(jwt_algorithm="HS256"):
     Returns:
         encoded_jwt (jtw): the encoded JSON web token
     """
-    time = datetime.datetime.now(datetime.UTC)
+    # time = datetime.datetime.now(datetime.UTC)
+    # NOTE: below added a 5 second timedelta due to error with authenticating against EDAN being too strict. Potential
+    # to replace code below when EDAN fix is completed with the above code.
+    time = datetime.datetime.now(datetime.UTC) - datetime.timedelta(seconds=5)
     payload = {"iss": os.getenv('edan_iss'),
                "jwtid": os.getenv('edan_jwtid'), #should be unique. not as yet enforced
                "iat": time}

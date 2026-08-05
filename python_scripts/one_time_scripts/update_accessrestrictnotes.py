@@ -1,5 +1,5 @@
 #!/usr/bin/python3
-# This script takes a CSV containing resource info (Id, resource_uri, updated_access_note) and retrieves the JSON
+# This script takes a CSV containing resource info (ead_id, resource_uri, updated_access_note) and retrieves the JSON
 # data for any resources whose rows in the CSV contain data in the updated_access_note column. Then, it makes a copy
 # of the resource JSON, updating the accessrestrict note's content with the data found in the updated_access_note
 # cell. Finally, it posts the updated JSON to ArchivesSpace.
@@ -36,13 +36,19 @@ def parseArguments():
 
 def main(accessrestrict_csv, backup_jsonl, dry_run=False):
     """
-    This script takes a CSV containing resource info (Id, resource_uri, updated_access_note) and retrieves the JSON
-    data for any resources whose rows in the CSV contain data in the updated_access_note column. Then, it makes a copy
-    of the resource JSON, updating the accessrestrict note's content with the data found in the updated_access_note
-    cell. Finally, it posts the updated JSON to ArchivesSpace.
+    This script takes a CSV containing resource info (ead_id, resource_uri, accessrestrict_note,
+    updated_acccessrestrict_note) and retrieves the JSON data for any resources whose rows in the CSV contain data in
+    the updated_access_note column. Then, it makes a copy of the resource JSON, updating the accessrestrict note's
+    content with the data found in the updated_acccessrestrict_note cell. Finally, it posts the updated JSON to
+    ArchivesSpace.
+
+    The CSV should have the following data structure:
+    - Column 1 headers = ead_id,resource_title,resource_uri,accessrestrict_note,updated_acccessrestrict_note
+    - Column 1 rows = REPO.##.####,RESOURCE_TITLE,/repositories/##/resources/#####,Collection is open for research.,
+    Collection is not open for research.
+
 
     Args:
-
         accessrestrict_csv (str): filepath of the CSV containing updates to accessrestrict notes and resource info
         backup_jsonl (str): filepath of the jsonL file for storing JSON data of objects before updates - backup
         dry_run (bool): if True, it prints the changed object_json but does not post the changes to ASpace
@@ -50,7 +56,7 @@ def main(accessrestrict_csv, backup_jsonl, dry_run=False):
     local_aspace = ASpaceAPI(os.getenv('as_api'), os.getenv('as_un'), os.getenv('as_pw'))
     resources = read_csv(accessrestrict_csv, encoding_type='UTF-8-SIG')
     for resource in resources:
-        if resource['updated_access_note']:
+        if resource['updated_acccessrestrict_note']:
             accessrestrict_count = 0
             uri_components = resource['resource_uri'].split('/')
             original_resource_data = local_aspace.get_object(uri_components[3], uri_components[4], f'{uri_components[1]}/{uri_components[2]}')
@@ -64,18 +70,18 @@ def main(accessrestrict_csv, backup_jsonl, dry_run=False):
                                 logger.warning(f'There are more than 1 subnotes to this accessrestrict note. Only the '
                                                f'first subnote will be updated.\n{note["subnotes"]}')
                             old_accessrestrict = note['subnotes'][0]['content']
-                            note['subnotes'][0]['content'] = resource['updated_access_note']
+                            note['subnotes'][0]['content'] = resource['updated_acccessrestrict_note']
                             if dry_run:
-                                logger.info(f'{resource["Id"]}\n'
+                                logger.info(f'{resource["ead_id"]}\n'
                                             f'Old accessrestrict note: {old_accessrestrict}\n'
-                                            f'Updated accessrestrict note: {resource["updated_access_note"]}')
-                                print(f'{resource["Id"]}\n'
+                                            f'Updated accessrestrict note: {resource["updated_acccessrestrict_note"]}')
+                                print(f'{resource["ead_id"]}\n'
                                       f'Old accessrestrict note: {old_accessrestrict}\n'
-                                      f'Updated accessrestrict note: {resource["updated_access_note"]}\n\n')
+                                      f'Updated accessrestrict note: {resource["updated_acccessrestrict_note"]}\n\n')
                             else:
                                 update_message = local_aspace.update_object(resource['resource_uri'], updated_resource)
-                                logger.info(f'main() - Updated {resource["Id"]}: {update_message}')
-                                print(f'main() - Updated {resource["Id"]}: {update_message}')
+                                logger.info(f'main() - Updated {resource["ead_id"]}: {update_message}')
+                                print(f'main() - Updated {resource["ead_id"]}: {update_message}')
                             accessrestrict_count += 1
                         else:
                             logger.info(f'main() - More than 1 accessrestrict note exists, only updating the first. '

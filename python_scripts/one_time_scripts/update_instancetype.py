@@ -6,10 +6,10 @@
 import argparse
 import os
 import sys
-
-from dotenv import load_dotenv, find_dotenv
-from loguru import logger
 from pathlib import Path
+
+from dotenv import find_dotenv, load_dotenv
+from loguru import logger
 
 sys.path.append(
     os.path.dirname("python_scripts")

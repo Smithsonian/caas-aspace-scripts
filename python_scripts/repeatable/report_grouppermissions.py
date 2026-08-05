@@ -4,16 +4,16 @@
 # marked with the text of that permission in the spreadsheet or if not, FALSE. This is to check to make sure permissions
 # are the same for each user group across all repositories.
 
-import mysql.connector as mysql
 import os
-
 from datetime import date
-from dotenv import load_dotenv, find_dotenv
-from mysql.connector import errorcode
+from pathlib import Path
+
+import mysql.connector as mysql
+from dotenv import find_dotenv, load_dotenv
 from loguru import logger
+from mysql.connector import errorcode
 from openpyxl import Workbook
 from openpyxl.styles import Font
-from pathlib import Path
 
 # Logging
 logger.remove()

@@ -4,14 +4,13 @@
 # 'Missing Title' in the list title, removes the title and updates to ArchivesSpace
 import copy
 import csv
-
-from asnake.client import ASnakeClient
-from asnake.client.web_client import ASnakeAuthError
 from collections import namedtuple
-from loguru import logger
 from pathlib import Path
 from secrets import *
 
+from asnake.client import ASnakeClient
+from asnake.client.web_client import ASnakeAuthError
+from loguru import logger
 
 logger.remove()
 log_path = Path('../../logs', 'remove-missingtitles_{time:YYYY-MM-DD}.log')

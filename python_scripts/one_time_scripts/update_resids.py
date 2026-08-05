@@ -5,12 +5,12 @@
 import csv
 import json
 import re
+from pathlib import Path
+from secrets import *
 
 from asnake.client import ASnakeClient
 from asnake.client.web_client import ASnakeAuthError
 from loguru import logger
-from pathlib import Path
-from secrets import *
 
 alphanumeric_capture = re.compile(r'[a-zA-Z0-9.-]*', re.UNICODE)
 

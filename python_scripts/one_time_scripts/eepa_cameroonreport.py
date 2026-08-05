@@ -4,12 +4,12 @@
 # each CSV, uses the ArchivesSpace API to grab the Abstract or Scope and Contents note from the JSON data, and writes
 # the note to the provided CSV in a new column
 import csv
+from pathlib import Path
+from secrets import *
 
 from asnake.client import ASnakeClient
 from asnake.client.web_client import ASnakeAuthError
 from loguru import logger
-from pathlib import Path
-from secrets import *
 
 logger.remove()
 log_path = Path('../../logs', 'report_eepacameroon_{time:YYYY-MM-DD}.log')

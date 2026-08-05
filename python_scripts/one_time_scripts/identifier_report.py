@@ -4,9 +4,10 @@
 # dictionary containing all the unique, non-alphanumeric characters in the identifiers and their counts
 import csv
 import json
+from pathlib import Path
 
 from loguru import logger
-from pathlib import Path
+
 
 def read_csv(missing_titles_csv):
     """

@@ -4,21 +4,17 @@
 # agents, dates, extents, languages, notes, and subjects, and then deletes any data within those
 # fields except digitized date and uploads the updated digital object back to ArchivesSpace
 
-import jsonlines
 from collections import namedtuple
 from copy import deepcopy
 from http.client import HTTPException
 from pathlib import Path
-
-from jsonlines import InvalidLineError
-
 from secrets import *
 
+import jsonlines
 from asnake.client import ASnakeClient
 from asnake.client.web_client import ASnakeAuthError
+from jsonlines import InvalidLineError
 from loguru import logger
-
-
 
 logger.remove()
 log_path = Path('../../logs', 'delete_dometadata_{time:YYYY-MM-DD}.log')

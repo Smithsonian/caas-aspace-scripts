@@ -7,15 +7,15 @@
 # sorts the order of the IDs according to the above and posts the updated agent record via the ArchivesSpace API.
 import argparse
 import os
-import pandas
 import sys
 import time
-
 from collections import namedtuple
 from copy import deepcopy
-from dotenv import load_dotenv, find_dotenv
-from loguru import logger
 from pathlib import Path
+
+import pandas
+from dotenv import find_dotenv, load_dotenv
+from loguru import logger
 
 sys.path.append(os.path.dirname('python_scripts'))  # Needed to import functions from utilities.py
 from python_scripts.utilities import ASpaceAPI, record_error, write_to_file

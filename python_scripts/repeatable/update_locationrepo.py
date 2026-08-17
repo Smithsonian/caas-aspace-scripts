@@ -38,7 +38,7 @@ def add_repo(location_data, repository_id):
         record_error('add_repo() - Unable to add repository code', TypeError)
     else:
         updated_repo = deepcopy(location_data)
-        updated_repo['owner_repo'] = {'ref': f'/repositories/{str(repository_id)}'}
+        updated_repo['owner_repo'] = {'ref': f'/repositories/{repository_id!s}'}
         return updated_repo
 
 def main(csv_location, repo_id):

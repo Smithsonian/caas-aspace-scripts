@@ -196,7 +196,7 @@ def main():
     aspace_db = ASpaceDatabase(os.getenv('DB_UN'), os.getenv('DB_PW'), os.getenv('DB_HOST'), os.getenv('DB_NAME'),
                                int(os.getenv('DB_PORT')))
     report_spreadsheet = Spreadsheet(str(Path('../../test_data',
-                                              f'report_grouppermissions_{str(date.today())}.xlsx')))
+                                              f'report_grouppermissions_{date.today()!s}.xlsx')))
     report_spreadsheet.wb.remove(report_spreadsheet.wb['Sheet'])
     grouppermission_sheet = report_spreadsheet.create_sheet('group_permissions')
 

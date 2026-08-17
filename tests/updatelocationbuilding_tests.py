@@ -3,8 +3,8 @@ import contextlib
 import io
 import unittest
 
-from python_scripts.utilities import *
 from python_scripts.one_time_scripts.update_locationbuildingfloor import *
+from python_scripts.utilities import *
 from test_data.location_testdata import *
 
 # Hardcode to dev env

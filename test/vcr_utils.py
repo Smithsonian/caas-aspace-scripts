@@ -4,6 +4,7 @@ import os
 
 from vcr import VCR
 
+
 def filter_json_response_body(fields, replacement='[REDACTED]'):
     """
     A callback function factory that creates a function to scrub 

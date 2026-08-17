@@ -2,7 +2,8 @@
 # This script contains unittests for update_locations.py
 import unittest
 
-from dotenv import load_dotenv, find_dotenv
+from dotenv import find_dotenv, load_dotenv
+
 from python_scripts.repeatable.update_locationrepo import *
 from python_scripts.utilities import *
 
@@ -27,5 +28,4 @@ class TestAddRepo(unittest.TestCase):
         #     test_updated_location = add_repo(test_update_location, False)
         # self.assertTrue(
         #     r"""add_repo() - Unable to add repository code: <class 'TypeError'>""" in f.getvalue())
-        pass
 

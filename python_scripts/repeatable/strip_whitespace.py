@@ -109,7 +109,7 @@ def main(whitespace_csv, dry_run):
             record_error(f'Unable to retrieve object with provided URI: '
                          f'repositories/{obj["repo_id"]}/{args.type}/{obj["id"]}',
                          existing_object)
-            return None
+            return
         elif existing_object is not None:
             json_object = existing_object.json()
             data = strip_whitespace(json_object, obj['field_1'], obj['field_2'])
@@ -117,7 +117,7 @@ def main(whitespace_csv, dry_run):
                 update_message = aspace.client.post(data['uri'], json=data).json()
                 if 'error' in update_message:
                     record_error('update_object() - Update failed due to following error', update_message)
-                    return None
+                    return
                 else:
                     logger.info(f'{update_message}')
                     print(f'Updated object data: {update_message}')

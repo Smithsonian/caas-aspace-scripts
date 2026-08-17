@@ -3,10 +3,11 @@
 # This script consists of unittests for update_znames.py
 import json
 import unittest
+from secrets import *
+
+from test_data.znames_testdata import *
 
 from python_scripts.one_time_scripts.update_znames import *
-from secrets import *
-from test_data.znames_testdata import *
 
 
 class TestClientLogin(unittest.TestCase):

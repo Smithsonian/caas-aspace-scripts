@@ -2,9 +2,10 @@
 
 # This script consists of unittests for update_resids.py
 import unittest
+from secrets import *
 
 from python_scripts.one_time_scripts.update_resids import *
-from secrets import *
+
 # from test_data.resids_testdata import *
 
 

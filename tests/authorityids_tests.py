@@ -5,7 +5,6 @@ import unittest
 
 from python_scripts.one_time_scripts.update_authorityids import *
 
-
 # from test_data.authorityids_testdata import *
 
 

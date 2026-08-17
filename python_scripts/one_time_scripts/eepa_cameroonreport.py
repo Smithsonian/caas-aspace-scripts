@@ -55,7 +55,7 @@ def read_csv(cameroon_reports_csv):
     try:
         open_csv = open(cameroon_reports_csv, 'r', encoding='UTF-8')
         resources = csv.DictReader(open_csv)
-    except IOError as csverror:
+    except OSError as csverror:
         logger.error(f'ERROR reading csv file: {csverror}')
         print(f'ERROR reading csv file: {csverror}')
     else:

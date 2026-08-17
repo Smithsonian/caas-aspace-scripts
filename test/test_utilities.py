@@ -5,11 +5,13 @@ import json
 import os
 import tempfile
 import unittest
-
-from test.vcr_utils import vcr
-from dotenv import load_dotenv, find_dotenv
 from pathlib import Path
+
+from dotenv import find_dotenv, load_dotenv
+
 from python_scripts.utilities import *
+from test.vcr_utils import vcr
+
 
 @vcr.use_cassette()
 def setUpModule():

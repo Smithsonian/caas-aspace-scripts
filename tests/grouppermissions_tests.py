@@ -57,7 +57,7 @@ class TestSpreadsheetClass(unittest.TestCase):
         """
         Tests generating an openpyxl Workbook instance and assigns it as a Spreadsheet instance variable
         """
-        test_spreadsheet_filepath = str(Path('../test_data', f'test_report_grouppermissions_{str(date.today())}.xlsx'))
+        test_spreadsheet_filepath = str(Path('../test_data', f'test_report_grouppermissions_{date.today()!s}.xlsx'))
         test_spreadsheet = Spreadsheet(test_spreadsheet_filepath)
         self.assertIsInstance(test_spreadsheet, Spreadsheet)
         self.assertIsInstance(test_spreadsheet.wb, openpyxl.Workbook)
@@ -67,7 +67,7 @@ class TestSpreadsheetClass(unittest.TestCase):
         """
         Tests generating an openpyxl Workbook instance with a bad filepath to make sure it raises an error
         """
-        test_spreadsheet_filepath = str('//bad_filepath')
+        test_spreadsheet_filepath = '//bad_filepath'
         with self.assertRaises(FileNotFoundError):
             Spreadsheet(test_spreadsheet_filepath)
 
@@ -75,7 +75,7 @@ class TestSpreadsheetClass(unittest.TestCase):
         """
         Tests creating a sheet within an existing spreadsheet
         """
-        test_spreadsheet_filepath = str(Path('../test_data', f'test_report_grouppermissions_{str(date.today())}.xlsx'))
+        test_spreadsheet_filepath = str(Path('../test_data', f'test_report_grouppermissions_{date.today()!s}.xlsx'))
         test_spreadsheet = Spreadsheet(test_spreadsheet_filepath)
         test_sheetname = 'test'
         test_spreadsheet.create_sheet(test_sheetname)
@@ -90,7 +90,7 @@ class TestSpreadsheetClass(unittest.TestCase):
         """
         Tests creating a bad sheet using a bad sheet name to raise a ValueError
         """
-        test_spreadsheet_filepath = str(Path('../test_data', f'test_report_grouppermissions_{str(date.today())}.xlsx'))
+        test_spreadsheet_filepath = str(Path('../test_data', f'test_report_grouppermissions_{date.today()!s}.xlsx'))
         test_spreadsheet = Spreadsheet(test_spreadsheet_filepath)
         test_sheetname = 'my:test:sheet'
         with self.assertRaises(ValueError):
@@ -106,7 +106,7 @@ class TestSpreadsheetClass(unittest.TestCase):
         """
         test_perms = {'_archivesspace--searchindex': ["test_header_1", "test_header_2", "test_header_3"],
                         '_archivesspace--administrator': ["test_header_1", "test_header_2", "test_header_3"]}
-        test_spreadsheet_filepath = str(Path('../test_data', f'test_report_grouppermissions_{str(date.today())}.xlsx'))
+        test_spreadsheet_filepath = str(Path('../test_data', f'test_report_grouppermissions_{date.today()!s}.xlsx'))
         test_spreadsheet = Spreadsheet(test_spreadsheet_filepath)
         test_worksheet = test_spreadsheet.create_sheet('test')
         test_spreadsheet.wb.remove(test_spreadsheet.wb['Sheet'])

@@ -5,9 +5,9 @@ import contextlib
 import io
 import os
 import unittest
+from secrets import *
 
 from python_scripts.one_time_scripts.eepa_cameroonreport import *
-from secrets import *
 from test_data.eepacameroon_testdata import *
 
 

@@ -76,7 +76,7 @@ def read_csv(authorityids_csv):
     try:
         open_csv = open(authorityids_csv, 'r', encoding='UTF-8')
         authorityids_uris = csv.DictReader(open_csv)
-    except IOError as csverror:
+    except OSError as csverror:
         logger.error(f'ERROR reading csv file: {csverror}')
         print(f'ERROR reading csv file: {csverror}')
     else:
@@ -96,7 +96,6 @@ def update_authorityids(sbjagt_metadata, test=""):
     """
     # Update = namedtuple('Update', 'Status Message')
     # new_sbjagt = copy.deepcopy(sbjagt_metadata)
-    pass
 
 
 def run_script(accres_ids_csv):
@@ -128,6 +127,5 @@ def run_script(accres_ids_csv):
 
 
 if __name__ == "__main__":
-    pass
     run_script(str(Path('../../test_data/resource_accession_IDs_all.csv')))
 

@@ -52,7 +52,7 @@ def read_csv(new_subjects_csv):
     try:
         open_csv = open(new_subjects_csv, 'r', encoding='UTF-8')
         new_subjects = csv.DictReader(open_csv)
-    except IOError as csverror:
+    except OSError as csverror:
         logger.error(f'ERROR reading csv file: {csverror}')
         print(f'ERROR reading csv file: {csverror}')
     else:

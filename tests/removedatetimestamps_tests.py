@@ -3,8 +3,8 @@ import contextlib
 import io
 import unittest
 
-from python_scripts.utilities import *
 from python_scripts.repeatable.remove_datetimestamps import *
+from python_scripts.utilities import *
 
 # Hardcode to dev env
 env_file = find_dotenv('.env.dev')

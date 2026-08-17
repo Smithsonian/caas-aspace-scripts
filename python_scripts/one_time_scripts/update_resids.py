@@ -56,7 +56,7 @@ def read_csv(all_ids_csv):
     try:
         open_csv = open(all_ids_csv, 'r', encoding='UTF-8')
         resources = csv.DictReader(open_csv)
-    except IOError as csverror:
+    except OSError as csverror:
         logger.error(f'ERROR reading csv file: {csverror}')
         print(f'ERROR reading csv file: {csverror}')
     else:
@@ -92,7 +92,6 @@ def concatenate_idfields(full_identifier):
         concatenated_identifier (str): combined identifier from id_0, id_1, id_2, and id_3 fields for resource
         identifiers
     """
-    pass
 
 
 def check_eadid(updated_identifier, resource_uri, aspace_client):
@@ -110,7 +109,6 @@ def check_eadid(updated_identifier, resource_uri, aspace_client):
         match_eadid (bool): if True, EAD ID and updated identifier match. If False, EAD ID and updated identifier do not
         match
     """
-    pass
 
 
 def update_resids(aspace_client, updated_resource):
@@ -125,7 +123,6 @@ def update_resids(aspace_client, updated_resource):
         update_message (dict): ArchivesSpace response
 
     """
-    pass
 
 
 def main():

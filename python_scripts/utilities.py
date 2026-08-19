@@ -1,6 +1,7 @@
 import csv
 import json
 from http.client import HTTPException
+from pathlib import Path
 
 import jsonlines
 import mysql.connector as mysql
@@ -303,11 +304,10 @@ def read_csv(csv_file, encoding_type='UTF-8'):
     try:
         with open(csv_file, 'r', encoding=encoding_type) as open_csv:
             csv_dict = csv.DictReader(open_csv)
+            return list(csv_dict)
     except OSError as csverror:
         logger.error(f'ERROR reading csv file: {csverror}')
         print(f'ERROR reading csv file: {csverror}')
-    else:
-        return csv_dict
 
 
 def check_url(url):

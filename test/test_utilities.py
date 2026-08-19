@@ -342,10 +342,9 @@ class TestReadCSV(unittest.TestCase):
     def test_good_csv(self):
         """Tests reading an existing CSV file and returns data"""
         test_subjects = read_csv(str(Path('test/fixtures/mergesubjects_testdata.csv')))
-        with open(test_subjects):
-            self.assertIsNotNone(test_subjects)
-            for row in test_subjects:
-                self.assertIsInstance(row, dict)
+        self.assertIsNotNone(test_subjects)
+        for row in test_subjects:
+            self.assertIsInstance(row, dict)
 
     def test_bad_csv(self):
         """Tests reading a non-existant CSV returns a FileNotFound error and that test_subjects is None"""

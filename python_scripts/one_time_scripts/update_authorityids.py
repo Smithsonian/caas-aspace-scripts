@@ -1,5 +1,3 @@
-#!/usr/bin/env python
-
 # This script intakes a CSV of all subjects and agends in ArchivesSpace to update their Authority IDs to match the
 # following standard: <https://<authority_url>/<authority_id>>
 import csv

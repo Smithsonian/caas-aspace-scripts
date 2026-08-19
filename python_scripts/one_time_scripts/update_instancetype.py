@@ -1,4 +1,3 @@
-#!/usr/bin/python3
 # This script takes a CSV containing archival object IDs, retrieves the archival object JSON from the ArchivesSpace
 # API, checks for container instances associated with the archival object, updates the FIRST instance's instance type
 # to the updated_instance_value, then posts the result back to ArchivesSpace.

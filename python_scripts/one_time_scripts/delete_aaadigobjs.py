@@ -1,4 +1,3 @@
-#!/usr/bin/python3
 # This script takes a CSV of archival object refIDs and runs each refID through an SQL query, which gets all associated
 # digital objects with that archival object. It then returns the completed digital object URI and adds it to a list.
 # Then it goes through the list of URIs and deletes them from ArchivesSpace using the delete_objects.py script.
@@ -100,9 +99,9 @@ def main(csv_path, jsonl_path, dry_run=False):
         daofile.close()
     delete_dos_filepath = str(Path(os.getcwd(), 'aaa_delete_daos.csv'))
     if dry_run:
-        subprocess.run(['python', '../repeatable/delete_objects.py', delete_dos_filepath, jsonl_path, '-dR'])
+        subprocess.run(['python', '../repeatable/delete_objects.py', delete_dos_filepath, jsonl_path, '-dR'], check=False)
     else:
-        subprocess.run(['python', '../repeatable/delete_objects.py', delete_dos_filepath, jsonl_path])
+        subprocess.run(['python', '../repeatable/delete_objects.py', delete_dos_filepath, jsonl_path], check=False)
 
 
 # Call with `python delete_aaadigobjs.py <csv_filpath>.csv <jsonl_filepath>.jsonl`

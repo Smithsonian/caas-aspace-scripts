@@ -1,4 +1,3 @@
-#!/usr/bin/python3
 # This script finds resource records with a finding aid status of "Publish (sync with EDAN/SOVA)" and that have a
 # published archival object on the highest level component (c01), takes the list of EAD IDs from those resources,
 # and tests them against "https://sova.si.edu/fancytree/", seeing if they return an empty treeview in SOVA. If so, the

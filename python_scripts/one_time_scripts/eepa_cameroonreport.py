@@ -1,5 +1,3 @@
-#!/usr/bin/env python
-
 # This script takes CSV files listing specific collections from EEPA repository, extracts the resource URIs listed in
 # each CSV, uses the ArchivesSpace API to grab the Abstract or Scope and Contents note from the JSON data, and writes
 # the note to the provided CSV in a new column

@@ -1,4 +1,3 @@
-#!/usr/bin/python3
 # This script takes an Excel file, "combined-aspace-agents-edited.xlsx", and uses the "combined and cleaned" sheet,
 # takes the agent link from the "Aspace_link" column, grabs the agent JSON from ArchivesSpace using the API, then adds
 # a new Record ID to the agent, if an existing record ID does not already exist. Non-matching record IDs are logged and

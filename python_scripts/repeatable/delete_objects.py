@@ -1,4 +1,3 @@
-#!/usr/bin/python3
 # This script takes a CSV of URIs and object type as inputs, grabs all the objects' JSON data using the API, saves
 # them to a jsonL file using the jsonl_path input, and then deletes them in ArchivesSpace. Structure the CSV like so:
 # uri

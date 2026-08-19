@@ -1,7 +1,6 @@
 import csv
 import json
 from http.client import HTTPException
-from pathlib import Path
 
 import jsonlines
 import mysql.connector as mysql
@@ -144,6 +143,7 @@ class ASpaceAPI:
                                                    params={"suppressed": suppression}).json()
         if 'error' in suppress_message:
             record_error('update_suppression() - Suppression failed due to following error', suppress_message)
+            return None
         else:
             return suppress_message
 

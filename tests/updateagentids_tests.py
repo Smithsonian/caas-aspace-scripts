@@ -1,4 +1,3 @@
-#!/usr/bin/python3
 # This script contains unittests for update_agentids.py
 import contextlib
 import io

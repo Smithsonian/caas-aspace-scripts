@@ -1,5 +1,3 @@
-#!/usr/bin/env python
-
 # This script consists of unittests for report_grouppermissions.py
 import contextlib
 import io

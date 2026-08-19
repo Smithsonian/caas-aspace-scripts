@@ -1,5 +1,3 @@
-#!/usr/bin/env python
-
 # This script consists of unittests for update_resids.py
 import unittest
 from secrets import *

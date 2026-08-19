@@ -1,8 +1,5 @@
-#!/usr/bin/python3
 # This script contains unittests for update_locations.py
 import unittest
-
-from dotenv import find_dotenv, load_dotenv
 
 from python_scripts.repeatable.update_locationrepo import *
 from python_scripts.utilities import *

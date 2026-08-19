@@ -9,6 +9,7 @@ from test_data.eepacameroon_testdata import *
 
 from python_scripts.one_time_scripts.eepa_cameroonreport import *
 
+
 class TestClientLogin(unittest.TestCase):
 
     def test_default_connection(self):

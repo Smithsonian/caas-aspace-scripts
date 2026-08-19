@@ -430,6 +430,7 @@ class TestWriteToXmlFile(unittest.TestCase):
         with tempfile.NamedTemporaryFile(suffix=".xml", delete=False) as self.temp_file:
             self.file_path = self.temp_file.name
 
+
     def tearDown(self):
         if os.path.exists(self.file_path):
             os.remove(self.file_path)

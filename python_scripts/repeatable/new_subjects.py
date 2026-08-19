@@ -50,8 +50,8 @@ def read_csv(new_subjects_csv):
     """
     new_subjects = []
     try:
-        open_csv = open(new_subjects_csv, 'r', encoding='UTF-8')
-        new_subjects = csv.DictReader(open_csv)
+        with open(new_subjects_csv, 'r', encoding='UTF-8') as open_csv:
+            new_subjects = csv.DictReader(open_csv)
     except OSError as csverror:
         logger.error(f'ERROR reading csv file: {csverror}')
         print(f'ERROR reading csv file: {csverror}')

@@ -301,8 +301,8 @@ def read_csv(csv_file, encoding_type='UTF-8'):
         csv_dict (list): a list of subjects to update and their metadata based on the csv contents
     """
     try:
-        open_csv = open(csv_file, 'r', encoding=encoding_type)
-        csv_dict = csv.DictReader(open_csv)
+        with open(csv_file, 'r', encoding=encoding_type) as open_csv:
+            csv_dict = csv.DictReader(open_csv)
     except OSError as csverror:
         logger.error(f'ERROR reading csv file: {csverror}')
         print(f'ERROR reading csv file: {csverror}')

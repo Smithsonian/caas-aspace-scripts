@@ -4,7 +4,7 @@
 # are the same for each user group across all repositories.
 
 import os
-from datetime import date
+from datetime import UTC, datetime
 from pathlib import Path
 
 import mysql.connector as mysql
@@ -195,7 +195,7 @@ def main():
     aspace_db = ASpaceDatabase(os.getenv('DB_UN'), os.getenv('DB_PW'), os.getenv('DB_HOST'), os.getenv('DB_NAME'),
                                int(os.getenv('DB_PORT')))
     report_spreadsheet = Spreadsheet(str(Path('../../test_data',
-                                              f'report_grouppermissions_{date.today()!s}.xlsx')))
+                                              f'report_grouppermissions_{datetime.now(UTC)!s}.xlsx')))
     report_spreadsheet.wb.remove(report_spreadsheet.wb['Sheet'])
     grouppermission_sheet = report_spreadsheet.create_sheet('group_permissions')
 
@@ -241,12 +241,10 @@ def main():
             groups_permissions[group_name].append(user_group[0])
 
     # Insert FALSE into permissions list if any of the cleaned_permissions do not exist in said list
-    permission_index = 0
-    for permission in cleaned_permissions:
+    for permission_index, permission in enumerate(cleaned_permissions):
         for group_permissions in groups_permissions.values():
             if permission not in group_permissions:
                 group_permissions.insert(permission_index, 'FALSE')
-        permission_index += 1
 
     # Write permissions and groups to spreadsheet
     allgroups_row = 2

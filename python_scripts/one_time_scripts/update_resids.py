@@ -52,8 +52,8 @@ def read_csv(all_ids_csv):
         resources (list): a list of dictionaries for each column name (key) and row values (value)
     """
     try:
-        open_csv = open(all_ids_csv, 'r', encoding='UTF-8')
-        resources = csv.DictReader(open_csv)
+        with open(all_ids_csv, 'r', encoding='UTF-8') as open_csv:
+            resources = csv.DictReader(open_csv)
     except OSError as csverror:
         logger.error(f'ERROR reading csv file: {csverror}')
         print(f'ERROR reading csv file: {csverror}')

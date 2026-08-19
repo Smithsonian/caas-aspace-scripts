@@ -43,10 +43,7 @@ def has_treeview(url):
         treeview_status (bool): the treeview status, True if it has a treeview, False if not.
     """
     treeview_response = requests.get(url)
-    if not treeview_response.json():
-        return False
-    else:
-        return True
+    return treeview_response.json()
 
 def main():
     """

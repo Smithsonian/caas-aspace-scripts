@@ -42,20 +42,21 @@ class TestWriteCSV(unittest.TestCase):
         new_test_file = str(Path('../test_data/EEPA_Cameroon_Reports/Cameroon - List of Archival Collection- '
                                  'Abstracts.csv'))
         test_values = ['Abstract/Scope']
-        for row in open(old_test_file):
-            test_values.append('blahblahblah')
-        write_csv(old_test_file, new_test_file, test_values)
-        self.assertTrue(os.path.isfile('../test_data/EEPA_Cameroon_Reports/Cameroon - List of Archival Collection- Abstracts.csv'))
-        with open(new_test_file, 'r', newline='', encoding='utf-8') as readcsv:
-            csvreader = csv.reader(readcsv)
-            row_count = 0
-            for row in csvreader:
-                if row_count == 0:
-                    self.assertEqual(row[-1], 'Abstract/Scope')
-                    row_count += 1
-                else:
-                    self.assertEqual(row[-1], 'blahblahblah')
-                    row_count += 1
+        with open(old_test_file) as otf:
+            for row in otf:
+                test_values.append('blahblahblah')
+            write_csv(old_test_file, new_test_file, test_values)
+            self.assertTrue(os.path.isfile('../test_data/EEPA_Cameroon_Reports/Cameroon - List of Archival Collection- Abstracts.csv'))
+            with open(new_test_file, 'r', newline='', encoding='utf-8') as readcsv:
+                csvreader = csv.reader(readcsv)
+                row_count = 0
+                for row in csvreader:
+                    if row_count == 0:
+                        self.assertEqual(row[-1], 'Abstract/Scope')
+                        row_count += 1
+                    else:
+                        self.assertEqual(row[-1], 'blahblahblah')
+                        row_count += 1
         os.remove(new_test_file)
 
     def test_bad_csv(self):

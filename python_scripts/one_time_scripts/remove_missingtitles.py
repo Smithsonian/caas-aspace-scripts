@@ -51,8 +51,8 @@ def read_csv(missing_titles_csv):
     """
     missingtitle_objects = []
     try:
-        open_csv = open(missing_titles_csv, 'r', encoding='UTF-8')
-        missingtitle_objects = csv.DictReader(open_csv)
+        with open(missing_titles_csv, 'r', encoding='UTF-8') as open_csv:
+            missingtitle_objects = csv.DictReader(open_csv)
     except OSError as csverror:
         logger.error(f'ERROR reading csv file: {csverror}')
         print(f'ERROR reading csv file: {csverror}')

@@ -3,7 +3,7 @@ import argparse
 import csv
 import os
 import sys
-from datetime import date
+from datetime import UTC, datetime
 from pathlib import Path
 
 from dotenv import find_dotenv, load_dotenv
@@ -85,7 +85,7 @@ def build_tc(tc):
         data['container_locations'] = [
             {
                 'status': 'current',
-                'start_date': str(date.today()),
+                'start_date': str(datetime.now(UTC).date()),
                 'ref': f"/locations/{tc['location_id']}"
             }
         ]

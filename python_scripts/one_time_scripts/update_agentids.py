@@ -126,8 +126,7 @@ def set_primary(object_json):
     Returns:
         object_json (dict): the updated JSON with the corrected primary record identifiers
     """
-    index = 0
-    for record in object_json["agent_record_identifiers"]:
+    for index, record in enumerate(object_json["agent_record_identifiers"]):
         if index == 0:
             record["primary_identifier"] = True
         else:

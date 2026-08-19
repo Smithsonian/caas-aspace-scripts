@@ -1,17 +1,15 @@
 # TODO: Fill out
 import argparse
-import datetime
 import os
 import subprocess
 import sys
 from pathlib import Path
 
-import jwt
 from dotenv import find_dotenv, load_dotenv
 from loguru import logger
 
 sys.path.append(os.path.dirname('python_scripts'))  # Needed to import functions from utilities.py
-from python_scripts.utilities import ASpaceAPI, read_csv, record_error
+from python_scripts.utilities import read_csv
 
 # Find  and load environment-specific .env file
 env_file = find_dotenv(f'.env.{os.getenv("ENV", "dev")}')
@@ -39,6 +37,7 @@ def sirismm_removal(ead_id):
 
 def dropbox_removal(ead_id):
     testdropbox = "/data/load_test/SOVA"
+    print(testdropbox)
     print(f"******************** DELETING {ead_id}-ead.xml      from    /lassb-data/SOVA/eads/      ***************")
     subprocess.run(['rm', '-r', '"/lassb-data/SOVA/eads/$rec_id-ead.xml"'], check=False)
 

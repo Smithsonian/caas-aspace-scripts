@@ -72,8 +72,8 @@ def read_csv(authorityids_csv):
     """
     authorityids_uris = []
     try:
-        open_csv = open(authorityids_csv, 'r', encoding='UTF-8')
-        authorityids_uris = csv.DictReader(open_csv)
+        with open(authorityids_csv, 'r', encoding='UTF-8') as open_csv:
+            authorityids_uris = csv.DictReader(open_csv)
     except OSError as csverror:
         logger.error(f'ERROR reading csv file: {csverror}')
         print(f'ERROR reading csv file: {csverror}')

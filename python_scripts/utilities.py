@@ -1,4 +1,3 @@
-#!/usr/bin/env python
 import csv
 import json
 from http.client import HTTPException
@@ -230,13 +229,13 @@ class ASpaceDatabase:
         except mysql.Error as error:
             if error.errno == errorcode.ER_ACCESS_DENIED_ERROR:
                 record_error('connect_db() - Failed to authorize username/password', error)
-                raise error
+                raise
             elif error.errno == errorcode.ER_BAD_DB_ERROR:
                 record_error('connect_db() - Database does not exist', error)
-                raise error
+                raise
             else:
                 record_error('connect_db() - Other error when connecting to the database', error)
-                raise error
+                raise
         else:
             self.cursor = self.connection.cursor()
             return self.connection, self.cursor
@@ -255,7 +254,7 @@ class ASpaceDatabase:
             self.cursor.execute(statement)
         except mysql.ProgrammingError as error:
             record_error('query_database() - SQL query was invalid', error)
-            raise error
+            raise
         else:
             results = self.cursor.fetchall()
         return results

@@ -1,4 +1,3 @@
-#!/usr/bin/python3
 # This script takes a CSV of EAD IDs and suppresses the records in EDAN, removing them from view in SOVA. Optionally,
 # it can also suppress the resources in ASpace if the resource URI is provided.
 import argparse

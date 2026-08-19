@@ -90,7 +90,9 @@ def check_subject(client, subj_id, subj_title):
     if 'error' not in existing_subj:
         existing_title = existing_subj['terms'][0]['term']
         return existing_title == subj_title
-    
+    return None
+
+
 def merge_subject(client, destination_subj_uri, candidate_subj_uri):
     """
     Args:

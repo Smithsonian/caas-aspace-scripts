@@ -1,4 +1,3 @@
-#!/usr/bin/python3
 # This script takes a CSV of archival object URIs with timestamps in their date begin and/or end fields, retrieves the
 # objects using the ASpace API, removes the timestamps, and re-posts the archival objects to ASpace.
 import argparse

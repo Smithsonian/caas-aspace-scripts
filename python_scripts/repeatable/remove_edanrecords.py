@@ -1,4 +1,3 @@
-#!/usr/bin/python3
 # TODO: Fill out
 import argparse
 import datetime
@@ -33,8 +32,8 @@ def parseArguments():
 
 def sirismm_removal(ead_id):
 
-    subprocess.run(['rm', '/sirismm/siris/sirispublic/EADs/$rec_id-ead.xml'])
-    subprocess.run(['rm', '/sirismm/siris/sirispublic/EADpdfs/$rec_id.pdf'])
+    subprocess.run(['rm', '/sirismm/siris/sirispublic/EADs/$rec_id-ead.xml'], check=False)
+    subprocess.run(['rm', '/sirismm/siris/sirispublic/EADpdfs/$rec_id.pdf'], check=False)
     # subprocess.run(['rm', '/sirismm/siris/sirispublic/EACs/$rec_id-eac.xml'])
 
 
@@ -44,13 +43,13 @@ def dropbox_removal(ead_id):
     subprocess.run(['rm', '-r', '"/lassb-data/SOVA/eads/$rec_id-ead.xml"'], check=False)
 
     print(f"******************** DELETING {ead_id}-ead.xml  from    /lassb-data/SOVA/idxfiles/  ***************")
-    subprocess.run(['rm', '-r', '"/lassb-data/SOVA/idxfiles/$rec_id-ead-idx.xml"'])
+    subprocess.run(['rm', '-r', '"/lassb-data/SOVA/idxfiles/$rec_id-ead-idx.xml"'], check=False)
 
     print(f"******************** DELETING {ead_id}-ead-uidx.xml from    /lassb-data/SOVA/idxfiles/  ***************")
-    subprocess.run(['rm', '-r', '"/lassb-data/SOVA/idxfiles/$rec_id-ead-uidx.xml"'])
+    subprocess.run(['rm', '-r', '"/lassb-data/SOVA/idxfiles/$rec_id-ead-uidx.xml"'], check=False)
 
     print(f"******************** DELETING {ead_id}.pdf          from    /lassb-data/SOVA/pdfs/      ***************")
-    subprocess.run(['rm', '-r', '"/lassb-data/SOVA/pdfs/$rec_id.pdf"'])
+    subprocess.run(['rm', '-r', '"/lassb-data/SOVA/pdfs/$rec_id.pdf"'], check=False)
 
     # print(f"******************** DELETING {ead_id}-eac.xml      from    /lassb-data/EAC/eacs/       ***************")
     # subprocess.run(['rm', '-r', "/lassb-data/EAC/eacs/$rec_id-eac.xml"])
@@ -59,13 +58,13 @@ def dropbox_removal(ead_id):
     # subprocess.run(['rm', '-r', '"/lassb-data/EAC/idxfiles/$rec_id-eac-idx.xml"'])
 
     print(f"******************** DELETING {ead_id}-eadingestrequest.xml  from    /lassb-data/SOVA/eadIngestRequests/   ***************")
-    subprocess.run(['rm', '-r', '"/lassb-data/SOVA/eadIngestRequests/$rec_id-eadingestrequest.xml"'])
+    subprocess.run(['rm', '-r', '"/lassb-data/SOVA/eadIngestRequests/$rec_id-eadingestrequest.xml"'], check=False)
 
     print(f"******************** DELETING {ead_id}-ead.xml  from    /qsova-dropbox/test_OCIO/RawEADArchive/   ***************")
-    subprocess.run(['rm', '-r', '"/qsova-dropbox/test_OCIO/RawEADArchive/$rec_id-ead.xml"'])
+    subprocess.run(['rm', '-r', '"/qsova-dropbox/test_OCIO/RawEADArchive/$rec_id-ead.xml"'], check=False)
 
     print(f"******************** DELETING {ead_id}-ead.xml  from    /qsova-dropbox/test_OCIO/EADarchives/EADarchiveYYYY-MM-DD/   ***************")
-    subprocess.run(['rm', '-r', '"/qsova-dropbox/test_OCIO/EADarchives/EADarchive*/$rec_id-ead.xml"'])
+    subprocess.run(['rm', '-r', '"/qsova-dropbox/test_OCIO/EADarchives/EADarchive*/$rec_id-ead.xml"'], check=False)
 
 
 def main(csvPath, dry_run=False):

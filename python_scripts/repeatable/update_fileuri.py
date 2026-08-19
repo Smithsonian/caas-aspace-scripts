@@ -1,5 +1,3 @@
-#!/usr/bin/env python
-
 # This script updates digital object file_uri's based on a provided CSV.  For help on available arguments and options:
 # `python repeatable/update_fileuri.py -h`.
 import argparse
@@ -45,6 +43,7 @@ def get_digital_object(client, repo_id, digital_object_id):
     if 'error' in existing_digital_object:
         logger.error(f'ERROR getting existing digital object {digital_object_id}: {existing_digital_object}')
         print(f'ERROR getting existing digital object {digital_object_id}: {existing_digital_object}')
+        return None
     else:
         return existing_digital_object
     

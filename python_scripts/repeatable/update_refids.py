@@ -1,4 +1,3 @@
-#!/usr/bin/python3
 # This script takes a CSV of archival object URIs as inputs, grabs all the archival objects' JSON data using the API,
 # saves them to a jsonL file using the jsonl_path input, and updates the archival objects' update_refid field to
 # True, posting them back to ArchivesSpace which regenerates the refids.

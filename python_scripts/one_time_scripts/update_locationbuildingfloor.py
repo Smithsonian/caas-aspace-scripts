@@ -1,4 +1,3 @@
-#!/usr/bin/python3
 # This script retrieves location IDs with a given building name passed in the oB (originalBuilding) argument using an SQL
 # query to the ASpace database. Then it takes a list of those IDs and retrieves their JSON data from the API and
 # updates the building field with the argument passed in the uB (updatedBuilding) argument. Then it posts the updated

@@ -1,4 +1,3 @@
-#!/usr/bin/python3
 # This script takes a CSV file containing the URIs of locations to be updated and the repository identifier number as
 # script arguments, structured like so: `python update_locations.py <filename>.csv <repo_id>`
 # The CSV should have at least one of the headers labeled URI. The script adds an
@@ -36,6 +35,7 @@ def add_repo(location_data, repository_id):
     """
     if type(repository_id) is not int:
         record_error('add_repo() - Unable to add repository code', TypeError)
+        return None
     else:
         updated_repo = deepcopy(location_data)
         updated_repo['owner_repo'] = {'ref': f'/repositories/{repository_id!s}'}

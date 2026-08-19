@@ -1,4 +1,3 @@
-#!/usr/bin/python3
 # This script takes a CSV containing resource info (ead_id, resource_uri, updated_access_note) and retrieves the JSON
 # data for any resources whose rows in the CSV contain data in the updated_access_note column. Then, it makes a copy
 # of the resource JSON, updating the accessrestrict note's content with the data found in the updated_access_note
@@ -63,29 +62,28 @@ def main(accessrestrict_csv, backup_jsonl, dry_run=False):
             write_to_file(backup_jsonl, original_resource_data)
             updated_resource = deepcopy(original_resource_data)
             for note in updated_resource['notes']:
-                if 'type' in note:
-                    if note['type'] == 'accessrestrict':
-                        if accessrestrict_count == 0:
-                            if len(note['subnotes']) > 1:
-                                logger.warning(f'There are more than 1 subnotes to this accessrestrict note. Only the '
-                                               f'first subnote will be updated.\n{note["subnotes"]}')
-                            old_accessrestrict = note['subnotes'][0]['content']
-                            note['subnotes'][0]['content'] = resource['updated_acccessrestrict_note']
-                            if dry_run:
-                                logger.info(f'{resource["ead_id"]}\n'
-                                            f'Old accessrestrict note: {old_accessrestrict}\n'
-                                            f'Updated accessrestrict note: {resource["updated_acccessrestrict_note"]}')
-                                print(f'{resource["ead_id"]}\n'
-                                      f'Old accessrestrict note: {old_accessrestrict}\n'
-                                      f'Updated accessrestrict note: {resource["updated_acccessrestrict_note"]}\n\n')
-                            else:
-                                update_message = local_aspace.update_object(resource['resource_uri'], updated_resource)
-                                logger.info(f'main() - Updated {resource["ead_id"]}: {update_message}')
-                                print(f'main() - Updated {resource["ead_id"]}: {update_message}')
-                            accessrestrict_count += 1
+                if 'type' in note and note['type'] == 'accessrestrict':
+                    if accessrestrict_count == 0:
+                        if len(note['subnotes']) > 1:
+                            logger.warning(f'There are more than 1 subnotes to this accessrestrict note. Only the '
+                                           f'first subnote will be updated.\n{note["subnotes"]}')
+                        old_accessrestrict = note['subnotes'][0]['content']
+                        note['subnotes'][0]['content'] = resource['updated_acccessrestrict_note']
+                        if dry_run:
+                            logger.info(f'{resource["ead_id"]}\n'
+                                        f'Old accessrestrict note: {old_accessrestrict}\n'
+                                        f'Updated accessrestrict note: {resource["updated_acccessrestrict_note"]}')
+                            print(f'{resource["ead_id"]}\n'
+                                  f'Old accessrestrict note: {old_accessrestrict}\n'
+                                  f'Updated accessrestrict note: {resource["updated_acccessrestrict_note"]}\n\n')
                         else:
-                            logger.info(f'main() - More than 1 accessrestrict note exists, only updating the first. '
-                                        f'Additional accessrestrict notes: {note}')
+                            update_message = local_aspace.update_object(resource['resource_uri'], updated_resource)
+                            logger.info(f'main() - Updated {resource["ead_id"]}: {update_message}')
+                            print(f'main() - Updated {resource["ead_id"]}: {update_message}')
+                        accessrestrict_count += 1
+                    else:
+                        logger.info(f'main() - More than 1 accessrestrict note exists, only updating the first. '
+                                    f'Additional accessrestrict notes: {note}')
 
 
 # Call with `python update_accessrestrictnotes.py <csvPath>.csv <jsonl_filepath>.jsonl <log_folder_path>`

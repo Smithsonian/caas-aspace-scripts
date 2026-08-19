@@ -1,5 +1,3 @@
-#!/usr/bin/env python
-
 # This script collects all users from ArchivesSpace, parses their usernames to separate any starting with 'z-' and
 # ending with '-expired-' into just the text in-between, then updates the username in ArchivesSpace with the new
 # username

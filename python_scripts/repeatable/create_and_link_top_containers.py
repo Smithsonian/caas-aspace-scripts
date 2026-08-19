@@ -1,4 +1,3 @@
-#!/usr/bin/python3
 # This script creates new top containers in bulk and links as instances to other records
 import argparse
 import csv

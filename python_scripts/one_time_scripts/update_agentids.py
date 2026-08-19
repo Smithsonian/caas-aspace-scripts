@@ -177,7 +177,7 @@ def main(excel_path, object_type, dry_run=False):
                     updated_object_json = add_recordID(str(int(row.VIAF_id)), "viaf", updated_object_json)  # converting id to integer to remove extraneous decimal places, then convert to string
             sorted_sources = sort_identifiers(updated_object_json)
             updated_primary_identifiers = set_primary(sorted_sources)
-            if dry_run is True:
+            if dry_run:
                 print(f'{updated_primary_identifiers}')
             else:
                 write_to_file(str(original_agent_json_data), original_agent_json)

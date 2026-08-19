@@ -1,5 +1,3 @@
-#!/usr/bin/env python
-
 # This script works through a csv of offending content and removes whitespace from the specified field(s).
 # For help on available arguments and options:
 # `python repeatable/strip_whitespace.py -h`.
@@ -74,6 +72,8 @@ def strip_whitespace(json_object, field_1, field_2):
     else:
         record_error(f'Field `{field_1}` does not exist in JSON data: ',
                      json_object)
+        return None
+
 
 def main(whitespace_csv, dry_run):
     """

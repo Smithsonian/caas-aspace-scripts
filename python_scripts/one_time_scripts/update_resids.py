@@ -1,5 +1,3 @@
-#!/usr/bin/env python
-
 # This script takes a CSV file of resource identifiers, edits them to standardize them to contain only alphanumeric
 # characters, except periods using those as separators, and posts those changes to ArchivesSpace
 import csv

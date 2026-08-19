@@ -1,4 +1,3 @@
-#!/usr/bin/python3
 # This script takes a CSV file containing, at minimum, a repo_id, agent_type, and
 # agent_id, for a set of agents and downloads the resulting EAC-CPF representations
 # of those agents to a given destination directory.

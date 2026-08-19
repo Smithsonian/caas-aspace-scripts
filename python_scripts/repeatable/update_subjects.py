@@ -52,7 +52,7 @@ def read_csv(updated_subjects_csv):
     try:
         open_csv = open(updated_subjects_csv, 'r', encoding='UTF-8')
         updated_subjects = csv.DictReader(open_csv)
-    except IOError as csverror:
+    except OSError as csverror:
         logger.error(f'ERROR reading csv file: {csverror}')
         print(f'ERROR reading csv file: {csverror}')
     else:
@@ -72,6 +72,7 @@ def get_subject(client, existing_subject_id):
     if 'error' in existing_subj:
         logger.error(f'ERROR getting existing subject {existing_subject_id}: {existing_subj}')
         print(f'ERROR getting existing subject {existing_subject_id}: {existing_subj}')
+        return None
     else:
         return existing_subj
     

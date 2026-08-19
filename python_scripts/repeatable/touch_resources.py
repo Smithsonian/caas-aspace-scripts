@@ -1,4 +1,3 @@
-#!/usr/bin/python3
 # This script takes a CSV file containing the URIs for resource records to get and post back to ArchivesSpace without
 # updating any data, used to kickstart an update to EDAN/SOVA by updating the system_mtime field.
 import argparse

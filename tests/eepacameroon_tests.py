@@ -5,9 +5,9 @@ import os
 import unittest
 from secrets import *
 
-from python_scripts.one_time_scripts.eepa_cameroonreport import *
 from test_data.eepacameroon_testdata import *
 
+from python_scripts.one_time_scripts.eepa_cameroonreport import *
 
 class TestClientLogin(unittest.TestCase):
 

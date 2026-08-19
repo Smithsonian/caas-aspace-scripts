@@ -370,8 +370,8 @@ class TestCheckUrl(unittest.TestCase):
 
 class TestWriteToFile(unittest.TestCase):
     def setUp(self):
-        with tempfile.NamedTemporaryFile(suffix='.jsonl', delete=False) as self.temp_file:
-            self.file_path = self.temp_file.name
+        self.temp_file = tempfile.NamedTemporaryFile(suffix='.jsonl', delete=False)
+        self.file_path = self.temp_file.name
 
     def tearDown(self):
         if os.path.exists(self.file_path):
@@ -427,8 +427,8 @@ class TestWriteToFile(unittest.TestCase):
 class TestWriteToXmlFile(unittest.TestCase):
 
     def setUp(self):
-        with tempfile.NamedTemporaryFile(suffix=".xml", delete=False) as self.temp_file:
-            self.file_path = self.temp_file.name
+        self.temp_file = tempfile.NamedTemporaryFile(suffix=".xml", delete=False)
+        self.file_path = self.temp_file.name
 
     def tearDown(self):
         if os.path.exists(self.file_path):

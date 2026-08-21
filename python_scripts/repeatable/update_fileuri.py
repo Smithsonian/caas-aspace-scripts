@@ -1,14 +1,13 @@
-#!/usr/bin/env python
-
 # This script updates digital object file_uri's based on a provided CSV.  For help on available arguments and options:
 # `python repeatable/update_fileuri.py -h`.
 import argparse
 import os
 import sys
-
-from dotenv import load_dotenv, find_dotenv
-from loguru import logger
 from pathlib import Path
+
+from dotenv import find_dotenv, load_dotenv
+from loguru import logger
+
 from python_scripts.utilities import check_url, client_login, read_csv
 
 # Logging
@@ -44,6 +43,7 @@ def get_digital_object(client, repo_id, digital_object_id):
     if 'error' in existing_digital_object:
         logger.error(f'ERROR getting existing digital object {digital_object_id}: {existing_digital_object}')
         print(f'ERROR getting existing digital object {digital_object_id}: {existing_digital_object}')
+        return None
     else:
         return existing_digital_object
     

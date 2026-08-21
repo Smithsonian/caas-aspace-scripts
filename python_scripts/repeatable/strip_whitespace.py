@@ -1,16 +1,15 @@
-#!/usr/bin/env python
-
 # This script works through a csv of offending content and removes whitespace from the specified field(s).
 # For help on available arguments and options:
 # `python repeatable/strip_whitespace.py -h`.
 import argparse
 import os
 import sys
+from pathlib import Path
 
 from asnake.aspace import ASpace
-from dotenv import load_dotenv, find_dotenv
+from dotenv import find_dotenv, load_dotenv
 from loguru import logger
-from pathlib import Path
+
 from python_scripts.utilities import read_csv, record_error
 
 # Logging
@@ -73,6 +72,8 @@ def strip_whitespace(json_object, field_1, field_2):
     else:
         record_error(f'Field `{field_1}` does not exist in JSON data: ',
                      json_object)
+        return None
+
 
 def main(whitespace_csv, dry_run):
     """
@@ -108,7 +109,7 @@ def main(whitespace_csv, dry_run):
             record_error(f'Unable to retrieve object with provided URI: '
                          f'repositories/{obj["repo_id"]}/{args.type}/{obj["id"]}',
                          existing_object)
-            return None
+            return
         elif existing_object is not None:
             json_object = existing_object.json()
             data = strip_whitespace(json_object, obj['field_1'], obj['field_2'])
@@ -116,7 +117,7 @@ def main(whitespace_csv, dry_run):
                 update_message = aspace.client.post(data['uri'], json=data).json()
                 if 'error' in update_message:
                     record_error('update_object() - Update failed due to following error', update_message)
-                    return None
+                    return
                 else:
                     logger.info(f'{update_message}')
                     print(f'Updated object data: {update_message}')

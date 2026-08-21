@@ -1,8 +1,8 @@
 # This script consists of unittests for update_coordinates.py
 import unittest
 
-from python_scripts.utilities import *
 from python_scripts.one_time_scripts.update_coordinates import *
+from python_scripts.utilities import *
 
 # Hardcode to dev env
 env_file = find_dotenv('.env.dev')

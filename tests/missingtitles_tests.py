@@ -1,10 +1,8 @@
-#!/usr/bin/env python
-
 # This script consists of unittests for update_znames.py
 import unittest
+from secrets import *
 
 from python_scripts.one_time_scripts.remove_missingtitles import *
-from secrets import *
 
 
 class TestClientLogin(unittest.TestCase):

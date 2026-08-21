@@ -1,13 +1,12 @@
-#!/usr/bin/env python
-import mysql.connector as mysql
 import csv
 import json
-import jsonlines
-import requests
+from http.client import HTTPException
 
+import jsonlines
+import mysql.connector as mysql
+import requests
 from asnake.client import ASnakeClient
 from asnake.client.web_client import ASnakeAuthError
-from http.client import HTTPException
 from jsonlines import InvalidLineError
 from loguru import logger
 from mysql.connector import errorcode
@@ -79,7 +78,7 @@ class ASpaceAPI:
             record_objects = []
             for identifier in parameters[1]:
                 record_objects.append(self.aspace_client.get(
-                    f'{repository_uri}/{record_type}?{parameters[0]}={str(identifier)}').json())
+                    f'{repository_uri}/{record_type}?{parameters[0]}={identifier!s}').json())
         else:
             record_objects = self.aspace_client.get(
                 f'{repository_uri}/{record_type}?{parameters[0]}={parameters[1]}').json()
@@ -144,6 +143,7 @@ class ASpaceAPI:
                                                    params={"suppressed": suppression}).json()
         if 'error' in suppress_message:
             record_error('update_suppression() - Suppression failed due to following error', suppress_message)
+            return None
         else:
             return suppress_message
 
@@ -230,13 +230,13 @@ class ASpaceDatabase:
         except mysql.Error as error:
             if error.errno == errorcode.ER_ACCESS_DENIED_ERROR:
                 record_error('connect_db() - Failed to authorize username/password', error)
-                raise error
+                raise
             elif error.errno == errorcode.ER_BAD_DB_ERROR:
                 record_error('connect_db() - Database does not exist', error)
-                raise error
+                raise
             else:
                 record_error('connect_db() - Other error when connecting to the database', error)
-                raise error
+                raise
         else:
             self.cursor = self.connection.cursor()
             return self.connection, self.cursor
@@ -255,7 +255,7 @@ class ASpaceDatabase:
             self.cursor.execute(statement)
         except mysql.ProgrammingError as error:
             record_error('query_database() - SQL query was invalid', error)
-            raise error
+            raise
         else:
             results = self.cursor.fetchall()
         return results
@@ -302,13 +302,12 @@ def read_csv(csv_file, encoding_type='UTF-8'):
         csv_dict (list): a list of subjects to update and their metadata based on the csv contents
     """
     try:
-        open_csv = open(csv_file, 'r', encoding=encoding_type)
-        csv_dict = csv.DictReader(open_csv)
-    except IOError as csverror:
+        with open(csv_file, 'r', encoding=encoding_type) as open_csv:
+            csv_dict = csv.DictReader(open_csv)
+            return list(csv_dict)
+    except OSError as csverror:
         logger.error(f'ERROR reading csv file: {csverror}')
         print(f'ERROR reading csv file: {csverror}')
-    else:
-        return csv_dict
 
 
 def check_url(url):
@@ -378,6 +377,6 @@ def write_to_xml_file(file_path, xml_data):
             file.write(xml_data)
             logger.info(f"Successfully wrote XML file to {file_path}")
             print(f"Successfully wrote XML file to {file_path}")
-    except IOError as e:
+    except OSError as e:
         logger.info(f'Error writing file: {e}')
         print(f'Error writing file: {e}')

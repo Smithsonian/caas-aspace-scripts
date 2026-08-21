@@ -1,4 +1,3 @@
-#!/usr/bin/python3
 # This script takes a CSV containing archival object IDs, retrieves the archival object JSON from the ArchivesSpace
 # API, checks for container instances associated with the archival object, updates the FIRST instance's instance type
 # to the updated_instance_value, then posts the result back to ArchivesSpace.
@@ -6,10 +5,10 @@
 import argparse
 import os
 import sys
-
-from dotenv import load_dotenv, find_dotenv
-from loguru import logger
 from pathlib import Path
+
+from dotenv import find_dotenv, load_dotenv
+from loguru import logger
 
 sys.path.append(
     os.path.dirname("python_scripts")

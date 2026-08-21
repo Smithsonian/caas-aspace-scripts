@@ -1,4 +1,3 @@
-# This script consists of unittests for delete_object.py
 import contextlib
 import io
 import random

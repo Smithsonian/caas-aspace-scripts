@@ -1,16 +1,15 @@
-#!/usr/bin/python3
 # This script takes a CSV of EAD IDs and suppresses the records in EDAN, removing them from view in SOVA. Optionally,
 # it can also suppress the resources in ASpace if the resource URI is provided.
 import argparse
 import datetime
-import jwt
 import os
-import requests
 import sys
-
-from dotenv import load_dotenv, find_dotenv
-from loguru import logger
 from pathlib import Path
+
+import jwt
+import requests
+from dotenv import find_dotenv, load_dotenv
+from loguru import logger
 
 sys.path.append(os.path.dirname('python_scripts'))  # Needed to import functions from utilities.py
 from python_scripts.utilities import ASpaceAPI, read_csv, record_error

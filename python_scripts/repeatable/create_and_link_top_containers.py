@@ -1,14 +1,13 @@
-#!/usr/bin/python3
 # This script creates new top containers in bulk and links as instances to other records
 import argparse
 import csv
 import os
 import sys
-
-from datetime import date
-from dotenv import load_dotenv, find_dotenv
-from loguru import logger
+from datetime import UTC, datetime
 from pathlib import Path
+
+from dotenv import find_dotenv, load_dotenv
+from loguru import logger
 
 sys.path.append(os.path.dirname('python_scripts'))  # Needed to import functions from utilities.py
 from python_scripts.utilities import ASpaceAPI, read_csv
@@ -86,7 +85,7 @@ def build_tc(tc):
         data['container_locations'] = [
             {
                 'status': 'current',
-                'start_date': str(date.today()),
+                'start_date': str(datetime.now(UTC).date()),
                 'ref': f"/locations/{tc['location_id']}"
             }
         ]

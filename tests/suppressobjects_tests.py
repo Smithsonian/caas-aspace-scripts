@@ -1,5 +1,3 @@
-#!/usr/bin/python3
-
 # This script contains unittests for suppress_objects.py
 import contextlib
 import io

@@ -1,4 +1,3 @@
-#!/usr/bin/python3
 # This script finds resource records with a finding aid status of "Publish (sync with EDAN/SOVA)" and that have a
 # published archival object on the highest level component (c01), takes the list of EAD IDs from those resources,
 # and tests them against "https://sova.si.edu/fancytree/", seeing if they return an empty treeview in SOVA. If so, the
@@ -7,13 +6,13 @@
 import argparse
 import csv
 import os
-import requests
 import sys
-
-from bs4 import BeautifulSoup
-from dotenv import load_dotenv, find_dotenv
-from loguru import logger
 from pathlib import Path
+
+import requests
+from bs4 import BeautifulSoup
+from dotenv import find_dotenv, load_dotenv
+from loguru import logger
 
 sys.path.append(os.path.dirname('python_scripts'))  # Needed to import functions from utilities.py
 from python_scripts.utilities import ASpaceDatabase
@@ -44,10 +43,7 @@ def has_treeview(url):
         treeview_status (bool): the treeview status, True if it has a treeview, False if not.
     """
     treeview_response = requests.get(url)
-    if not treeview_response.json():
-        return False
-    else:
-        return True
+    return treeview_response.json()
 
 def main():
     """

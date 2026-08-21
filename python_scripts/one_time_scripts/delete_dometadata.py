@@ -1,24 +1,19 @@
-#!/usr/bin/env python
 # This script iterates through all the digital objects in every repository in SI's ArchivesSpace
 # instance - except Test, Training, and NMAH-AF, parses them for any data in the following fields:
 # agents, dates, extents, languages, notes, and subjects, and then deletes any data within those
 # fields except digitized date and uploads the updated digital object back to ArchivesSpace
 
-import jsonlines
 from collections import namedtuple
 from copy import deepcopy
 from http.client import HTTPException
 from pathlib import Path
-
-from jsonlines import InvalidLineError
-
 from secrets import *
 
+import jsonlines
 from asnake.client import ASnakeClient
 from asnake.client.web_client import ASnakeAuthError
+from jsonlines import InvalidLineError
 from loguru import logger
-
-
 
 logger.remove()
 log_path = Path('../../logs', 'delete_dometadata_{time:YYYY-MM-DD}.log')
@@ -204,14 +199,13 @@ def parse_delete_fields(object_json):
     fields_to_delete = []
     DeleteField = namedtuple('DeleteField', 'Field Subrecord')
     for field in fields_to_check:
-        if field in object_json:
-            if object_json[f'{field}']:
-                for subrecord in object_json[f'{field}']:
-                    if 'label' in subrecord and field == 'dates':
-                        if not subrecord['label'] == 'digitized':
-                            fields_to_delete.append(DeleteField(field, subrecord))
-                    else:
+        if field in object_json and object_json[f'{field}']:
+            for subrecord in object_json[f'{field}']:
+                if 'label' in subrecord and field == 'dates':
+                    if subrecord['label'] != 'digitized':
                         fields_to_delete.append(DeleteField(field, subrecord))
+                else:
+                    fields_to_delete.append(DeleteField(field, subrecord))
     return fields_to_delete
 
 

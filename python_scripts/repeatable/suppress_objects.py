@@ -1,4 +1,3 @@
-#!/usr/bin/python3
 # This script takes a CSV file containing the URIs or URLs of objects to suppress in the ArchivesSpace staff interface,
 # unpublishes and sets the finding aid status to staff only (for resources). The CSV should have a header row that reads
 # "URI", and you can pass the object's repository identifier number and object type (resources, archival_objects,
@@ -10,11 +9,11 @@
 import argparse
 import os
 import sys
-
 from copy import deepcopy
-from dotenv import load_dotenv, find_dotenv
-from loguru import logger
 from pathlib import Path
+
+from dotenv import find_dotenv, load_dotenv
+from loguru import logger
 
 sys.path.append(os.path.dirname('python_scripts'))  # Needed to import functions from utilities.py
 from python_scripts.utilities import ASpaceAPI, read_csv, record_error
@@ -53,6 +52,7 @@ def update_publish_status(object_json, object_type):
     if object_type not in acceptable_types:
         record_error(f'update_publish_status() - provided object type is not in {acceptable_types}',
                      ValueError)
+        return None
     else:
         updated_object = deepcopy(object_json)
         if object_type == "resources":
@@ -90,7 +90,7 @@ def main(csv_location, repo_id=None, object_type=None, dry_run=False):
                                                       f'repositories/{repo_id}')
             if original_object:
                 updated_object = update_publish_status(original_object, object_type)
-                if dry_run is True:
+                if dry_run:
                     print(f'This is what the post will look like: {updated_object}')
                 else:
                     update_status = local_aspace.update_object(updated_object['uri'], updated_object)

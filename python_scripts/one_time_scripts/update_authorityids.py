@@ -1,15 +1,12 @@
-#!/usr/bin/env python
-
 # This script intakes a CSV of all subjects and agends in ArchivesSpace to update their Authority IDs to match the
 # following standard: <https://<authority_url>/<authority_id>>
 import csv
+from pathlib import Path
+from secrets import *
 
 from asnake.client import ASnakeClient
 from asnake.client.web_client import ASnakeAuthError
 from loguru import logger
-from pathlib import Path
-from secrets import *
-
 
 logger.remove()
 log_path = Path('../../logs', 'update_authorityids_{time:YYYY-MM-DD}.log')
@@ -75,9 +72,9 @@ def read_csv(authorityids_csv):
     """
     authorityids_uris = []
     try:
-        open_csv = open(authorityids_csv, 'r', encoding='UTF-8')
-        authorityids_uris = csv.DictReader(open_csv)
-    except IOError as csverror:
+        with open(authorityids_csv, 'r', encoding='UTF-8') as open_csv:
+            authorityids_uris = csv.DictReader(open_csv)
+    except OSError as csverror:
         logger.error(f'ERROR reading csv file: {csverror}')
         print(f'ERROR reading csv file: {csverror}')
     else:
@@ -97,7 +94,6 @@ def update_authorityids(sbjagt_metadata, test=""):
     """
     # Update = namedtuple('Update', 'Status Message')
     # new_sbjagt = copy.deepcopy(sbjagt_metadata)
-    pass
 
 
 def run_script(accres_ids_csv):
@@ -129,6 +125,5 @@ def run_script(accres_ids_csv):
 
 
 if __name__ == "__main__":
-    pass
     run_script(str(Path('../../test_data/resource_accession_IDs_all.csv')))
 

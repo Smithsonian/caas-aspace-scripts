@@ -2,12 +2,12 @@
 import csv
 import os
 import sys
+from pathlib import Path
 
 from asnake.client import ASnakeClient
 from asnake.client.web_client import ASnakeAuthError
-from dotenv import load_dotenv, find_dotenv
+from dotenv import find_dotenv, load_dotenv
 from loguru import logger
-from pathlib import Path
 
 logger.remove()
 log_path = Path('./logs', 'new_subjects_{time:YYYY-MM-DD}.log')
@@ -50,9 +50,9 @@ def read_csv(new_subjects_csv):
     """
     new_subjects = []
     try:
-        open_csv = open(new_subjects_csv, 'r', encoding='UTF-8')
-        new_subjects = csv.DictReader(open_csv)
-    except IOError as csverror:
+        with open(new_subjects_csv, 'r', encoding='UTF-8') as open_csv:
+            new_subjects = csv.DictReader(open_csv)
+    except OSError as csverror:
         logger.error(f'ERROR reading csv file: {csverror}')
         print(f'ERROR reading csv file: {csverror}')
     else:

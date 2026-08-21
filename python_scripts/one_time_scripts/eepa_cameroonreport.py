@@ -1,15 +1,13 @@
-#!/usr/bin/env python
-
 # This script takes CSV files listing specific collections from EEPA repository, extracts the resource URIs listed in
 # each CSV, uses the ArchivesSpace API to grab the Abstract or Scope and Contents note from the JSON data, and writes
 # the note to the provided CSV in a new column
 import csv
+from pathlib import Path
+from secrets import *
 
 from asnake.client import ASnakeClient
 from asnake.client.web_client import ASnakeAuthError
 from loguru import logger
-from pathlib import Path
-from secrets import *
 
 logger.remove()
 log_path = Path('../../logs', 'report_eepacameroon_{time:YYYY-MM-DD}.log')
@@ -53,9 +51,9 @@ def read_csv(cameroon_reports_csv):
     """
     resources = []
     try:
-        open_csv = open(cameroon_reports_csv, 'r', encoding='UTF-8')
-        resources = csv.DictReader(open_csv)
-    except IOError as csverror:
+        with open(cameroon_reports_csv, 'r', encoding='UTF-8') as open_csv:
+            resources = csv.DictReader(open_csv)
+    except OSError as csverror:
         logger.error(f'ERROR reading csv file: {csverror}')
         print(f'ERROR reading csv file: {csverror}')
     else:
@@ -79,14 +77,12 @@ def write_csv(original_filepath, new_filepath, add_values):
             with open(new_filepath, 'w', newline='', encoding='utf-8') as writecsv:
                 csvreader = csv.reader(readcsv)
                 csvwriter = csv.writer(writecsv)
-                row_count = 0
-                for row in csvreader:
+                for row_count, row in enumerate(csvreader):
                     row.append(add_values[row_count])
-                    row_count += 1
                     csvwriter.writerow(row)
                 writecsv.close()
             readcsv.close()
-    except Exception as csverror:
+    except OSError as csverror:
         print(f'Error when reading/writing to CSV: {csverror}')
         logger.error(f'Error when reading/writing to CSV: {csverror}')
 
@@ -106,6 +102,7 @@ def get_resource_metadata(resource_uri, aspace_client):
     if 'error' in resource_json:
         logger.error(f'ERROR getting object metadata: {resource_json}')
         print(f'ERROR getting object metadata: {resource_json}')
+        return None
     else:
         return resource_json
 
@@ -124,21 +121,20 @@ def find_abstract_scope(resource_json):
     """
     abstract_content = ''
     scope_content = ''
-    if 'notes' in resource_json:
-        if bool(resource_json['notes']) is True:
-            for note in resource_json['notes']:
-                if 'type' in note:
-                    if note['type'] == 'abstract':
-                        abstract_content = note['content']
-                        if type(abstract_content) is list:
-                            all_abstract_contents = [subnote for subnote in note['content']]
-                            combined_abstract = " "
-                            abstract_content = combined_abstract.join(all_abstract_contents)
-                    if note['type'] == 'scopecontent':
-                        all_scope_contents = [subnote['content'] for subnote in note['subnotes']
-                                              if 'content' in subnote]
-                        combined_scope = " "
-                        scope_content = combined_scope.join(all_scope_contents)
+    if 'notes' in resource_json and bool(resource_json['notes']) is True:
+        for note in resource_json['notes']:
+            if 'type' in note:
+                if note['type'] == 'abstract':
+                    abstract_content = note['content']
+                    if type(abstract_content) is list:
+                        all_abstract_contents = [subnote for subnote in note['content']]
+                        combined_abstract = " "
+                        abstract_content = combined_abstract.join(all_abstract_contents)
+                if note['type'] == 'scopecontent':
+                    all_scope_contents = [subnote['content'] for subnote in note['subnotes']
+                                          if 'content' in subnote]
+                    combined_scope = " "
+                    scope_content = combined_scope.join(all_scope_contents)
     if not abstract_content and scope_content:
         return scope_content
     else:

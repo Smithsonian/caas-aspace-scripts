@@ -1,12 +1,11 @@
-#!/usr/bin/env python
-
 # This script reads a CSV containing all the resource and accession identifiers in ArchivesSpace and returns a
 # dictionary containing all the unique, non-alphanumeric characters in the identifiers and their counts
 import csv
 import json
+from pathlib import Path
 
 from loguru import logger
-from pathlib import Path
+
 
 def read_csv(missing_titles_csv):
     """
@@ -21,9 +20,9 @@ def read_csv(missing_titles_csv):
         missingtitle_objects (list): a list of URIs (dict) with "Missing Title" in their notes
     """
     try:
-        open_csv = open(missing_titles_csv, 'r', encoding='UTF-8')
-        missingtitle_objects = csv.DictReader(open_csv)
-    except IOError as csverror:
+        with open(missing_titles_csv, 'r', encoding='UTF-8') as open_csv:
+            missingtitle_objects = csv.DictReader(open_csv)
+    except OSError as csverror:
         logger.error(f'ERROR reading csv file: {csverror}')
         print(f'ERROR reading csv file: {csverror}')
     else:

@@ -1,14 +1,13 @@
-#!/usr/bin/python3
 # This script takes a CSV of archival object URIs as inputs, grabs all the archival objects' JSON data using the API,
 # saves them to a jsonL file using the jsonl_path input, and updates the archival objects' update_refid field to
 # True, posting them back to ArchivesSpace which regenerates the refids.
 import argparse
 import os
 import sys
-
-from dotenv import load_dotenv, find_dotenv
-from loguru import logger
 from pathlib import Path
+
+from dotenv import find_dotenv, load_dotenv
+from loguru import logger
 
 sys.path.append(os.path.dirname('python_scripts'))  # Needed to import functions from utilities.py
 from python_scripts.utilities import ASpaceAPI, read_csv, write_to_file

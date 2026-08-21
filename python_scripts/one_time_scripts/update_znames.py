@@ -1,15 +1,14 @@
-#!/usr/bin/env python
-
 # This script collects all users from ArchivesSpace, parses their usernames to separate any starting with 'z-' and
 # ending with '-expired-' into just the text in-between, then updates the username in ArchivesSpace with the new
 # username
-from asnake.client import ASnakeClient
-from asnake.client.web_client import ASnakeAuthError
+import re
 from collections import namedtuple
-from loguru import logger
 from pathlib import Path
 from secrets import *
-import re
+
+from asnake.client import ASnakeClient
+from asnake.client.web_client import ASnakeAuthError
+from loguru import logger
 
 username_capture = re.compile(r'(?<=z-)(.*)(?=-expired)', re.UNICODE)
 

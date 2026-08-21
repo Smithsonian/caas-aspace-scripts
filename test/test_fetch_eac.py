@@ -4,11 +4,13 @@ import io
 import os
 import shutil
 import unittest
-
-from test.vcr_utils import vcr
-from dotenv import load_dotenv, find_dotenv
 from pathlib import Path
+
+from dotenv import find_dotenv, load_dotenv
+
 from python_scripts.repeatable.fetch_eac import *
+from test.vcr_utils import vcr
+
 
 @vcr.use_cassette()
 def setUpModule():

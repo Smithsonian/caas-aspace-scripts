@@ -1,14 +1,13 @@
-#!/usr/bin/env python
-
 # This script updates caas_aspace_refid's based on a provided CSV.  For help on available arguments and options:
 # `python repeatable/update_fileuri.py -h`.
 import argparse
 import os
 import sys
-
-from dotenv import load_dotenv, find_dotenv
-from loguru import logger
 from pathlib import Path
+
+from dotenv import find_dotenv, load_dotenv
+from loguru import logger
+
 from python_scripts.utilities import client_login, read_csv
 
 # Logging
@@ -32,13 +31,13 @@ def parseArguments():
 def get_refid(client, resource_uri):
     existing_refid = client.get(f'plugins/caas_next_refid/find_by_uri?resource_uri={resource_uri}').json()
     if 'error' in existing_refid:
-        logger.error(f'Refid will be created for {resource_uri}')
-        (f'Refid will be created for {resource_uri}')
+        logger.error(f'Refid will be created for {resource_uri}\nRefid will be created for {resource_uri}')
         return True
     else:
-        logger.error(f'Refid already exists for {resource_uri}')
-        (f'Refid already exists for {resource_uri}')
-    
+        logger.error(f'Refid already exists for {resource_uri}\nRefid already exists for {resource_uri}')
+        return None
+
+
 def build_refid(obj):
     refid = {}
     refid['resource_uri'] = obj['uri']

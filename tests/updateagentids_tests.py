@@ -1,12 +1,13 @@
-#!/usr/bin/python3
 # This script contains unittests for update_agentids.py
 import contextlib
 import io
+
 # import pandas
 import unittest
 
 from python_scripts.one_time_scripts.update_agentids import *
 from test_data.updateagentids_testdata import *
+
 
 class TestAddRecordID(unittest.TestCase):
 
@@ -56,15 +57,13 @@ class TestSortRecordIdentifiers(unittest.TestCase):
     def test_good_sources(self):
         sort_order = ["wikidata", "snac", "naf", "ulan", "viaf", "local"]
         test_sorted_sources = sort_identifiers(test_object_json)
-        record_index = 0
-        for record in test_sorted_sources["agent_record_identifiers"]:
+        for record_index, record in enumerate(test_sorted_sources["agent_record_identifiers"]):
             if record_index == 0:
                 self.assertEqual(record['source'], sort_order[0])
             elif record_index == 1:
                 self.assertEqual(record['source'], sort_order[1])
             elif record_index == 2:
                 self.assertEqual(record['source'], sort_order[2])
-            record_index += 1
 
     def test_non_source(self):
         bad_source = {"primary_identifier": primary,
@@ -85,35 +84,29 @@ class TestSetPrimary(unittest.TestCase):
     def test_no_primary(self):
         test_object_json["agent_record_identifiers"][2]["primary_identifier"] = False
         updated_primary = set_primary(test_object_json)
-        index = 0
-        for record_id in updated_primary["agent_record_identifiers"]:
+        for index, record_id in enumerate(updated_primary["agent_record_identifiers"]):
             if index == 0:
                 self.assertTrue(record_id["primary_identifier"])
             else:
                 self.assertFalse(record_id["primary_identifier"])
-            index += 1
 
     def test_one_primary(self):
         updated_primary = set_primary(test_object_json)
-        index = 0
-        for record_id in updated_primary["agent_record_identifiers"]:
+        for index, record_id in enumerate(updated_primary["agent_record_identifiers"]):
             if index == 0:
                 self.assertTrue(record_id["primary_identifier"])
             else:
                 self.assertFalse(record_id["primary_identifier"])
-            index += 1
 
     def test_multiple_primary(self):
         test_object_json["agent_record_identifiers"][0]["primary_identifier"] = True
         test_object_json["agent_record_identifiers"][1]["primary_identifier"] = True
         updated_primary = set_primary(test_object_json)
-        index = 0
-        for record_id in updated_primary["agent_record_identifiers"]:
+        for index, record_id in enumerate(updated_primary["agent_record_identifiers"]):
             if index == 0:
                 self.assertTrue(record_id["primary_identifier"])
             else:
                 self.assertFalse(record_id["primary_identifier"])
-            index += 1
 
 if __name__ == "__main__":
     unittest.main(verbosity=2)

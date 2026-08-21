@@ -1,4 +1,3 @@
-#!/usr/bin/python3
 # This script finds locations with the label "MapCase" and looks for those that have leading zeros in their indicators
 # such as 01, 02, etc. It then removes the leading zeros for coordinate_1_indicators and searches for and removes
 # leading zeros from coordinate_2_indicators as well. It then posts the updates to those specific locations to ASpace.
@@ -6,11 +5,11 @@
 import argparse
 import os
 import sys
-
 from copy import deepcopy
-from dotenv import load_dotenv, find_dotenv
-from loguru import logger
 from pathlib import Path
+
+from dotenv import find_dotenv, load_dotenv
+from loguru import logger
 
 sys.path.append(os.path.dirname('python_scripts'))  # Needed to import functions from utilities.py
 from python_scripts.utilities import ASpaceAPI, ASpaceDatabase, write_to_file
@@ -41,12 +40,10 @@ def strip_coordinate_leadzero(location_json):
         updated_location (dict): the updated JSON data without leading zeros if present in coordinate indicators
     """
     updated_location = deepcopy(location_json)
-    if 'coordinate_1_indicator' in updated_location:
-        if updated_location['coordinate_1_indicator'].startswith('0'):
-            updated_location['coordinate_1_indicator'] = updated_location['coordinate_1_indicator'].lstrip('0')
-    if 'coordinate_2_indicator' in updated_location:
-        if updated_location['coordinate_2_indicator'].startswith('0'):
-            updated_location['coordinate_2_indicator'] = updated_location['coordinate_2_indicator'].lstrip('0')
+    if 'coordinate_1_indicator' in updated_location and updated_location['coordinate_1_indicator'].startswith('0'):
+        updated_location['coordinate_1_indicator'] = updated_location['coordinate_1_indicator'].lstrip('0')
+    if 'coordinate_2_indicator' in updated_location and updated_location['coordinate_2_indicator'].startswith('0'):
+        updated_location['coordinate_2_indicator'] = updated_location['coordinate_2_indicator'].lstrip('0')
     return updated_location
 
 

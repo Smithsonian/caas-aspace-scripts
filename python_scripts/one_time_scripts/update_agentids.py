@@ -1,4 +1,3 @@
-#!/usr/bin/python3
 # This script takes an Excel file, "combined-aspace-agents-edited.xlsx", and uses the "combined and cleaned" sheet,
 # takes the agent link from the "Aspace_link" column, grabs the agent JSON from ArchivesSpace using the API, then adds
 # a new Record ID to the agent, if an existing record ID does not already exist. Non-matching record IDs are logged and
@@ -7,15 +6,15 @@
 # sorts the order of the IDs according to the above and posts the updated agent record via the ArchivesSpace API.
 import argparse
 import os
-import pandas
 import sys
 import time
-
 from collections import namedtuple
 from copy import deepcopy
-from dotenv import load_dotenv, find_dotenv
-from loguru import logger
 from pathlib import Path
+
+import pandas
+from dotenv import find_dotenv, load_dotenv
+from loguru import logger
 
 sys.path.append(os.path.dirname('python_scripts'))  # Needed to import functions from utilities.py
 from python_scripts.utilities import ASpaceAPI, record_error, write_to_file
@@ -127,8 +126,7 @@ def set_primary(object_json):
     Returns:
         object_json (dict): the updated JSON with the corrected primary record identifiers
     """
-    index = 0
-    for record in object_json["agent_record_identifiers"]:
+    for index, record in enumerate(object_json["agent_record_identifiers"]):
         if index == 0:
             record["primary_identifier"] = True
         else:
@@ -178,7 +176,7 @@ def main(excel_path, object_type, dry_run=False):
                     updated_object_json = add_recordID(str(int(row.VIAF_id)), "viaf", updated_object_json)  # converting id to integer to remove extraneous decimal places, then convert to string
             sorted_sources = sort_identifiers(updated_object_json)
             updated_primary_identifiers = set_primary(sorted_sources)
-            if dry_run is True:
+            if dry_run:
                 print(f'{updated_primary_identifiers}')
             else:
                 write_to_file(str(original_agent_json_data), original_agent_json)

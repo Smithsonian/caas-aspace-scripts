@@ -1,14 +1,13 @@
-#!/usr/bin/python3
 # This script takes a CSV of archival object URIs with timestamps in their date begin and/or end fields, retrieves the
 # objects using the ASpace API, removes the timestamps, and re-posts the archival objects to ASpace.
 import argparse
 import os
 import sys
-
 from copy import deepcopy
-from dotenv import load_dotenv, find_dotenv
-from loguru import logger
 from pathlib import Path
+
+from dotenv import find_dotenv, load_dotenv
+from loguru import logger
 
 sys.path.append(os.path.dirname('python_scripts'))  # Needed to import functions from utilities.py
 from python_scripts.utilities import ASpaceAPI, read_csv, write_to_file

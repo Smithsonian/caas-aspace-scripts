@@ -1,19 +1,18 @@
-#!/usr/bin/env python
 # This script generates a spreadsheet report that lists all the permissions in archivesspace by the first row, with
 # each column displaying the permission and each row displaying the user group. If a user group has a permission, it is
 # marked with the text of that permission in the spreadsheet or if not, FALSE. This is to check to make sure permissions
 # are the same for each user group across all repositories.
 
-import mysql.connector as mysql
 import os
+from datetime import UTC, datetime
+from pathlib import Path
 
-from datetime import date
-from dotenv import load_dotenv, find_dotenv
-from mysql.connector import errorcode
+import mysql.connector as mysql
+from dotenv import find_dotenv, load_dotenv
 from loguru import logger
+from mysql.connector import errorcode
 from openpyxl import Workbook
 from openpyxl.styles import Font
-from pathlib import Path
 
 # Logging
 logger.remove()
@@ -62,13 +61,13 @@ class ASpaceDatabase:
         except mysql.Error as error:
             if error.errno == errorcode.ER_ACCESS_DENIED_ERROR:
                 record_error('connect_db() - Failed to authorize username/password', error)
-                raise error
+                raise
             elif error.errno == errorcode.ER_BAD_DB_ERROR:
                 record_error('connect_db() - Database does not exist', error)
-                raise error
+                raise
             else:
                 record_error('connect_db() - Other error when connecting to the database', error)
-                raise error
+                raise
         else:
             self.cursor = self.connection.cursor()
             return self.connection, self.cursor
@@ -88,7 +87,7 @@ class ASpaceDatabase:
             self.cursor.execute(statement)
         except mysql.Error as error:
             record_error('query_database() - SQL query was invalid', error)
-            raise error
+            raise
         else:
             results = self.cursor.fetchall()
         return results
@@ -132,7 +131,7 @@ class Spreadsheet:
             wb.save(self.spreadsheet_filepath)
         except FileNotFoundError as invalid_file:
             record_error('generate_workbook() - Unable to save workbook with given filepath', invalid_file)
-            raise invalid_file
+            raise
         return wb
 
     def create_sheet(self, sheetname):
@@ -151,7 +150,7 @@ class Spreadsheet:
         except ValueError as bad_sheettitle:
             record_error('create_sheet() - The sheet name provided was not acceptable as a title',
                          bad_sheettitle)
-            raise bad_sheettitle
+            raise
         else:
             self.wb.save(self.spreadsheet_filepath)
             self.sheets[sheetname] = worksheet
@@ -172,7 +171,7 @@ class Spreadsheet:
         # for row in worksheet.iter_cols(min_col=min_column, min_row=min_row):
         #     for cell in row:
         worksheet.cell(row=cell_row, column=cell_column).value=permission
-        if header is True:
+        if header:
             worksheet.cell(row=cell_row, column=cell_column).font=Font(bold=True, underline='single')
         self.wb.save(self.spreadsheet_filepath)
 
@@ -196,7 +195,7 @@ def main():
     aspace_db = ASpaceDatabase(os.getenv('DB_UN'), os.getenv('DB_PW'), os.getenv('DB_HOST'), os.getenv('DB_NAME'),
                                int(os.getenv('DB_PORT')))
     report_spreadsheet = Spreadsheet(str(Path('../../test_data',
-                                              f'report_grouppermissions_{str(date.today())}.xlsx')))
+                                              f'report_grouppermissions_{datetime.now(UTC)!s}.xlsx')))
     report_spreadsheet.wb.remove(report_spreadsheet.wb['Sheet'])
     grouppermission_sheet = report_spreadsheet.create_sheet('group_permissions')
 
@@ -242,12 +241,10 @@ def main():
             groups_permissions[group_name].append(user_group[0])
 
     # Insert FALSE into permissions list if any of the cleaned_permissions do not exist in said list
-    permission_index = 0
-    for permission in cleaned_permissions:
+    for permission_index, permission in enumerate(cleaned_permissions):
         for group_permissions in groups_permissions.values():
             if permission not in group_permissions:
                 group_permissions.insert(permission_index, 'FALSE')
-        permission_index += 1
 
     # Write permissions and groups to spreadsheet
     allgroups_row = 2

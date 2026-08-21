@@ -2,12 +2,12 @@
 import csv
 import os
 import sys
+from pathlib import Path
 
 from asnake.client import ASnakeClient
 from asnake.client.web_client import ASnakeAuthError
-from dotenv import load_dotenv, find_dotenv
+from dotenv import find_dotenv, load_dotenv
 from loguru import logger
-from pathlib import Path
 
 logger.remove()
 log_path = Path('./logs', 'merge_subjects_{time:YYYY-MM-DD}.log')
@@ -50,9 +50,9 @@ def read_csv(merge_subjects_csv):
     """
     merge_subjects = []
     try:
-        open_csv = open(merge_subjects_csv, 'r', encoding='UTF-8')
-        merge_subjects = csv.DictReader(open_csv)
-    except IOError as csverror:
+        with open(merge_subjects_csv, 'r', encoding='UTF-8') as open_csv:
+            merge_subjects = csv.DictReader(open_csv)
+    except OSError as csverror:
         logger.error(f'ERROR reading csv file: {csverror}')
         print(f'ERROR reading csv file: {csverror}')
     else:
@@ -90,7 +90,9 @@ def check_subject(client, subj_id, subj_title):
     if 'error' not in existing_subj:
         existing_title = existing_subj['terms'][0]['term']
         return existing_title == subj_title
-    
+    return None
+
+
 def merge_subject(client, destination_subj_uri, candidate_subj_uri):
     """
     Args:

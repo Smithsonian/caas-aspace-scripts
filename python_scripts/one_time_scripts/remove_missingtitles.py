@@ -1,17 +1,14 @@
-#!/usr/bin/env python
-
 # This script collects all resources and archival objects from every repository, checks their notes for lists and
 # 'Missing Title' in the list title, removes the title and updates to ArchivesSpace
 import copy
 import csv
-
-from asnake.client import ASnakeClient
-from asnake.client.web_client import ASnakeAuthError
 from collections import namedtuple
-from loguru import logger
 from pathlib import Path
 from secrets import *
 
+from asnake.client import ASnakeClient
+from asnake.client.web_client import ASnakeAuthError
+from loguru import logger
 
 logger.remove()
 log_path = Path('../../logs', 'remove-missingtitles_{time:YYYY-MM-DD}.log')
@@ -54,9 +51,9 @@ def read_csv(missing_titles_csv):
     """
     missingtitle_objects = []
     try:
-        open_csv = open(missing_titles_csv, 'r', encoding='UTF-8')
-        missingtitle_objects = csv.DictReader(open_csv)
-    except IOError as csverror:
+        with open(missing_titles_csv, 'r', encoding='UTF-8') as open_csv:
+            missingtitle_objects = csv.DictReader(open_csv)
+    except OSError as csverror:
         logger.error(f'ERROR reading csv file: {csverror}')
         print(f'ERROR reading csv file: {csverror}')
     else:
@@ -78,7 +75,7 @@ def get_objects(object_metadata, test=""):
     Update = namedtuple('Update', 'Status Message')
     new_object = copy.deepcopy(object_metadata)
     if 'notes' in object_metadata:
-        if bool(object_metadata['notes']) is True:
+        if bool(object_metadata['notes']):
             new_obj_notes = delete_missingtitle(new_object['notes'])
             if new_obj_notes:
                 logger.info(f'{test}Old object metadata: {object_metadata}')
@@ -111,16 +108,15 @@ def delete_missingtitle(object_notes):
     """
     new_notes = []
     for note in object_notes:
-        if note['jsonmodel_type'] == 'note_multipart':
-            if 'subnotes' in note:
-                for subnote in note['subnotes']:
-                    if (subnote['jsonmodel_type'] == 'note_orderedlist' or
-                            subnote['jsonmodel_type'] == 'note_definedlist' or
-                            subnote['jsonmodel_type'] == 'note_chronology'):
-                        if 'title' in subnote:
-                            if subnote['title'] == 'Missing Title':
-                                new_notes = object_notes
-                                subnote.pop('title', None)
+        if note['jsonmodel_type'] == 'note_multipart' and 'subnotes' in note:
+            for subnote in note['subnotes']:
+                if ((subnote['jsonmodel_type'] == 'note_orderedlist' or
+                        subnote['jsonmodel_type'] == 'note_definedlist' or
+                        subnote['jsonmodel_type'] == 'note_chronology') and
+                        'title' in subnote and
+                        subnote['title'] == 'Missing Title'):
+                            new_notes = object_notes
+                            subnote.pop('title', None)
     return new_notes
 
 

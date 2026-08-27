@@ -55,10 +55,10 @@ def main(accessrestrict_csv, backup_jsonl, dry_run=False):
     local_aspace = ASpaceAPI(os.getenv('as_api'), os.getenv('as_un'), os.getenv('as_pw'))
     resources = read_csv(accessrestrict_csv, encoding_type='UTF-8-SIG')
     for resource in resources:
-        if resource['updated_acccessrestrict_note']:
+        if resource['updated_accessrestrict_note']:
             accessrestrict_count = 0
             uri_components = resource['resource_uri'].split('/')
-            original_resource_data = local_aspace.get_object(uri_components[3], uri_components[4], f'{uri_components[1]}/{uri_components[2]}')
+            original_resource_data = local_aspace.get_object(uri_components[2], uri_components[3], f'{uri_components[0]}/{uri_components[1]}')
             write_to_file(backup_jsonl, original_resource_data)
             updated_resource = deepcopy(original_resource_data)
             for note in updated_resource['notes']:
@@ -68,14 +68,14 @@ def main(accessrestrict_csv, backup_jsonl, dry_run=False):
                             logger.warning(f'There are more than 1 subnotes to this accessrestrict note. Only the '
                                            f'first subnote will be updated.\n{note["subnotes"]}')
                         old_accessrestrict = note['subnotes'][0]['content']
-                        note['subnotes'][0]['content'] = resource['updated_acccessrestrict_note']
+                        note['subnotes'][0]['content'] = resource['updated_accessrestrict_note']
                         if dry_run:
                             logger.info(f'{resource["ead_id"]}\n'
                                         f'Old accessrestrict note: {old_accessrestrict}\n'
-                                        f'Updated accessrestrict note: {resource["updated_acccessrestrict_note"]}')
+                                        f'Updated accessrestrict note: {resource["updated_accessrestrict_note"]}')
                             print(f'{resource["ead_id"]}\n'
                                   f'Old accessrestrict note: {old_accessrestrict}\n'
-                                  f'Updated accessrestrict note: {resource["updated_acccessrestrict_note"]}\n\n')
+                                  f'Updated accessrestrict note: {resource["updated_accessrestrict_note"]}\n\n')
                         else:
                             update_message = local_aspace.update_object(resource['resource_uri'], updated_resource)
                             logger.info(f'main() - Updated {resource["ead_id"]}: {update_message}')

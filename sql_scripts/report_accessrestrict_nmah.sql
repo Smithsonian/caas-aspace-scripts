@@ -5,7 +5,7 @@ SELECT
             res.repo_id,
             '/resources/',
             res.id) AS resource_uri,
-    CONVERT( JSON_EXTRACT(CAST(CONVERT( note.notes USING UTF8) AS CHAR (100000)),
+    CONVERT( JSON_EXTRACT(CAST(CONVERT( note.notes USING UTF8) AS CHAR (65000)),
             '$.subnotes[0].content') USING UTF8MB3) AS conditions_governing_access,
     NULL AS updated_accessrestrict_note
 FROM

@@ -1,3 +1,8 @@
+--This query gets all agent_persons linked to NMAI resources and archival objects that have record IDs (authorities
+--such as naf, viaf, wikidata) and that do not have record IDs. The original request for the script asks to exclude
+--agent_persons with wikidata record sources, and commented out is one way to do that (via ev.value NOT IN ('wikidata'),
+--but that method was returning results with agents with wikidata sources, so more troubleshooting is needed.
+
 SELECT DISTINCT
     CONCAT('/agents/people/', ap.id) AS agent_uri,
 --     np.sort_name,

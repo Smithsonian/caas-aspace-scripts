@@ -186,7 +186,8 @@ class ASpaceAPI:
         """
         delete_message = self.aspace_client.delete(f'{object_uri}').json()
         if 'error' in delete_message:
-            record_error(f'delete_object() - Delete failed due to following error: {object_uri}', delete_message)
+            record_error(f'delete_object() - Delete failed due to following error: {object_uri}',
+                         delete_message)
             return None
         else:
             return delete_message

@@ -281,7 +281,7 @@ class TestArchivesSpaceClass(unittest.TestCase):
             test_response = local_aspace.delete_object(test_delete)
 
         self.assertTrue(
-            r"""delete_object() - Delete failed due to following error: {'error': {'repo_id': ['Failed validation -- The Repository must exist']}}""" in f.getvalue())
+            r"""delete_object() - Delete failed due to following error: /repositories/1000000/resources/915534548632131 {'error': {'repo_id': ['Failed validation -- The Repository must exist']}}""" in f.getvalue())
         self.assertIsNone(test_response)
 
 
